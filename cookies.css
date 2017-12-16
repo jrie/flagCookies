@@ -1,0 +1,90 @@
+html, body {
+  width: 800px;
+  height: 490px;
+  color: #335;
+  background-color: #cce;
+  font-family: sans;
+}
+
+.panel {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.panel-section-header {
+  font-weight: bold;
+  font-size: 1.25em;
+  text-transform: uppercase;
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+  background-color: #aeaede;
+}
+
+ul {
+  padding: 8px 8px;
+  margin: 0px;
+  list-style: none;
+}
+
+li {
+  position: relative;
+  clear: left;
+  padding: 3px;
+  border-radius: 9px;
+  background-color: #aeaece;
+  margin-bottom: 4px;
+  display: block;
+  border-bottom: 1px solid #779;
+  border-top: 1px solid #eef;
+}
+
+li:nth-child(2n+1) {
+  background-color: #bebede;
+}
+
+.cookieKey {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin-bottom: 0.3em;
+  margin-right: 15px;
+  display: block;
+}
+
+.cookieValue {
+  color: #557;
+}
+
+p {
+  position: relative;
+  word-wrap: break-word;
+  width: 85%;
+  left: 4%;
+  top: 0%;
+  display: inline-block;
+}
+
+button {
+  text-transform: uppercase;
+  float: left;
+  position: relative;
+  top: 0.75em;
+  left: 0.75em;
+  text-align: center;
+  max-width: 8%;
+  padding: 3px 9px;
+  background-color: #f0f020;
+  border-radius: 18px;
+  border: 1px solid #666;
+  color: #447;
+  font-weight: bold;
+}
+
+button::-moz-focus-inner {
+  border: none;
+}
+
+button.flagged {
+  background-color: #a00000;
+  color: #fff;
+}
