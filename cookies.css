@@ -1,8 +1,8 @@
 html, body {
   width: 800px;
-  height: 490px;
+  max-height: 490px;
   color: #335;
-  background-color: #cce;
+  background-color: #337;
   font-family: sans;
 }
 
@@ -18,10 +18,13 @@ html, body {
   position: sticky;
   top: 0px;
   z-index: 10;
-  background-color: #aeaede;
+  background-color: #9e9ec7;
+  border-bottom: 1px solid #000;
+  border-top: 1px solid #cce;
 }
 
 ul {
+  clear: both;
   padding: 8px 8px;
   margin: 0px;
   list-style: none;
@@ -66,25 +69,44 @@ p {
 
 button {
   text-transform: uppercase;
-  float: left;
+  text-align: center;
+  border-radius: 18px;
+  border: 1px solid #666;
+  font-weight: bold;
+  padding: 3px 9px;
+}
+
+#header-title {
+  max-width: 75%;
+}
+
+#tabs {
+  position: absolute;
+  top: 0.75em;
+  right: 1%;
+}
+
+#cookie-list button {
   position: relative;
+  float: left;
   top: 0.75em;
   left: 0.75em;
-  text-align: center;
   max-width: 8%;
   padding: 3px 9px;
   background-color: #f0f020;
-  border-radius: 18px;
-  border: 1px solid #666;
   color: #447;
-  font-weight: bold;
 }
 
 button::-moz-focus-inner {
   border: none;
 }
 
-button.flagged {
+#cookie-list button.flagged {
   background-color: #a00000;
   color: #fff;
+
+}
+
+.hidden {
+  display: none;
 }

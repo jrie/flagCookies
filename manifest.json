@@ -21,7 +21,7 @@
   "homepage_url": "https://ngb.to/threads/32235-Firefox-%E2%80%93-Sandboxing-von-Tracking-Seiten",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "1.1a",
+  "version": "1.1b",
   "permissions": ["cookies", "tabs", "<all_urls>", "storage"],
   "background": {
     "scripts": [
