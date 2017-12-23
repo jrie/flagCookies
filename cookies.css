@@ -32,30 +32,21 @@ html, body {
   margin-bottom: 4px;
 }
 
+.info {
+  padding-left: 21px;
+  font-weight: bold;
+  font-size: 1.25em;
+  margin-bottom: 18px;
+}
+
 #header-title {
   display: block;
   max-width: 75%;
   margin-bottom: 8px;
 }
 
-#searchBar {
-  background-color: #eee;
-  background-image: url('icons/search_icon.png');
-  background-position: 4px center;
-  background-repeat: no-repeat;
-  background-clip: border-box;
-  background-size: 26px 26px;
-  color: #557;
-  display: inline;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin: 0px;
-  padding: 4px 12px 7px 32px;
-  width: 100%;
-  font-weight: bold;
-}
-
 hr {
+  clear: both;
   border: none;
   border-bottom: 1px solid #cdcdcd;
 }
@@ -167,6 +158,60 @@ button.checkmark.flagged {
   background-position: -4px -43px;
 }
 
+button.checkmark.auto-flagged {
+  background-image: url('icons/checkmark_af.png');
+  background-position: -4px -43px;
+}
+
 li:hover button.checkmark {
   border: 1px solid #000;
+}
+
+button#auto-flag {
+  text-transform: uppercase;
+  background-color: #ddd;
+  background-image: url('icons/cookie_wflag_28.png');
+  background-position: 4px 3px;
+  background-repeat: no-repeat;
+  background-clip: border-box;
+  padding: 7px 12px 8px 12px;
+  padding-left: 28px;
+  border-color: #ddd;
+  color: #557;
+  float: left;
+  display: inline;
+  margin-right:  3%;
+  width: 18%;
+  border: 1px solid #99a;
+  transition: background-color,color;
+  transition-duration: 320ms;
+}
+
+button#auto-flag.active {
+  background-color: #b20600;
+  background-image: url('icons/cookie_flag_28.png');
+  color: #eee;
+  border: 1px solid #444;
+}
+
+#searchBar {
+  background-color: #eee;
+  background-image: url('icons/search_icon.png');
+  background-position: 4px center;
+  background-repeat: no-repeat;
+  background-clip: border-box;
+  background-size: 26px 26px;
+  color: #557;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin: 0px;
+  padding: 6px 12px 9px 4%;
+  font-weight: bold;
+  width: 79%;
+}
+
+#clearAutoFlagged {
+  margin-top: 10px;
+  margin-bottom: 4px;
 }

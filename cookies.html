@@ -10,13 +10,14 @@
         <div id="header-title"></div>
         <div id="tabs">
           <button id="allCookies">Active cookies</button>
-          <button id="flaggedCookies">Flagged cookies</button>
+          <button id="flaggedCookies">Flagged</button>
         </div>
         <hr/>
-        <input type="text" placeholder="Search cookie list" id="searchBar" />
+        <button id="auto-flag">Auto flag</button><input type="text" placeholder="Search cookie list" id="searchBar" />
       </div>
       <ul id="cookie-list"></ul>
       <ul class="hidden" id="cookie-list-flagged"></ul>
+      <div class="hidden" id="cookie-list-auto-flagged-div"><ul id="cookie-list-auto-flagged"></ul><button id="clearAutoFlagged">Clear auto-flagged cookies</button></div>
     </div>
     <script src="flagCookies.js"></script>
   </body>
