@@ -1,9 +1,9 @@
 html, body {
   width: 800px;
   max-height: 490px;
-  color: #335;
-  background-color: #337;
-  font-family: sans;
+  color: #557;
+  background-color: #ddd;
+  font: 0.9em Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
 .panel {
@@ -12,57 +12,107 @@ html, body {
 }
 
 .panel-section-header {
+  display: block;
   font-weight: bold;
-  font-size: 1.25em;
-  text-transform: uppercase;
+  font-size: 1.35em;
+  text-transform: none;
   position: sticky;
   top: 0px;
   z-index: 10;
-  background-color: #9e9ec7;
-  border-bottom: 1px solid #000;
+  background-color: #eee;
+  border-bottom: 1px solid #aaa;
   border-top: 1px solid #cce;
+  min-height: 4em;
+}
+
+.intro {
+  display: block;
+  color: #888;
+  font-size: 0.75em;
+  margin-bottom: 4px;
+}
+
+#header-title {
+  display: block;
+  max-width: 75%;
+  margin-bottom: 8px;
+}
+
+#searchBar {
+  background-color: #eee;
+  background-image: url('icons/search_icon.png');
+  background-position: 4px center;
+  background-repeat: no-repeat;
+  background-clip: border-box;
+  background-size: 26px 26px;
+  color: #557;
+  display: inline;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin: 0px;
+  padding: 4px 12px 7px 32px;
+  width: 100%;
+  font-weight: bold;
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid #cdcdcd;
 }
 
 ul {
   clear: both;
-  padding: 8px 8px;
+  padding: 5px 8px;
   margin: 0px;
   list-style: none;
 }
 
 li {
   position: relative;
-  clear: left;
-  padding: 3px;
-  border-radius: 9px;
-  background-color: #aeaece;
-  margin-bottom: 4px;
+  border-radius: 8px;
+  background-color: #fff;
+  margin-bottom: 5px;
   display: block;
-  border-bottom: 1px solid #779;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
   border-top: 1px solid #eef;
+  transition-property: background-color;
+  transition-duration: 375ms;
 }
 
 li:nth-child(2n+1) {
-  background-color: #bebede;
+  background-color: #eee;
+}
+
+li:hover {
+  background-color: #557;
+  color: #eef;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-top: 1px solid #cce;
+}
+
+li:hover .cookieValue {
+  color: #fff;
 }
 
 .cookieKey {
   font-size: 1.25em;
   font-weight: bold;
-  margin-bottom: 0.3em;
-  margin-right: 15px;
+  margin-bottom: 0.25em;
   display: block;
 }
 
 .cookieValue {
-  color: #557;
+  color: #779;
 }
 
-p {
+#cookie-list p,
+#cookie-list-flagged p {
   position: relative;
   word-wrap: break-word;
   width: 85%;
-  left: 4%;
+  left: 6%;
   top: 0%;
   display: inline-block;
 }
@@ -70,14 +120,21 @@ p {
 button {
   text-transform: uppercase;
   text-align: center;
-  border-radius: 18px;
+  background-color: #446;
+  border-radius: 24px;
   border: 1px solid #666;
   font-weight: bold;
-  padding: 3px 9px;
+  padding: 6px 12px;
+  cursor: pointer;
 }
 
-#header-title {
-  max-width: 75%;
+button:hover {
+  background-color: #eee;
+  color: #557;
+}
+
+button::-moz-focus-inner {
+  border: none;
 }
 
 #tabs {
@@ -86,27 +143,30 @@ button {
   right: 1%;
 }
 
-#cookie-list button {
-  position: relative;
-  float: left;
-  top: 0.75em;
-  left: 0.75em;
-  max-width: 8%;
-  padding: 3px 9px;
-  background-color: #f0f020;
-  color: #447;
-}
-
-button::-moz-focus-inner {
-  border: none;
-}
-
-#cookie-list button.flagged {
-  background-color: #a00000;
-  color: #fff;
-
-}
-
 .hidden {
   display: none;
+}
+
+button.checkmark {
+  cursor: pointer;
+  position: absolute;
+  top: 0.85em;
+  left: 10px;
+  border: 1px solid #557;
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  background-color: #fff;
+  background-image: url(icons/checkmark.png);
+  background-repeat: no-repeat;
+  background-clip:border-box;
+  background-position: -4px -4px;
+}
+
+button.checkmark.flagged {
+  background-position: -4px -43px;
+}
+
+li:hover button.checkmark {
+  border: 1px solid #000;
 }

@@ -4,6 +4,10 @@
       "strict_min_version": "58.0a1"
     }
   },
+  "developer": {
+    "name": "JanRie",
+    "url": "https://github.com/jrie"
+  },
   "browser_action": {
     "browser_style": true,
     "default_title": "Flag and clear cookies",
@@ -21,7 +25,7 @@
   "homepage_url": "https://ngb.to/threads/32235-Firefox-%E2%80%93-Sandboxing-von-Tracking-Seiten",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "1.1b",
+  "version": "1.1c",
   "permissions": ["cookies", "tabs", "<all_urls>", "storage"],
   "background": {
     "scripts": [
