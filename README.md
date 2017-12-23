@@ -4,6 +4,8 @@ Firefox - flag cookies which track you for deletion. And delete those on page re
 
 ## Screenshots
 
+[![FlagCookies v1.3 - Auto-flag cookies](https://www.picflash.org/img/2017/12/23/TBjb0d8snka8oingz.png "Auto flag cookies")] (https://www.picflash.org/viewer.php?img=jb0d8snka8oingz.png)
+
 [![FlagCookies v1.2 - Active cookies view](https://www.picflash.org/img/2017/12/23/TB1scmjt0dwr5zuyy.png "Active cookies view")] (https://www.picflash.org/viewer.php?img=1scmjt0dwr5zuyy.png)
 
 [![FlagCookies v1.2 - Flagged cookies view](https://www.picflash.org/img/2017/12/23/TB07bsya9xjp9aty5.png "Flagged cookies view")] (https://www.picflash.org/viewer.php?img=07bsya9xjp9aty5.png)
