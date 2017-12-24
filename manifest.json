@@ -10,23 +10,23 @@
   },
   "browser_action": {
     "browser_style": true,
-    "default_title": "Flag and clear cookies",
+    "default_title": "FlagCookies",
     "default_popup": "cookies.html",
     "default_icon": {
       "19": "icons/cookie_19.png",
       "38": "icons/cookie_38.png"
     }
   },
-  "description": "List cookies in the active tab, flag cookies for deletion and delete them on before the page reloads or the tab or window closes.\nStores the cookie name for deletion and by domain URL in the local browser storage.",
+  "description": "List cookies in the active tab. Permit cookies for a domain by one click or flag cookies for either manually enforced or by selection automatically, before the page reloads or the tab or window closes.\nStores the cookie name for deletion/permission and by domain URL in the local browser storage - or the domain name if auto flagging is enabled.",
   "icons": {
     "48": "icons/cookie_48.png",
     "96": "icons/cookie_96.png",
     "128": "icons/cookie_128.png"
   },
-  "homepage_url": "https://ngb.to/threads/32235-Firefox-%E2%80%93-Sandboxing-von-Tracking-Seiten",
+  "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "1.3",
+  "version": "1.4",
   "permissions": ["cookies", "tabs", "<all_urls>", "storage"],
   "background": {
     "scripts": [

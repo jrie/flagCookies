@@ -11,7 +11,8 @@ html, body {
   overflow-x: hidden;
 }
 
-.panel-section-header {
+.panel-section-header,
+.legend {
   display: block;
   font-weight: bold;
   font-size: 1.35em;
@@ -23,6 +24,51 @@ html, body {
   border-bottom: 1px solid #aaa;
   border-top: 1px solid #cce;
   min-height: 4em;
+}
+
+.legend {
+  min-height: 2.5em;
+  height: 2.5em;
+  padding: 0px 20px 4px 20px;
+  bottom: 0px;
+  margin: 0px;
+}
+
+.legend p.intro {
+  margin-right: 28px;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.legend span {
+  border: 1px solid #aaa;
+  border: none;
+  background-color: #ddd;
+  background-color: transparent;
+  padding: 6px 5px 4px 35px;
+  background-repeat: no-repeat;
+  background-clip:border-box;
+  margin-right: 25px;
+  font-size: 0.7em;
+  margin-top: 0.5em;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.legend #leg-flagged {
+  background-image: url('icons/checkmark.png');
+  background-position: -4px -43px;
+
+}
+
+.legend #leg-auto-flagged {
+  background-image: url('icons/checkmark_af.png');
+  background-position: -4px -43px;
+}
+
+.legend #leg-permitted {
+  background-image: url('icons/checkmark_permit.png');
+  background-position: -4px -41px;
 }
 
 .intro {
@@ -163,6 +209,11 @@ button.checkmark.auto-flagged {
   background-position: -4px -43px;
 }
 
+button.checkmark.permit {
+  background-image: url('icons/checkmark_permit.png');
+  background-position: -4px -41px;
+}
+
 li:hover button.checkmark {
   border: 1px solid #000;
 }
@@ -191,7 +242,7 @@ button#auto-flag.active {
   background-color: #b20600;
   background-image: url('icons/cookie_flag_28.png');
   color: #eee;
-  border: 1px solid #444;
+  border: 1px solid #779;
 }
 
 #searchBar {

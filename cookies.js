@@ -4,23 +4,38 @@ var domainURL = ""; // The active domain url
 // Clear the cookies which are enabled for the domain in browser storage
 async function clearCookies(action) {
   let data = await browser.storage.local.get();
+  if (data[domainURL] === undefined) {
+    return;
+  }
+
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
     let domainCookies = await browser.cookies.getAll({url: domainURL});
     for (let cookie of domainCookies) {
+      if (data[domainURL][cookie.name] === false) {
+        console.log("Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'");
+        continue;
+      }
+
       let details = { url: domainURL, name: cookie.name };
-      if ((await browser.cookies.remove(details)) != null) {
-        if (data[domainURL] && data[domainURL][cookie.name] == true) {
-          console.log("Deleted on '" + action + "',' cookie: '" + cookie.name + "' for '" + domainURL + "'");
+      if ((await browser.cookies.remove(details)) !== null) {
+        if (data[domainURL][cookie.name] === true) {
+          console.log("Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'");
         } else {
-          console.log("Auto-flag deleted on '" + action + "',' cookie: '" + cookie.name + "' for '" + domainURL + "'");
+          console.log("Auto-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'");
         }
       }
     }
-  } else if (data[domainURL] !== undefined) {
+
+  } else {
     for (let cookie in data[domainURL]) {
+      if (data[domainURL][cookie] === false) {
+        console.log("Permitted cookie on '" + action + "', cookie: '" + cookie + "' for '" + domainURL + "'");
+        continue;
+      }
+
       let details = { url: domainURL, name: cookie };
       if ((await browser.cookies.remove(details)) != null) {
-        console.log("Deleted on '" + action + "',' cookie: '" + cookie + "' for '" + domainURL + "'");
+        console.log("Deleted on '" + action + "', cookie: '" + cookie + "' for '" + domainURL + "'");
       }
     }
   }
