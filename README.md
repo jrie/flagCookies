@@ -4,6 +4,10 @@ Firefox - flag cookies which track you for deletion. And delete those on page re
 
 ## Screenshots
 
+**Click on the link to get a full resolution picture**
+
+[![FlagCookies v1.4 - Permit cookies](https://www.picflash.org/img/2017/12/24/TBlmrnzabbyebb6x9.png "Permit, flag and legend display")] (https://www.picflash.org/viewer.php?img=lmrnzabbyebb6x9.png)
+
 [![FlagCookies v1.3 - Auto-flag cookies](https://www.picflash.org/img/2017/12/23/TBjb0d8snka8oingz.png "Auto flag cookies")] (https://www.picflash.org/viewer.php?img=jb0d8snka8oingz.png)
 
 [![FlagCookies v1.2 - Active cookies view](https://www.picflash.org/img/2017/12/23/TB1scmjt0dwr5zuyy.png "Active cookies view")] (https://www.picflash.org/viewer.php?img=1scmjt0dwr5zuyy.png)
@@ -16,22 +20,26 @@ Firefox - flag cookies which track you for deletion. And delete those on page re
 
 ## Requirements and usage
 
-Firefox in version 58.0a1 is minimum - which is also listed in the "manifest.json".
+**Firefox in version 58.0a1 is minimum**
+
+## Usage
 
 Open the "cookie icon" - you see the active domain cookies which there name and there value.
-Click on button on the left, it will be "checked" for flagging then - meaning the cookie will be removed on page load/reload/tab and or window close.
+Click on button on the left of the list, it will be "checked" for flagging. This means the cookie will be removed on page load/reload/tab and or window close.
 
-In "flagged cookies" all flagged cookies for the domain are shown. There you can "uncheck" even cookies, which are set to be flagged for the domain, but not currently active set by the domain - those are shown only with there name, no values are stored or shown then. Cookies in this list, which have a value, are currently active. Flagged but not present cookies are set at the end of the list.
+click once more and the cookie becomes "permitted", this is a white list for cookies.
 
-The cookie values are not stored by the add-on, only the cookies names are stored in the browser storage by domain name.
+If you enable "Auto-flag" - all cookies, even unknown, are deleted for this domain, in case they are not set are not set to be "permitted".
 
+No cookie values are stored by the add-on, only the cookies names are stored in the browser storage by domain name. Or if "auto-flag" is enabled for a domain or not.
 
 ## Installation
 
-You can use the .xpi provided on the release page and install, or download/clone the repository, to add the Add-on dynamically by using "about:debugging" in Firefox, which allows you to install, using the "manifest.json" file, if you point to it.
+You can use the signed .xpi provided on the release page and install directly. Or download/clone the repository, to add the Add-on dynamically by using "about:debugging" in Firefox, which allows you to install, using the "manifest.json" file, if you point to it.
 
 The addon then is loaded. If you like to know what kind of cookies are deleted, there is output of the add-on, which can be displayed using "Debug" - if you enable debugging of extensions in "about:debbuging" in Firefox. And "allow add-on debugging" feature. Click on "Debug". And watch the console showing output.
 
-## Thanks
+## Thanks and notes
 
-Thanks to Cybergreek who pushed the major style changes!
+To phre4k for the initially idea!
+To Cybergreek who pushed the major style change(s).
