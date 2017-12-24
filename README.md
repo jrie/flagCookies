@@ -4,18 +4,16 @@ Firefox - flag cookies which track you for deletion. And delete those on page re
 
 ## Screenshots
 
-**Click on the link to get a full resolution picture**
+[![FlagCookies v1.4 - Permit cookies](https://www.picflash.org/img/2017/12/24/lmrnzabbyebb6x9.png "Permit, flag and legend display")] (https://www.picflash.org/viewer.php?img=lmrnzabbyebb6x9.png)
 
-[![FlagCookies v1.4 - Permit cookies](https://www.picflash.org/img/2017/12/24/TBlmrnzabbyebb6x9.png "Permit, flag and legend display")] (https://www.picflash.org/viewer.php?img=lmrnzabbyebb6x9.png)
+[![FlagCookies v1.3 - Auto-flag cookies](https://www.picflash.org/img/2017/12/23/jb0d8snka8oingz.png "Auto flag cookies")] (https://www.picflash.org/viewer.php?img=jb0d8snka8oingz.png)
 
-[![FlagCookies v1.3 - Auto-flag cookies](https://www.picflash.org/img/2017/12/23/TBjb0d8snka8oingz.png "Auto flag cookies")] (https://www.picflash.org/viewer.php?img=jb0d8snka8oingz.png)
+[![FlagCookies v1.2 - Active cookies view](https://www.picflash.org/img/2017/12/23/1scmjt0dwr5zuyy.png "Active cookies view")] (https://www.picflash.org/viewer.php?img=1scmjt0dwr5zuyy.png)
 
-[![FlagCookies v1.2 - Active cookies view](https://www.picflash.org/img/2017/12/23/TB1scmjt0dwr5zuyy.png "Active cookies view")] (https://www.picflash.org/viewer.php?img=1scmjt0dwr5zuyy.png)
-
-[![FlagCookies v1.2 - Flagged cookies view](https://www.picflash.org/img/2017/12/23/TB07bsya9xjp9aty5.png "Flagged cookies view")] (https://www.picflash.org/viewer.php?img=07bsya9xjp9aty5.png)
+[![FlagCookies v1.2 - Flagged cookies view](https://www.picflash.org/img/2017/12/23/07bsya9xjp9aty5.png "Flagged cookies view")] (https://www.picflash.org/viewer.php?img=07bsya9xjp9aty5.png)
 
 
-[![FlagCookies v1.2 - Search feature](https://www.picflash.org/img/2017/12/23/TB1kpzjz6cd9jjvpt.png "Search filtering")] (https://www.picflash.org/viewer.php?img=1kpzjz6cd9jjvpt.png)
+[![FlagCookies v1.2 - Search feature](https://www.picflash.org/img/2017/12/23/1kpzjz6cd9jjvpt.png "Search filtering")] (https://www.picflash.org/viewer.php?img=1kpzjz6cd9jjvpt.png)
 
 
 ## Requirements and usage
