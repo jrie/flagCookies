@@ -38,7 +38,12 @@ async function showCookiesForTab (tabs) {
     let cookieList = document.getElementById('cookie-list')
     let flaggedCookieList = document.getElementById('cookie-list-flagged')
 
-    if (cookies.length > 0) {
+    if (cookies.length === 0) {
+      let infoDisplay = document.getElementById('infoDisplay')
+      let contentText = 'No cookies in this tab.'
+      infoDisplay.children[0].textContent = contentText
+      infoDisplay.removeAttribute('class')
+    } else {
       for (let cookie of cookies) {
         let li = document.createElement('li')
 
@@ -78,14 +83,8 @@ async function showCookiesForTab (tabs) {
 
         cookieList.appendChild(li)
       }
-    } else {
-      let p = document.createElement('p')
-      p.className = 'info'
 
-      let content = document.createTextNode('No cookies in this tab.')
-      p.appendChild(content)
-
-      cookieList.parentNode.appendChild(p)
+      cookieList.removeAttribute('class')
     }
 
     if (data[domainURL]) {
@@ -180,7 +179,16 @@ async function flaggedCookieSwitch (event) {
     }
   }
 
-  event.target.parentNode.parentNode.removeChild(event.target.parentNode)
+  let parent = event.target.parentNode.parentNode
+
+  parent.removeChild(event.target.parentNode)
+  if (parent.children.length === 0) {
+    let infoDisplay = document.getElementById('infoDisplay')
+    let contentText = 'No cookies flagged.'
+    infoDisplay.children[0].textContent = contentText
+    parent.className = 'hidden'
+    infoDisplay.removeAttribute('class')
+  }
 }
 
 async function cookieFlagSwitch (event) {
@@ -230,28 +238,34 @@ function unhide (targetList) {
     doSearch(searchVal)
   } else {
     for (let child of targetList.children) {
-      if (child.className === 'hidden') {
-        child.className = ''
-      }
+      if (child.className === 'hidden') child.removeAttribute('class')
     }
   }
 }
 
 // Switch views
-function switchFlagged () {
-  let list = document.getElementById('cookie-list-flagged')
+function switchView (event) {
+  let list = document.getElementById(event.target.dataset.target)
   unhide(list)
 
-  document.getElementById('cookie-list').className = 'hidden'
-  list.className = ''
-}
+  let content = document.getElementById('content')
+  for (let child of content.children) {
+    child.className = 'hidden'
+  }
 
-function switchAll () {
-  let list = document.getElementById('cookie-list')
-  unhide(list)
+  if (list.children.length === 0) {
+    let infoDisplay = document.getElementById('infoDisplay')
 
-  document.getElementById('cookie-list-flagged').className = 'hidden'
-  list.className = ''
+    let contentText = 'No cookies in this tab.'
+    if (event.target.dataset.target === 'cookie-list-flagged') {
+      contentText = 'No cookies flagged.'
+    }
+
+    infoDisplay.children[0].textContent = contentText
+    infoDisplay.removeAttribute('class')
+  } else {
+    list.removeAttribute('class')
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -272,7 +286,7 @@ async function flagAutoSwitch (event) {
   } else {
     delete data['flagCookies_autoFlag'][domainURL]
     await browser.storage.local.set(data)
-    event.target.className = ''
+    event.target.removeAttribute('class')
     switchAutoFlag(false, 'cookie-list')
   }
 }
@@ -336,15 +350,15 @@ function doSearch (searchVal, targetList) {
     if (cookieKey.indexOf(searchVal) === -1 && cookieValue.indexOf(searchVal) === -1) {
       child.className = 'hidden'
     } else {
-      child.className = ''
+      child.removeAttribute('class')
     }
   }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
-document.getElementById('flaggedCookies').addEventListener('click', switchFlagged)
-document.getElementById('allCookies').addEventListener('click', switchAll)
+document.getElementById('flaggedCookies').addEventListener('click', switchView)
+document.getElementById('allCookies').addEventListener('click', switchView)
 document.getElementById('auto-flag').addEventListener('click', flagAutoSwitch)
 document.getElementById('searchBar').addEventListener('keyup', searchContent)
 
