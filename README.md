@@ -1,19 +1,12 @@
 # flagCookies
-Firefox - flag cookies which track you for deletion. And delete those on page reload or while browsing a domain or while closing the tab/window.
+A cookie manager on steroids.
 
 
 ## Screenshots
 
 [![FlagCookies v1.5 - No cookies globally](https://www.picflash.org/img/2017/12/26/lbtljurjgu3y9ps.png "FlagCookies 1.5 - No cookies globally if I dont permit a cookie myself!")](https://www.picflash.org/viewer.php?img=lbtljurjgu3y9ps.png)
 
-
-## Requirements and usage
-
-**Firefox in version 58.0a1 is minimum**
-
 ## Description
-
-A cookie manager on steroids.
 
 Which allows to globally delete all or some domain cookies (with particular permissions), separated by subdomains and even unknown and on every domain/subdomain on page load/reload/tab and window close.
 
@@ -25,7 +18,12 @@ Global flagging does remove all non particular permitted cookies for all domains
 
 Cookies are shown with name and value, to get a grasp on what is in the box.
 
-Get a grip on what cookies are allowed while you browse a website or the web in general.
+Get a grip on what cookies are allowed while you browse a website or the web in general
+
+
+## Requirements
+
+**Firefox in version 58.0a1 is minimum**
 
 
 ## Installation
