@@ -40,7 +40,7 @@ async function showCookiesForTab (tabs) {
 
     if (cookies.length === 0) {
       let infoDisplay = document.getElementById('infoDisplay')
-      let contentText = 'No cookies in this tab.'
+      let contentText = 'No active cookies for domain.'
       infoDisplay.children[0].textContent = contentText
       infoDisplay.removeAttribute('class')
     } else {
@@ -57,9 +57,10 @@ async function showCookiesForTab (tabs) {
         if (data[domainURL] && data[domainURL][cookie.name] !== undefined) {
           if (data[domainURL][cookie.name] === true) {
             checkMark.className = 'checkmark flagged'
-            addFlaggedCookie(cookie.name, cookie.value)
+            addCookieToList('cookie-list-flagged', cookie.name, cookie.value)
           } else if (data[domainURL][cookie.name] === false) {
             checkMark.className = 'checkmark permit'
+            addCookieToList('cookie-list-permitted', cookie.name, cookie.value)
           }
         }
 
@@ -90,11 +91,11 @@ async function showCookiesForTab (tabs) {
     if (data[domainURL]) {
       if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
         for (let cookieName in data[domainURL]) {
-          let found = false
-
           if (data[domainURL][cookieName] !== true) {
             continue
           }
+
+          let found = false
 
           for (let child of flaggedCookieList.children) {
             if (child.children[0].dataset['name'] === cookieName) {
@@ -103,7 +104,7 @@ async function showCookiesForTab (tabs) {
             }
           }
 
-          if (!found) addFlaggedCookie(cookieName, '')
+          if (!found) addCookieToList('cookie-list-flagged', cookieName, '')
         }
       } else {
         for (let cookieName in data[domainURL]) {
@@ -120,23 +121,34 @@ async function showCookiesForTab (tabs) {
             }
           }
 
-          if (!found) addFlaggedCookie(cookieName, '')
+          if (!found) addCookieToList('cookie-list-flagged', cookieName, '')
         }
       }
     }
   })
+
+  if (data['flagCookies_flag_global'] && data['flagCookies_flag_global']['use'] === true) {
+      flagGlobalAutoNonEvent()
+  }
 }
 
-function addFlaggedCookie (name, value) {
-  let flaggedCookieList = document.getElementById('cookie-list-flagged')
+function addCookieToList (targetList, name, value) {
+  let targetCookieList = document.getElementById(targetList)
   let li = document.createElement('li')
   li.dataset['name'] = name
 
   let checkMark = document.createElement('button')
-  checkMark.className = 'checkmark flagged'
+
   checkMark.dataset['name'] = name
   checkMark.dataset['value'] = value
-  checkMark.addEventListener('click', flaggedCookieSwitch);
+
+  if (targetList === 'cookie-list-flagged') {
+    checkMark.className = 'checkmark flagged'
+    checkMark.addEventListener('click', flaggedCookieSwitch);
+  } else {
+    checkMark.className = 'checkmark permit'
+    checkMark.addEventListener('click', permittedCookieSwitch);
+  }
 
   let p = document.createElement('p')
 
@@ -154,7 +166,7 @@ function addFlaggedCookie (name, value) {
 
   li.appendChild(checkMark)
   li.appendChild(p)
-  flaggedCookieList.appendChild(li)
+  targetCookieList.appendChild(li)
 }
 
 function getActiveTab () {
@@ -170,11 +182,22 @@ async function flaggedCookieSwitch (event) {
 
   // Uncheck from flagged in active cookies, if present
   let domainCookieList = document.getElementById('cookie-list')
+  let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined ? data['flagCookies_autoFlag'][domainURL] !== undefined : false
+  let hasGlobal = data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] === true
+
   for (let child of domainCookieList.children) {
     if (child.children[0].dataset['name'] === cookieName) {
       delete data[domainURL][cookieName]
       await browser.storage.local.set(data)
-      child.children[0].className = 'checkmark'
+      if (hasAutoFlag) {
+        data[domainURL][cookieName] = 'af'
+        child.children[0].className = 'checkmark auto-flagged'
+      } else if (hasGlobal) {
+        child.children[0].className = 'checkmark auto-flagged'
+      } else {
+        delete data[domainURL][cookieName]
+        child.children[0].className = 'checkmark'
+      }
       break
     }
   }
@@ -184,7 +207,43 @@ async function flaggedCookieSwitch (event) {
   parent.removeChild(event.target.parentNode)
   if (parent.children.length === 0) {
     let infoDisplay = document.getElementById('infoDisplay')
-    let contentText = 'No cookies flagged.'
+    let contentText = 'No flagged cookies for domain.'
+    infoDisplay.children[0].textContent = contentText
+    parent.className = 'hidden'
+    infoDisplay.removeAttribute('class')
+  }
+}
+
+async function permittedCookieSwitch (event) {
+  let data = await browser.storage.local.get()
+  let cookieName = event.target.dataset['name']
+
+  // Uncheck from permitted in active cookies, if present
+  let domainCookieList = document.getElementById('cookie-list')
+  let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined ? data['flagCookies_autoFlag'][domainURL] !== undefined : false
+  let hasGlobal = data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] === true
+  for (let child of domainCookieList.children) {
+    if (child.children[0].dataset['name'] === cookieName) {
+      if (hasAutoFlag) {
+        data[domainURL][cookieName] = 'af'
+        child.children[0].className = 'checkmark auto-flagged'
+      } else if (hasGlobal) {
+        child.children[0].className = 'checkmark auto-flagged'
+      } else {
+        delete data[domainURL][cookieName]
+        child.children[0].className = 'checkmark'
+      }
+      await browser.storage.local.set(data)
+      break
+    }
+  }
+
+  let parent = event.target.parentNode.parentNode
+
+  parent.removeChild(event.target.parentNode)
+  if (parent.children.length === 0) {
+    let infoDisplay = document.getElementById('infoDisplay')
+    let contentText = 'No permitted cookies for domain.'
     infoDisplay.children[0].textContent = contentText
     parent.className = 'hidden'
     infoDisplay.removeAttribute('class')
@@ -206,10 +265,11 @@ async function cookieFlagSwitch (event) {
   if (!hasCookie || (hasCookie && data[domainURL][cookieName] !== true && data[domainURL][cookieName] !== false)) {
     data[domainURL][cookieName] = true
     event.target.className = 'checkmark flagged'
-    addFlaggedCookie(cookieName, cookieValue)
+    addCookieToList('cookie-list-flagged', cookieName, cookieValue)
   } else if (data[domainURL][cookieName] === true) {
     data[domainURL][cookieName] = false
     event.target.className = 'checkmark permit'
+    addCookieToList('cookie-list-permitted', cookieName, cookieValue)
 
     // Remove from flagged list if present
     let flaggedCookieList = document.getElementById('cookie-list-flagged')
@@ -222,9 +282,23 @@ async function cookieFlagSwitch (event) {
   } else if (hasAutoFlag && data[domainURL][cookieName] !== 'af') {
     data[domainURL][cookieName] = 'af'
     event.target.className = 'checkmark auto-flagged'
+  } else if (data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] !== undefined && data['flagCookies_flag_global']['use'] === true) {
+    delete data[domainURL][cookieName]
+    event.target.className = 'checkmark auto-flagged'
   } else {
     delete data[domainURL][cookieName]
     event.target.className = 'checkmark'
+  }
+
+  if (data[domainURL][cookieName] === undefined || (hasAutoFlag && data[domainURL][cookieName] === 'af')) {
+    // Remove from permitted list if present
+    let permittedCookieList = document.getElementById('cookie-list-permitted')
+    for (let child of permittedCookieList.children) {
+      if (child.children[0].dataset['name'] === cookieName) {
+        child.parentNode.removeChild(child)
+        break
+      }
+    }
   }
 
   await browser.storage.local.set(data)
@@ -253,12 +327,16 @@ function switchView (event) {
     child.className = 'hidden'
   }
 
+  event.target.className = 'active'
+
   if (list.children.length === 0) {
     let infoDisplay = document.getElementById('infoDisplay')
 
-    let contentText = 'No cookies in this tab.'
+    let contentText = 'No active cookies for domain.'
     if (event.target.dataset.target === 'cookie-list-flagged') {
-      contentText = 'No cookies flagged.'
+      contentText = 'No flagged cookies for domain.'
+    } else if (event.target.dataset.target === 'cookie-list-permitted') {
+      contentText = 'No permitted cookies for domain.'
     }
 
     infoDisplay.children[0].textContent = contentText
@@ -289,6 +367,42 @@ async function flagAutoSwitch (event) {
     event.target.removeAttribute('class')
     switchAutoFlag(false, 'cookie-list')
   }
+}
+
+// Switch global auto flagging
+async function flagGlobalAutoNonEvent () {
+  let data = await browser.storage.local.get()
+
+  if (data['flagCookies_flag_global'] === undefined) {
+    data['flagCookies_flag_global'] = {'use': false}
+  }
+
+  let globalFlagButton = document.getElementById('global-flag')
+  let autoFlagButton = document.getElementById('auto-flag')
+
+  if (globalFlagButton.className !== 'active') {
+    globalFlagButton.className = 'active'
+    data['flagCookies_flag_global']['use'] = true
+    await browser.storage.local.set(data)
+    switchAutoFlagGlobal(true, 'cookie-list')
+  } else {
+    globalFlagButton.removeAttribute('class')
+    data['flagCookies_flag_global']['use'] = false
+    await browser.storage.local.set(data)
+
+    let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined ? data['flagCookies_autoFlag'][domainURL] !== undefined : false
+
+    if (hasAutoFlag) {
+      switchAutoFlag(true, 'cookie-list')
+    } else {
+      switchAutoFlagGlobal(false, 'cookie-list')
+    }
+  }
+}
+
+async function flagGlobalAuto (event) {
+  flagGlobalAutoNonEvent()
+  event.preventDefault()
 }
 
 // Switch auto flag status for cookies
@@ -324,13 +438,41 @@ async function switchAutoFlag (switchOn, targetList) {
       if (data[domainURL][cookieKey]) {
         if (data[domainURL][cookieKey] === 'af') {
           delete data[domainURL][cookieKey]
-          contentChild.className = 'checkmark'
+
+          if (data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] !== true) {
+            contentChild.className = 'checkmark'
+          }
         }
       }
     }
   }
 
   await browser.storage.local.set(data)
+}
+
+// Switch auto globalflag status for cookies
+async function switchAutoFlagGlobal (switchOn, targetList) {
+  let data = await browser.storage.local.get()
+  let searchTarget = document.getElementById(targetList)
+
+  if (switchOn) {
+    for (let child of searchTarget.children) {
+      let contentChild = child.children[0]
+      let cookieKey = contentChild.dataset['name']
+      if (data[domainURL] === undefined || (data[domainURL] !== undefined && data[domainURL][cookieKey] !== true && data[domainURL][cookieKey] !== false)) {
+        contentChild.className = 'checkmark auto-flagged'
+      }
+    }
+  } else {
+    for (let child of searchTarget.children) {
+      let contentChild = child.children[0]
+      let cookieKey = contentChild.dataset['name']
+
+      if (data[domainURL] === undefined || (data[domainURL] !== undefined && data[domainURL][cookieKey] !== true && data[domainURL][cookieKey] !== false)) {
+        contentChild.className = 'checkmark'
+      }
+    }
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -357,9 +499,11 @@ function doSearch (searchVal, targetList) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
+document.getElementById('activeCookies').addEventListener('click', switchView)
 document.getElementById('flaggedCookies').addEventListener('click', switchView)
-document.getElementById('allCookies').addEventListener('click', switchView)
+document.getElementById('permittedCookies').addEventListener('click', switchView)
 document.getElementById('auto-flag').addEventListener('click', flagAutoSwitch)
+document.getElementById('global-flag').addEventListener('click', flagGlobalAuto)
 document.getElementById('searchBar').addEventListener('keyup', searchContent)
 
 getActiveTab().then(showCookiesForTab)

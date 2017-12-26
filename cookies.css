@@ -45,24 +45,19 @@ html, body {
   border: none;
   background-color: #ddd;
   background-color: transparent;
-  padding: 6px 5px 4px 35px;
+  padding: 6px 16px 4px 28px;
   background-repeat: no-repeat;
   background-clip:border-box;
-  margin-right: 25px;
+  margin-right: 16px;
   font-size: 0.7em;
   margin-top: 0.5em;
   margin-bottom: 12px;
   display: inline-block;
+  border-right: 1px solid #aaa;
 }
 
 .legend #leg-flagged {
   background-image: url('icons/checkmark.png');
-  background-position: -4px -43px;
-
-}
-
-.legend #leg-auto-flagged {
-  background-image: url('icons/checkmark_af.png');
   background-position: -4px -43px;
 }
 
@@ -70,6 +65,13 @@ html, body {
   background-image: url('icons/checkmark_permit.png');
   background-position: -4px -41px;
 }
+
+.legend #leg-auto-flagged {
+  background-image: url('icons/checkmark_af.png');
+  background-position: -4px -43px;
+  border-right: none;
+}
+
 
 .intro {
   display: block;
@@ -145,7 +147,8 @@ li:hover .cookieValue {
 }
 
 #cookie-list p,
-#cookie-list-flagged p {
+#cookie-list-flagged p,
+#cookie-list-permitted p {
   position: relative;
   word-wrap: break-word;
   width: 85%;
@@ -218,7 +221,8 @@ li:hover button.checkmark {
   border: 1px solid #000;
 }
 
-button#auto-flag {
+button#auto-flag,
+button#global-flag {
   text-transform: uppercase;
   background-color: #ddd;
   background-image: url('icons/cookie_wflag_28.png');
@@ -238,11 +242,20 @@ button#auto-flag {
   transition-duration: 320ms;
 }
 
-button#auto-flag.active {
+button#global-flag {
+  background-image: url('icons/globe_flag_28.png');
+}
+
+button#auto-flag.active,
+button#global-flag.active {
   background-color: #b20600;
   background-image: url('icons/cookie_flag_28.png');
   color: #eee;
   border: 1px solid #779;
+}
+
+button#global-flag.active {
+  background-image: url('icons/globe_wflag_28.png');
 }
 
 #searchBar {
@@ -259,7 +272,7 @@ button#auto-flag.active {
   margin: 0px;
   padding: 6px 12px 9px 4%;
   font-weight: bold;
-  width: 79%;
+  width: 58%;
 }
 
 #clearAutoFlagged {

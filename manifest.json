@@ -17,7 +17,7 @@
       "38": "icons/cookie_38.png"
     }
   },
-  "description": "List cookies in the active tab. Permit cookies for a domain by one click or flag cookies for either manually enforced or by selection automatically, before the page reloads or the tab or window closes.\nStores the cookie name for deletion/permission and by domain URL in the local browser storage - or the domain name if auto flagging is enabled.",
+  "description": "A cookie manager on steroids. Which allows to globally delete all or some domain cookies, separated by subdomains and even unknown and on every domain/subdomain on page load/reload/tab and window close.\n\nCookies can be allowed (permitted) or in particular forced to be deleted by "flagging" them.\n\nAuto-flagging can be used for a domain (subdomain based) auto clearing all non permitted cookies, even undiscoverd ones.",
   "icons": {
     "48": "icons/cookie_48.png",
     "96": "icons/cookie_96.png",
@@ -26,7 +26,7 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "1.4b",
+  "version": "1.5",
   "permissions": ["cookies", "tabs", "<all_urls>", "storage"],
   "background": {
     "scripts": [

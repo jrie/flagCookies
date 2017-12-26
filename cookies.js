@@ -4,7 +4,7 @@ var domainURL = '' // The active domain url
 // Clear the cookies which are enabled for the domain in browser storage
 async function clearCookies (action) {
   let data = await browser.storage.local.get()
-  if (data[domainURL] === undefined) {
+  if (data[domainURL] === undefined && data['flagCookies_flag_global'] === undefined) {
     return
   }
 
@@ -22,6 +22,33 @@ async function clearCookies (action) {
           console.log("Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
         } else {
           console.log("Auto-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+        }
+      }
+    }
+  } else if (data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] === true) {
+    let domainCookies = await browser.cookies.getAll({url: domainURL})
+
+    if (data[domainURL] === undefined) {
+        for (let cookie of domainCookies) {
+          let details = { url: domainURL, name: cookie.name }
+          if ((await browser.cookies.remove(details)) !== null) {
+            console.log("Global-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+          }
+        }
+    } else {
+      for (let cookie of domainCookies) {
+        if (data[domainURL][cookie.name] !== undefined && data[domainURL][cookie.name] === false) {
+          console.log("Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+          continue
+        }
+
+        let details = { url: domainURL, name: cookie.name }
+        if ((await browser.cookies.remove(details)) !== null) {
+          if (data[domainURL] !== undefined && data[domainURL][cookie.name] !== undefined && data[domainURL][cookie.name] === true) {
+            console.log("Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+          } else {
+            console.log("Global-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+          }
         }
       }
     }

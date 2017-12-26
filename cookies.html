@@ -9,18 +9,20 @@
       <div class="panel-section-header">
         <div id="header-title"></div>
         <div id="tabs">
-          <button id="allCookies" data-target="cookie-list">Active cookies</button>
+          <button id="activeCookies" data-target="cookie-list">Active</button>
           <button id="flaggedCookies" data-target="cookie-list-flagged">Flagged</button>
+          <button id="permittedCookies" data-target="cookie-list-permitted">Permitted</button>
         </div>
         <hr/>
-        <button id="auto-flag">Auto flag</button><input type="text" placeholder="Search cookie list" id="searchBar" />
+        <button id="auto-flag">Auto flag</button><button id="global-flag">Global</button><input type="text" placeholder="Search cookie list" id="searchBar" />
       </div>
       <div id="content">
         <div class="hidden" id="infoDisplay"><p class="info"></p></div>
         <ul class="hidden" id="cookie-list"></ul>
         <ul class="hidden" id="cookie-list-flagged"></ul>
+        <ul class="hidden" id="cookie-list-permitted"></ul>
       </div>
-      <div class="legend"><p class="intro">Flag legend:</p><span id="leg-flagged">Flagged</span><span id="leg-permitted">Permitted</span><span id="leg-auto-flagged">Auto flagged</span></div>
+      <div class="legend"><p class="intro">Flag status</p><span id="leg-flagged">Flagged</span><span id="leg-permitted">Permitted</span><span id="leg-auto-flagged">Auto flagged</span></div>
     </div>
     <script src="flagCookies.js"></script>
   </body>
