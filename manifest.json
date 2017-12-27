@@ -17,7 +17,7 @@
       "38": "icons/cookie_38.png"
     }
   },
-  "description": "A cookie manager on steroids.\n\nWhich allows to globally delete all or some domain cookies (with particular permissions), separated by subdomains and even unknown and on every domain/subdomain on page load/reload/tab and window close.\n\nCookies can be allowed (permitted) or in particular forced to be deleted by flagging them.\n\nAuto-flagging can be used for a domain (subdomain based) to auto clear all non permitted cookies, even undiscoverd ones.\n\nGlobal flagging does remove all non particular permitted cookies for all domains, even new ones.\n\nCookies are shown with name and value, to get a grasp on what is in the box.\n\nGet a grip on what cookies are allowed while you browse a website or the web in general.",
+  "description": "A cookie manager on steroids.\n\nWhich allows to globally delete all or some domain cookies (with particular permissions), separated by subdomains and even unknown and on every domain/subdomain on page load/reload/tab and window close.\n\nCookies can be allowed (permitted) or in particular forced to be deleted by flagging them.\n\nAuto-flagging can be used for a domain (subdomain based) to auto clear all non permitted cookies, even undiscovered ones.\n\nGlobal flagging does remove all non particular permitted cookies for all domains, even new ones.\n\nCookies are shown with name and value, to get a grasp on what is in the box.\n\nGet a grip on what cookies are allowed while you browse a website or the web in general.",
   "icons": {
     "48": "icons/cookie_48.png",
     "96": "icons/cookie_96.png",
@@ -26,7 +26,7 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "1.52",
+  "version": "1.53",
   "permissions": ["cookies", "tabs", "<all_urls>", "storage"],
   "background": {
     "scripts": [

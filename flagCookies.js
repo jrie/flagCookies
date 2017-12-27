@@ -8,7 +8,7 @@ async function showCookiesForTab (tabs) {
 
   // Get storage data and parse tab URL
   let data = await browser.storage.local.get()
-  let domainMatch = tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
+  let domainMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
   if (domainMatch) {
     domainURL = domainMatch[0]
   } else {
