@@ -10,7 +10,7 @@ A cookie manager on steroids.
 
 #### Log view in preferences
 
-[![FlagCookies v1.54 - Settings](https://www.picflash.org/img/2017/12/27/cpyor5z29t3tedo.png "Flag Cookies 1.54")](https://www.picflash.org/viewer.php?img=cpyor5z29t3tedo.png)
+[![FlagCookies v1.54 - Preferences](https://www.picflash.org/img/2017/12/27/21ddkv2jjlaz2jr.png "Version 1.54 - Log view in preferences")](https://www.picflash.org/viewer.php?img=21ddkv2jjlaz2jr.png)
 
 ## Description
 
