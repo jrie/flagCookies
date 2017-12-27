@@ -6,11 +6,11 @@ A cookie manager on steroids.
 
 #### Main interface
 
-[![FlagCookies v1.54](https://www.picflash.org/img/2017/12/27/eknl0uj9lt6tfww.png "FlagCookies v1.54")](https://www.picflash.org/viewer.php?img=eknl0uj9lt6tfww.png)
+[![FlagCookies v1.54](https://www.picflash.org/img/2017/12/27/eknl0uj9lt6tfww.png "Flag Cookies v1.54")](https://www.picflash.org/viewer.php?img=eknl0uj9lt6tfww.png)
 
 #### Log view in preferences
 
-[![FlagCookies v1.54 - Settings](https://www.picflash.org/img/2017/12/27/b3fn3xj8fhmwudq.png "FlagCookies v1.54 - Settings")](https://www.picflash.org/viewer.php?img=b3fn3xj8fhmwudq.png)
+[![FlagCookies v1.54 - Settings](https://www.picflash.org/img/2017/12/27/cpyor5z29t3tedo.png "Flag Cookies 1.54")](https://www.picflash.org/viewer.php?img=cpyor5z29t3tedo.png)
 
 ## Description
 
