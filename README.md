@@ -28,9 +28,9 @@ Get a grip on what cookies are allowed while you browse a website or the web in 
 
 ## Installation
 
-Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/) as this is always the latest version, the self-hosted releases are outdated!
+Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/) as this is always the latest version, the self-hosted releases could be outdated.
 
-Or download/clone the repository, to add the Add-on dynamically by using "about:debugging" in Firefox, which allows you to install, using the "manifest.json" file, if you point to it - but any cookie settings are stored temporarly. So installation of the add on from addons.mozilla.org is recommended!
+Or download/clone the repository, to add the Add-on dynamically by using "about:debugging" in Firefox, which allows you to install, using the "manifest.json" file, if you point to it - but any cookie settings are stored temporarly. So installation of the add on from addons.mozilla.org is recommended.
 
 ## Thanks and notes
 
