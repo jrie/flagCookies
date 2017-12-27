@@ -4,11 +4,17 @@ A cookie manager on steroids.
 
 ## Screenshots
 
-[![FlagCookies v1.52 - No cookies globally](https://www.picflash.org/img/2017/12/27/ecj5i3fo97aslsk.png "FlagCookies 1.52 - No cookies globally, if I dont permit a cookie myself!")](https://www.picflash.org/viewer.php?img=ecj5i3fo97aslsk.png)
+#### Main interface
+
+[![FlagCookies v1.54](https://www.picflash.org/img/2017/12/27/eknl0uj9lt6tfww.png "FlagCookies v1.54")](https://www.picflash.org/viewer.php?img=eknl0uj9lt6tfww.png)
+
+#### Log view in preferences
+
+[![FlagCookies v1.54 - Settings](https://www.picflash.org/img/2017/12/27/b3fn3xj8fhmwudq.png "FlagCookies v1.54 - Settings")](https://www.picflash.org/viewer.php?img=b3fn3xj8fhmwudq.png)
 
 ## Description
 
-Which allows to globally delete all or some domain cookies (with particular permissions), separated by subdomains and even unknown and on every domain/subdomain on page load/reload/tab and window close.
+Flag Cookies allows to globally delete all or some domain cookies (with particular permissions), separated by subdomains and even unknown and on every domain/subdomain on page load/reload/tab and window close.
 
 Cookies can be allowed (permitted) or in particular forced to be deleted by "flagging" them.
 
