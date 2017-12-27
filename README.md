@@ -1,5 +1,5 @@
 # flagCookies
-A cookie manager on steroids.
+A cookie manager on stereoids.
 
 
 ## Screenshots
@@ -29,6 +29,8 @@ Get a grip on what cookies are allowed while you browse a website or the web in 
 ## Installation
 
 You can use the Mozilla tested/verified .xpi provided on the release page and install directly for your OS.
+
+Or use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/).
 
 Or download/clone the repository, to add the Add-on dynamically by using "about:debugging" in Firefox, which allows you to install, using the "manifest.json" file, if you point to it - but any cookie settings are stored temporarly so, install the signed .xpi is recommend!
 
