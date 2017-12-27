@@ -1,5 +1,5 @@
 # flagCookies
-A cookie manager on stereoids.
+A cookie manager on steroids.
 
 
 ## Screenshots
