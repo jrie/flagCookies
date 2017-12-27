@@ -21,8 +21,13 @@
         <ul class="hidden" id="cookie-list"></ul>
         <ul class="hidden" id="cookie-list-flagged"></ul>
         <ul class="hidden" id="cookie-list-permitted"></ul>
+        <div class="hidden" id="settings-view">
+          <!--<div id="settings-general"><h4 class="intro">General settings</h4><button>Delete all stored settings</button></div>-->
+          <div id="settings-log"><p class="intro">Log</p><textarea id="log" disabled="disabled" placeholder="Deletion log"></textarea></div>
+          <!--<div id="settings-domains"><ul class="domain-data"><li class="domainKey">Google.de</li><ul domain-settings></ul><li></ul></div>-->
+        </div>
       </div>
-      <div class="legend"><p class="intro">Flag status</p><span id="leg-flagged">Flagged</span><span id="leg-permitted">Permitted</span><span id="leg-auto-flagged">Auto flagged</span><!--<button id="prefs">Preferences</button>--></div>
+      <div class="legend"><p class="intro">Flag status</p><span id="leg-flagged">Flagged</span><span id="leg-permitted">Permitted</span><span id="leg-auto-flagged">Auto flagged</span><button data-target="settings-view" id="prefs">Preferences</button></div>
     </div>
     <script src="flagCookies.js"></script>
   </body>

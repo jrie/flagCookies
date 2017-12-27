@@ -1,5 +1,5 @@
-// Shouldnt be required to make changes from here???
-var domainURL = '' // The active domain url
+let domainURL = '' // The active domain url
+let logData = [] // The log data we seen as a report to the settings view
 
 // Clear the cookies which are enabled for the domain in browser storage
 async function clearCookies (action) {
@@ -12,16 +12,22 @@ async function clearCookies (action) {
     let domainCookies = await browser.cookies.getAll({url: domainURL})
     for (let cookie of domainCookies) {
       if (data[domainURL][cookie.name] === false) {
-        console.log("Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+        let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+        addToLogData(msg)
+        console.log(msg)
         continue
       }
 
       let details = { url: domainURL, name: cookie.name }
       if ((await browser.cookies.remove(details)) !== null) {
         if (data[domainURL][cookie.name] === true) {
-          console.log("Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+          let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+          addToLogData(msg)
+          console.log(msg)
         } else {
-          console.log("Auto-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+          let msg = "Auto-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+          addToLogData(msg)
+          console.log(msg)
         }
       }
     }
@@ -32,22 +38,30 @@ async function clearCookies (action) {
         for (let cookie of domainCookies) {
           let details = { url: domainURL, name: cookie.name }
           if ((await browser.cookies.remove(details)) !== null) {
-            console.log("Global-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+            let msg = "Global-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+            addToLogData(msg)
+            console.log(msg)
           }
         }
     } else {
       for (let cookie of domainCookies) {
         if (data[domainURL][cookie.name] !== undefined && data[domainURL][cookie.name] === false) {
-          console.log("Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+          let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+          addToLogData(msg)
+          console.log(msg)
           continue
         }
 
         let details = { url: domainURL, name: cookie.name }
         if ((await browser.cookies.remove(details)) !== null) {
           if (data[domainURL] !== undefined && data[domainURL][cookie.name] !== undefined && data[domainURL][cookie.name] === true) {
-            console.log("Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+            let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+            addToLogData(msg)
+            console.log(msg)
           } else {
-            console.log("Global-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'")
+            let msg = "Global-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+            addToLogData(msg)
+            console.log(msg)
           }
         }
       }
@@ -55,13 +69,17 @@ async function clearCookies (action) {
   } else {
     for (let cookie in data[domainURL]) {
       if (data[domainURL][cookie] === false) {
-        console.log("Permitted cookie on '" + action + "', cookie: '" + cookie + "' for '" + domainURL + "'")
+        let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+        addToLogData(msg)
+        console.log(msg)
         continue
       }
 
       let details = { url: domainURL, name: cookie }
       if ((await browser.cookies.remove(details)) != null) {
-        console.log("Deleted on '" + action + "', cookie: '" + cookie + "' for '" + domainURL + "'")
+        let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+        addToLogData(msg)
+        console.log(msg)
       }
     }
   }
@@ -81,15 +99,48 @@ async function setdomainURLOnActivation (activeInfo) {
   }
 }
 
-let clearCookiesOnUpdate = (tabId, changeInfo, tab) => {
+async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   if (changeInfo.status && changeInfo.status === 'loading') {
-    clearCookies('tab loading')
+    clearCookies('tab load')
+    if (changeInfo['url'] === undefined) {
+      clearDomainLog();
+    }
+  } else if (changeInfo.status && changeInfo.status === 'complete') {
+    if (logData !== '') {
+      let data = await browser.storage.local.get()
+
+      if (data['flagCookies'] === undefined) data['flagCookies'] = {}
+
+      data['flagCookies']['logData'] = logData
+      await browser.storage.local.set(data)
+    }
   }
 }
 
 let clearCookiesOnLeave = (tabId, moveInfo) => {
   clearCookies('tab close/window close')
 }
+
+// --------------------------------------------------------------------------------------------------------------------------------
+// Log info
+function clearDomainLog () {
+  if (logData !== []) {
+    let newLog = [];
+    for (let entry of logData) {
+      if (entry.indexOf(domainURL) === -1) {
+        newLog.push(entry)
+      }
+    }
+
+    logData = newLog
+  }
+}
+
+function addToLogData (msg) {
+  if (logData.indexOf(msg) === -1) logData.push(msg)
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
 
 browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
 browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)

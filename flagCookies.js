@@ -1,5 +1,6 @@
 // --------------------------------------------------------------------------------------------------------------------------------
 let domainURL = ''
+
 // Slightly modifed version of list-cookies example on MDN github
 
 async function showCookiesForTab (tabs) {
@@ -132,6 +133,14 @@ async function showCookiesForTab (tabs) {
   }
 
   document.getElementById('activeCookies').className = 'active'
+  if (data['flagCookies'] !== undefined && data['flagCookies']['logData'] !== '') {
+    let log = document.getElementById('log')
+    for (let entry of data['flagCookies']['logData']) {
+      if (entry.indexOf(domainURL) !== -1) {
+        log.textContent += entry + '\n';
+      }
+    }
+  }
 }
 
 function addCookieToList (targetList, name, value) {
@@ -331,10 +340,11 @@ function switchView (event) {
 
   let tabs = document.getElementById('tabs')
   for (let child of tabs.children) {
-    if (child !== event.target) {
-      child.removeAttribute('class')
-    }
+    if (child !== event.target) child.removeAttribute('class')
   }
+
+  let prefs = document.getElementById('prefs')
+  if (prefs !== event.target) prefs.removeAttribute('class')
 
   event.target.className = 'active'
 
@@ -511,6 +521,7 @@ function doSearch (searchVal, targetList) {
 document.getElementById('activeCookies').addEventListener('click', switchView)
 document.getElementById('flaggedCookies').addEventListener('click', switchView)
 document.getElementById('permittedCookies').addEventListener('click', switchView)
+document.getElementById('prefs').addEventListener('click', switchView)
 document.getElementById('auto-flag').addEventListener('click', flagAutoSwitch)
 document.getElementById('global-flag').addEventListener('click', flagGlobalAuto)
 document.getElementById('searchBar').addEventListener('keyup', searchContent)

@@ -72,7 +72,6 @@ html, body {
   border-right: none;
 }
 
-
 .intro {
   display: block;
   color: #888;
@@ -174,7 +173,8 @@ button {
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.12);
 }
 
-input {
+input,
+textarea {
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.17);
 }
 
@@ -300,4 +300,26 @@ button#global-flag.active {
   background-repeat: no-repeat;
   background-clip: border-box;
   background-position: 4px center;
+}
+
+#settings-view {
+  padding: 10px;
+}
+
+textarea#log {
+  background-color: #eee;
+  color: #557;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin: 0px;
+  padding: 6px 12px;
+  font-weight: bold;
+  width: 100%;
+  min-height: 10em;
+  max-height: 10em;
+  min-width: 100%;
+  max-width: 100%;
+  margin-bottom: 10px;
+  resize:none;
 }
