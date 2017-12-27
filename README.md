@@ -39,3 +39,6 @@ Or download/clone the repository, to add the Add-on dynamically by using "about:
 To phre4k for the initially idea!
 
 To Cybergreek who pushed the major style change(s).
+
+### German speaking thread @ ngb.to
+[Flag Cookies on german bulletin board ngb.to](https://ngb.to/threads/32496-Firefox-Addon-FlagCookies)
