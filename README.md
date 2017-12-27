@@ -4,7 +4,7 @@ A cookie manager on steroids.
 
 ## Screenshots
 
-[![FlagCookies v1.5 - No cookies globally](https://www.picflash.org/img/2017/12/26/lbtljurjgu3y9ps.png "FlagCookies 1.5 - No cookies globally if I dont permit a cookie myself!")](https://www.picflash.org/viewer.php?img=lbtljurjgu3y9ps.png)
+[![FlagCookies v1.52 - No cookies globally](https://www.picflash.org/img/2017/12/27/ecj5i3fo97aslsk.png "FlagCookies 1.52 - No cookies globally, if I dont permit a cookie myself!")](https://www.picflash.org/viewer.php?img=ecj5i3fo97aslsk.png)
 
 ## Description
 
@@ -12,7 +12,7 @@ Which allows to globally delete all or some domain cookies (with particular perm
 
 Cookies can be allowed (permitted) or in particular forced to be deleted by "flagging" them.
 
-Auto-flagging can be used for a domain (subdomain based) to auto clear all non permitted cookies, even undiscoverd ones.
+Auto-flagging can be used for a domain (subdomain based) to auto clear all non permitted cookies, even undiscovered ones.
 
 Global flagging does remove all non particular permitted cookies for all domains, even new ones.
 
