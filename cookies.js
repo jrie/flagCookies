@@ -73,7 +73,7 @@ async function setdomainURLOnActivation (activeInfo) {
   let activeTabs = await browser.tabs.query({currentWindow: true, active: true})
   if (activeTabs.length !== 0) {
     let currentTab = activeTabs[0]
-    let urlMatch = currentTab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-:]*\//)
+    let urlMatch = currentTab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
     if (urlMatch) {
       domainURL = urlMatch[0]
       console.log('Switched active domain to: ' + domainURL)

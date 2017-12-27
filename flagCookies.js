@@ -8,7 +8,7 @@ async function showCookiesForTab (tabs) {
 
   // Get storage data and parse tab URL
   let data = await browser.storage.local.get()
-  let domainMatch = tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-:]*\//)
+  let domainMatch = tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
   if (domainMatch) {
     domainURL = domainMatch[0]
   } else {
@@ -130,6 +130,8 @@ async function showCookiesForTab (tabs) {
   if (data['flagCookies_flag_global'] && data['flagCookies_flag_global']['use'] === true) {
       flagGlobalAutoNonEvent()
   }
+
+  document.getElementById('activeCookies').className = 'active'
 }
 
 function addCookieToList (targetList, name, value) {
@@ -325,6 +327,13 @@ function switchView (event) {
   let content = document.getElementById('content')
   for (let child of content.children) {
     child.className = 'hidden'
+  }
+
+  let tabs = document.getElementById('tabs')
+  for (let child of tabs.children) {
+    if (child !== event.target) {
+      child.removeAttribute('class')
+    }
   }
 
   event.target.className = 'active'

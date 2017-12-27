@@ -112,11 +112,12 @@ li {
   background-color: #fff;
   margin-bottom: 5px;
   display: block;
-  border-bottom: 1px solid #ccc;
-  border-right: 1px solid #ccc;
   border-top: 1px solid #eef;
-  transition-property: background-color;
-  transition-duration: 375ms;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  transition-property: background-color,border-color;
+  transition-duration: 300ms;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.35);
 }
 
 li:nth-child(2n+1) {
@@ -126,9 +127,9 @@ li:nth-child(2n+1) {
 li:hover {
   background-color: #557;
   color: #eef;
-  border-bottom: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  border-top: 1px solid #cce;
+  border-top: 1px solid #668;
+  border-right: 1px solid #668;
+  border-bottom: 1px solid #668;
 }
 
 li:hover .cookieValue {
@@ -161,15 +162,25 @@ button {
   text-transform: uppercase;
   text-align: center;
   background-color: #446;
-  border-radius: 24px;
+  border-radius: 24px 24px;
   border: 1px solid #666;
   font-weight: bold;
   padding: 6px 12px;
   cursor: pointer;
+  color: #ddd;
 }
 
-button:hover {
-  background-color: #eee;
+button {
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.12);
+}
+
+input {
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.17);
+}
+
+button:hover,
+button.active {
+  background-color: #ddd;
   color: #557;
 }
 
@@ -179,7 +190,7 @@ button::-moz-focus-inner {
 
 #tabs {
   position: absolute;
-  top: 0.75em;
+  top: 0.55em;
   right: 1%;
 }
 
@@ -278,4 +289,15 @@ button#global-flag.active {
 #clearAutoFlagged {
   margin-top: 10px;
   margin-bottom: 4px;
+}
+
+#prefs {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  padding-left: 38px;
+  background-image: url('icons/settings_28.png');
+  background-repeat: no-repeat;
+  background-clip: border-box;
+  background-position: 4px center;
 }
