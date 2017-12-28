@@ -12,6 +12,10 @@ A cookie manager on steroids.
 
 [![FlagCookies v1.54 - Preferences](https://www.picflash.org/img/2017/12/27/21ddkv2jjlaz2jr.png "Version 1.54 - Log view in preferences")](https://www.picflash.org/viewer.php?img=21ddkv2jjlaz2jr.png)
 
+#### Settings dialog with clearing in 1.55
+
+[![FlagCookies v1.55 - Preferences](https://www.picflash.org/img/2017/12/28/b731uwf22iks7dj.png "Settings view in version 1.55, with option to clear all stored settings and data")] (https://www.picflash.org/viewer.php?img=b731uwf22iks7dj.png)
+
 ## Description
 
 Flag Cookies allows to globally delete all or some domain cookies (with particular permissions), separated by subdomains and even unknown and on every domain/subdomain on page load/reload/tab and window close.
