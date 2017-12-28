@@ -17,119 +17,92 @@ async function showCookiesForTab (tabs) {
   }
 
   // get all cookies in the domain
-  let gettingAllCookies = browser.cookies.getAll({url: domainURL})
-  gettingAllCookies.then((cookies) => {
-    // set the header of the panel
-    let activeTabUrl = document.querySelector('#header-title')
-    let introSpan = document.createElement('span')
-    introSpan.className = 'intro'
+  let cookies = await browser.cookies.getAll({url: domainURL})
 
-    let intro = document.createTextNode('Cookies for domain:')
-    introSpan.appendChild(intro)
+  // set the header of the panel
+  let activeTabUrl = document.querySelector('#header-title')
+  let introSpan = document.createElement('span')
+  introSpan.className = 'intro'
 
-    let url = document.createTextNode(domainURL)
-    url.className = 'domainurl'
-    activeTabUrl.appendChild(introSpan)
-    activeTabUrl.appendChild(url)
-    if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
-      document.getElementById('auto-flag').className = 'active'
-      switchAutoFlag(true, 'cookie-list')
-    }
+  let intro = document.createTextNode('Cookies for domain:')
+  introSpan.appendChild(intro)
 
-    let cookieList = document.getElementById('cookie-list')
-    let flaggedCookieList = document.getElementById('cookie-list-flagged')
+  let url = document.createTextNode(domainURL)
+  url.className = 'domainurl'
+  activeTabUrl.appendChild(introSpan)
+  activeTabUrl.appendChild(url)
+  if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
+    document.getElementById('auto-flag').className = 'active'
+    switchAutoFlag(true, 'cookie-list')
+  }
 
-    if (cookies.length === 0) {
-      let infoDisplay = document.getElementById('infoDisplay')
-      let contentText = 'No active cookies for domain.'
-      infoDisplay.children[0].textContent = contentText
-      infoDisplay.removeAttribute('class')
-    } else {
-      for (let cookie of cookies) {
-        let li = document.createElement('li')
+  let cookieList = document.getElementById('cookie-list')
+  let flaggedCookieList = document.getElementById('cookie-list-flagged')
 
-        let checkMark = document.createElement('button')
-        checkMark.className = 'checkmark'
+  if (cookies.length === 0) {
+    let infoDisplay = document.getElementById('infoDisplay')
+    let contentText = 'No active cookies for domain.'
+    infoDisplay.children[0].textContent = contentText
+    infoDisplay.removeAttribute('class')
+  } else {
+    for (let cookie of cookies) {
+      let li = document.createElement('li')
 
-        checkMark.addEventListener('click', cookieFlagSwitch)
-        checkMark.dataset['name'] = cookie.name
-        checkMark.dataset['value'] = cookie.value
+      let checkMark = document.createElement('button')
+      checkMark.className = 'checkmark'
 
-        if (data[domainURL] && data[domainURL][cookie.name] !== undefined) {
-          if (data[domainURL][cookie.name] === true) {
-            checkMark.className = 'checkmark flagged'
-            addCookieToList('cookie-list-flagged', cookie.name, cookie.value)
-          } else if (data[domainURL][cookie.name] === false) {
-            checkMark.className = 'checkmark permit'
-            addCookieToList('cookie-list-permitted', cookie.name, cookie.value)
-          }
-        }
+      checkMark.addEventListener('click', cookieFlagSwitch)
+      checkMark.dataset['name'] = cookie.name
+      checkMark.dataset['value'] = cookie.value
 
-        let p = document.createElement('p')
-
-        let pCookieKeyElm = document.createElement('span')
-        let pCookieKey = document.createTextNode(cookie.name)
-        pCookieKeyElm.className = 'cookieKey'
-        pCookieKeyElm.appendChild(pCookieKey)
-
-        let pCookieValueElm = document.createElement('span')
-        let pCookieValue = document.createTextNode(cookie.value)
-        pCookieValueElm.className = 'cookieValue'
-        pCookieValueElm.appendChild(pCookieValue)
-
-        p.appendChild(pCookieKeyElm)
-        p.appendChild(pCookieValueElm)
-
-        li.appendChild(checkMark)
-        li.appendChild(p)
-
-        cookieList.appendChild(li)
-      }
-
-      cookieList.removeAttribute('class')
-    }
-
-    if (data[domainURL]) {
-      if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
-        for (let cookieName in data[domainURL]) {
-          if (data[domainURL][cookieName] !== true) {
-            continue
-          }
-
-          let found = false
-
-          for (let child of flaggedCookieList.children) {
-            if (child.children[0].dataset['name'] === cookieName) {
-              found = true
-              break
-            }
-          }
-
-          if (!found) addCookieToList('cookie-list-flagged', cookieName, '')
-        }
-      } else {
-        for (let cookieName in data[domainURL]) {
-          if (data[domainURL][cookieName] !== true) {
-            continue
-          }
-
-          let found = false
-
-          for (let child of flaggedCookieList.children) {
-            if (child.children[0].dataset['name'] === cookieName) {
-              found = true
-              break
-            }
-          }
-
-          if (!found) addCookieToList('cookie-list-flagged', cookieName, '')
+      if (data[domainURL] && data[domainURL][cookie.name] !== undefined) {
+        if (data[domainURL][cookie.name] === true) {
+          checkMark.className = 'checkmark flagged'
+          addCookieToList('cookie-list-flagged', cookie.name, cookie.value)
+        } else if (data[domainURL][cookie.name] === false) {
+          checkMark.className = 'checkmark permit'
+          addCookieToList('cookie-list-permitted', cookie.name, cookie.value)
         }
       }
+
+      let p = document.createElement('p')
+
+      let pCookieKeyElm = document.createElement('span')
+      let pCookieKey = document.createTextNode(cookie.name)
+      pCookieKeyElm.className = 'cookieKey'
+      pCookieKeyElm.appendChild(pCookieKey)
+
+      let pCookieValueElm = document.createElement('span')
+      let pCookieValue = document.createTextNode(cookie.value)
+      pCookieValueElm.className = 'cookieValue'
+      pCookieValueElm.appendChild(pCookieValue)
+
+      p.appendChild(pCookieKeyElm)
+      p.appendChild(pCookieValueElm)
+
+      li.appendChild(checkMark)
+      li.appendChild(p)
+
+      cookieList.appendChild(li)
     }
-  })
+
+    cookieList.removeAttribute('class')
+  }
+
+  if (data[domainURL]) {
+    let domainData = data[domainURL]
+
+    for (let cookieKey in domainData) {
+      if (domainData[cookieKey] !== true) {
+        continue
+      }
+
+      if (!isDomainCookieInList(flaggedCookieList, cookieKey)) addCookieToList('cookie-list-flagged', cookieKey, '')
+    }
+  }
 
   if (data['flagCookies_flag_global'] && data['flagCookies_flag_global']['use'] === true) {
-      flagGlobalAutoNonEvent()
+    flagGlobalAutoNonEvent()
   }
 
   document.getElementById('activeCookies').className = 'active'
@@ -137,10 +110,20 @@ async function showCookiesForTab (tabs) {
     let log = document.getElementById('log')
     for (let entry of data['flagCookies']['logData']) {
       if (entry.indexOf(domainURL) !== -1) {
-        log.textContent += entry + '\n';
+        log.textContent += entry + '\n'
       }
     }
   }
+}
+
+function isDomainCookieInList (targetList, cookieKey) {
+  for (let child of targetList.children) {
+    if (child.children[0].dataset['name'] === cookieKey) {
+      return true
+    }
+  }
+
+  return false
 }
 
 function addCookieToList (targetList, name, value) {
