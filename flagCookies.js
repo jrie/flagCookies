@@ -3,31 +3,32 @@ let useChrome = typeof (browser) === 'undefined'
 
 // Chrome helpers
 function getChromeStorageForFunc (func) {
-  chrome.storage.local.get(null, function(data) { func(data) })
+  chrome.storage.local.get(null, function (data) { func(data) })
 }
 
 function getChromeStorageForFunc1 (func, par1) {
-  chrome.storage.local.get(null, function(data) { func(data, par1) })
+  chrome.storage.local.get(null, function (data) { func(data, par1) })
 }
 
 function getChromeStorageForFunc2 (func, par1, par2) {
-  chrome.storage.local.get(null, function(data) { func(data, par1, par2) })
+  chrome.storage.local.get(null, function (data) { func(data, par1, par2) })
 }
 
 function getChromeStorageForFunc3 (func, par1, par2, par3) {
-  chrome.storage.local.get(null, function(data) { func(data, par1, par2, par3) })
+  chrome.storage.local.get(null, function (data) { func(data, par1, par2, par3) })
 }
 
 function setChromeStorage (data) {
-  chrome.storage.local.set(data, function() { console.log('Chrome updated the storage data, without modifcation.') })
+  chrome.storage.local.set(data, function () { console.log('Chrome updated the storage data, without modifcation.') })
 }
 
 function chromeGetStorageAndCookiesForFunc (data, cookies, func) {
   if (data === null) {
-    chrome.storage.local.get(null, function(data) { chromeGetStorageAndCookiesForFunc(data, null, func) })
+    chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func) })
     return
   } else if (cookies === null) {
-    chrome.cookies.getAll({url: domainURL}, function(cookies) { chromeGetStorageAndCookiesForFunc(data, cookies, func) })
+    let targetDomain = domainURL.replace(/(http|https):\/\//, '').replace('/', '')
+    chrome.cookies.getAll({url: domainURL, domain: targetDomain}, function(cookies) { chromeGetStorageAndCookiesForFunc(data, cookies, func) })
     return
   }
 
@@ -497,13 +498,14 @@ function flagGlobalAutoNonEventWrapper(data) {
     data['flagCookies_flag_global']['use'] = false
     setChromeStorage(data)
 
-    let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined ? data['flagCookies_autoFlag'][domainURL] !== undefined : false
+    let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][domainURL] !== undefined
 
     if (hasAutoFlag) {
       switchAutoFlagGlobal(true, 'cookie-list')
     } else {
       switchAutoFlagGlobal(false, 'cookie-list')
     }
+
   }
 }
 
@@ -627,7 +629,7 @@ function switchAutoFlagGlobalNeutral (data, switchOn, targetList) {
     for (let child of searchTarget.children) {
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
-      if (data[domainURL] === undefined || (data[domainURL] !== undefined && data[domainURL][cookieKey] !== true && data[domainURL][cookieKey] !== false)) {
+      if (data[domainURL] === undefined || (data[domainURL] !== undefined && (data[domainURL][cookieKey] === undefined || (data[domainURL][cookieKey] !== true && data[domainURL][cookieKey] !== false)))) {
         contentChild.className = 'checkmark auto-flagged'
       }
     }
@@ -636,7 +638,7 @@ function switchAutoFlagGlobalNeutral (data, switchOn, targetList) {
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
 
-      if (data[domainURL] === undefined || (data[domainURL] !== undefined && data[domainURL][cookieKey] !== true && data[domainURL][cookieKey] !== false)) {
+      if (data[domainURL] === undefined || (data[domainURL] !== undefined && (data[domainURL][cookieKey] === undefined || (data[domainURL][cookieKey] !== true && data[domainURL][cookieKey] !== false)))) {
         contentChild.className = 'checkmark'
       }
     }
