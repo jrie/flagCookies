@@ -26,8 +26,8 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "1.551",
-  "permissions": ["cookies", "tabs", "<all_urls>", "storage"],
+  "version": "1.56",
+  "permissions": ["cookies", "tabs", "<all_urls>", "storage", "unlimitedStorage"],
   "background": {
     "scripts": [
       "cookies.js"

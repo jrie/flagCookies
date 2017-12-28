@@ -4,6 +4,17 @@ html, body {
   color: #557;
   background-color: #ddd;
   font: 0.9em Verdana, Geneva, Arial, Helvetica, sans-serif;
+  margin: 0px;
+  padding: 0px;
+}
+
+div {
+  margin: 0px;
+  padding: 0px;
+}
+
+span, p, h1, h2, h3, h4, h5 {
+  cursor: default;
 }
 
 .panel {
@@ -22,7 +33,6 @@ html, body {
   z-index: 10;
   background-color: #eee;
   border-bottom: 1px solid #aaa;
-  border-top: 1px solid #cce;
   min-height: 4em;
 }
 
@@ -32,6 +42,7 @@ html, body {
   padding: 0px 20px 4px 20px;
   bottom: 0px;
   margin: 0px;
+  display: block;
   clear: both;
 }
 
@@ -291,6 +302,11 @@ button#global-flag.active {
   padding: 6px 12px 9px 4%;
   font-weight: bold;
   width: 58%;
+}
+
+.chrome #searchBar {
+  width: 51.2%;
+  margin-bottom: 12px;
 }
 
 #clearAutoFlagged {
