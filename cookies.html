@@ -9,12 +9,12 @@
       <div class="panel-section-header">
         <div id="header-title"></div>
         <div id="tabs">
-          <button id="activeCookies" data-target="cookie-list">Active</button>
-          <button id="flaggedCookies" data-target="cookie-list-flagged">Flagged</button>
-          <button id="permittedCookies" data-target="cookie-list-permitted">Permitted</button>
+          <button id="activeCookies" data-target="cookie-list" title="Show active domain cookies">Active</button>
+          <button id="flaggedCookies" data-target="cookie-list-flagged"  title="Show flagged cookies which are to be deleted for this domain">Flagged</button>
+          <button id="permittedCookies" data-target="cookie-list-permitted"  title="Show permitted domain cookies which are to be kept">Permitted</button>
         </div>
         <hr/>
-        <button id="global-flag">Global</button><button id="auto-flag">Auto flag</button><input type="text" placeholder="Search cookie list" id="searchBar" />
+        <button id="global-flag" title="Delete cookies for all domains if not permitted">Global</button><button id="auto-flag" title="Delete cookies for this (sub)domain if not permitted">Auto flag</button><input type="text" placeholder="Search cookie list" id="searchBar" />
       </div>
       <div id="content">
         <div class="hidden" id="infoDisplay"><p class="info"></p></div>
@@ -22,12 +22,14 @@
         <ul class="hidden" id="cookie-list-flagged"></ul>
         <ul class="hidden" id="cookie-list-permitted"></ul>
         <div class="hidden" id="settings-view">
-          <!--<div id="settings-general"><h4 class="intro">General settings</h4><button>Delete all stored settings</button></div>-->
-          <div id="settings-log"><p class="intro">Log</p><textarea id="log" disabled="disabled" placeholder="Deletion log"></textarea></div>
+          <div id="settings-log"><div class="settings-title setting-info" title="The log shows all cookie delete and permit actions for the active domain"><p>Page action log</p></div><textarea id="log" disabled="disabled" placeholder="Cookie actions on page actions"></textarea></div>
+          <hr/>
+          <div id="settings-general"><div class="settings-title setting-info" title="Flag Cookies brower storage settings"><p>Storage settings</p></div><div id="settings-confirm-clear" title="Please check the box to confirm storage clearing"><button id="confirmSettingsClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="settings-action-clear" title="This will delete all domain and cookie settings of Flag Cookies">Delete all stored settings</button></div>
+        </div>
           <!--<div id="settings-domains"><ul class="domain-data"><li class="domainKey">Google.de</li><ul domain-settings></ul><li></ul></div>-->
         </div>
       </div>
-      <div class="legend"><p class="intro">Flag status</p><span id="leg-flagged">Flagged</span><span id="leg-permitted">Permitted</span><span id="leg-auto-flagged">Auto flagged</span><button data-target="settings-view" id="prefs">Preferences</button></div>
+      <div class="legend"><p class="intro">Flag legend</p><span id="leg-flagged" title="Flagged cookies will be deleted on page action">Flagged</span><span id="leg-permitted" title="Permitted cookies won't be removed by global or auto-flag">Permitted</span><span id="leg-auto-flagged" title="Global and auto-flagged cookies are deleted on page action">Auto flagged</span><button data-target="settings-view" id="prefs">Preferences</button></div>
     </div>
     <script src="flagCookies.js"></script>
   </body>

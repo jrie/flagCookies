@@ -516,6 +516,54 @@ function doSearch (searchVal, targetList) {
   }
 }
 
+// Settings dialog
+function toggleClearing (event) {
+  if (event.target.className.indexOf('active') === -1) event.target.className += ' active'
+  else event.target.className = event.target.className.replace(' active', '')
+}
+
+async function clearSettings (event) {
+  let log = document.getElementById('log')
+  if (document.getElementById('confirmSettingsClearing').className.indexOf('active') === -1) {
+    document.getElementById('log').textContent = 'Please confirm storage clearing.'
+    return
+  }
+
+  if (await browser.storage.local.clear() === null) {
+    log.textContent = 'Flag cookies settings and storage cleared'
+    resetUI()
+  } else {
+    log.textContent = 'Error clearing settings.'
+  }
+}
+
+function resetUI() {
+  document.getElementById('auto-flag').removeAttribute('class');
+  document.getElementById('global-flag').removeAttribute('class');
+  document.getElementById('searchBar').addEventListener('keyup', searchContent)
+
+  // Reset cookie list
+  let cookieList = document.getElementById('cookie-list')
+  for (let child of cookieList.children) {
+    let contentChild = child.children[0]
+    contentChild.className = 'checkmark'
+  }
+
+  let clearLists = ['cookie-list-flagged', 'cookie-list-permitted']
+
+  for (let child of clearLists) {
+    let parent = document.getElementById(child)
+    for (let childElement of parent.children) {
+      parent.removeChild(childElement)
+    }
+
+    parent.className = 'hidden'
+  }
+
+  let confirmClearing = document.getElementById('confirmSettingsClearing')
+  confirmClearing.className = confirmClearing.className.replace(' active', '')
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
 document.getElementById('activeCookies').addEventListener('click', switchView)
@@ -525,5 +573,7 @@ document.getElementById('prefs').addEventListener('click', switchView)
 document.getElementById('auto-flag').addEventListener('click', flagAutoSwitch)
 document.getElementById('global-flag').addEventListener('click', flagGlobalAuto)
 document.getElementById('searchBar').addEventListener('keyup', searchContent)
+document.getElementById('confirmSettingsClearing').addEventListener('click', toggleClearing)
+document.getElementById('settings-action-clear').addEventListener('click', clearSettings)
 
 getActiveTab().then(showCookiesForTab)

@@ -32,6 +32,7 @@ html, body {
   padding: 0px 20px 4px 20px;
   bottom: 0px;
   margin: 0px;
+  clear: both;
 }
 
 .legend p.intro {
@@ -72,7 +73,8 @@ html, body {
   border-right: none;
 }
 
-.intro {
+.intro,
+.settings-title {
   display: block;
   color: #888;
   font-size: 0.75em;
@@ -199,10 +201,14 @@ button::-moz-focus-inner {
 }
 
 button.checkmark {
-  cursor: pointer;
   position: absolute;
   top: 0.85em;
   left: 10px;
+}
+
+button.checkmark,
+button.checkmark-confirm {
+  cursor: pointer;
   border: 1px solid #557;
   border-radius: 4px;
   width: 26px;
@@ -213,6 +219,7 @@ button.checkmark {
   background-clip:border-box;
   background-position: -4px -4px;
 }
+
 
 button.checkmark.flagged {
   background-position: -4px -43px;
@@ -303,7 +310,34 @@ button#global-flag.active {
 }
 
 #settings-view {
-  padding: 10px;
+  position: relative;
+  padding: 5px 10px;
+  margin-bottom: 18px;
+}
+
+#settings-view hr {
+  margin: 15px 0px 12px 0px;
+  clear: both;
+}
+
+.settings-title {
+  position: relative;
+  top: -0.5em;
+  font-size: 1.15em;
+  float: left;
+  width: 21%;
+  font-weight: bold;
+}
+
+.setting-info p {
+  display: inline-block;
+  margin-left: 5px;
+  background-image: url('icons/help_16.png');
+  padding-top: 5px;
+  padding-right: 20px;
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-clip: border-box;
 }
 
 textarea#log {
@@ -313,13 +347,36 @@ textarea#log {
   border-radius: 8px;
   border: 1px solid #ccc;
   margin: 0px;
+  margin-top: 12px;
   padding: 6px 12px;
   font-weight: bold;
-  width: 100%;
+  width: 78%;
   min-height: 10em;
   max-height: 10em;
-  min-width: 100%;
-  max-width: 100%;
-  margin-bottom: 10px;
   resize:none;
+}
+
+#settings-action-clear {
+  margin-left: 35px;
+}
+
+#settings-confirm-clear {
+  float: left;
+}
+
+#settings-confirm-clear span {
+  position: relative;
+  top: 0.65em;
+  font-weight: bold;
+}
+
+button.checkmark-confirm {
+  margin-right: 8px;
+  position: relative;
+  top: 4px;
+}
+
+button.checkmark-confirm.active {
+  background-image: url('icons/checkmark_permit.png');
+  background-position: -4px -41px;
 }
