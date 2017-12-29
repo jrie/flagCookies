@@ -2,13 +2,12 @@
 
 html, body {
   width: 800px;
-  max-height: 490px;
+  max-height: 500px;
   color: #557;
   background-color: #ddd;
   font-size: 0.9em;
   font-family: 'Open Sans', Helvetica, Verdana, Geneva, Arial, sans-serif;;
   font-weight: normal;
-  overflow: hidden;
 }
 
 body {
@@ -36,7 +35,7 @@ span, p, h1, h2, h3, h4, h5 {
 }
 
 .panel {
-  max-height: 320px;
+  max-height: 500px;
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -47,14 +46,12 @@ span, p, h1, h2, h3, h4, h5 {
   font-weight: bold;
   font-size: 1.35em;
   text-transform: none;
-  position: relative;
+  position: sticky;
+  top: 0px;
+  z-index: 10;
   background-color: #eee;
   border-bottom: 1px solid #aaa;
   min-height: 6.15em;
-}
-
-.chrome .panel-section-header {
-  min-height 6.5em;
 }
 
 .chrome .panel-section-header {
@@ -65,10 +62,11 @@ span, p, h1, h2, h3, h4, h5 {
   bottom: 0px;
   min-height: 2.5em;
   height: 2.5em;
+  max-height: 2.5em;
   padding: 0px 20px 0px 14px;
   margin: 0px;
-  display: block;
   clear: both;
+  border: none;
 }
 
 .chrome .legend {
@@ -177,7 +175,7 @@ li:hover .cookieValue {
 }
 
 .cookieKey {
-  font-size: 1.25em;
+  font-size: 1.15em;
   font-weight: bold;
   margin-bottom: 0.25em;
   display: block;
@@ -425,6 +423,7 @@ textarea#log {
   min-height: 10em;
   max-height: 10em;
   resize:none;
+  font-size: 1em;
 }
 
 .chrome textarea#log {
