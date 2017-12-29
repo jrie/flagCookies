@@ -4,8 +4,25 @@ let logData = [] // The log data we seen as a report to the settings view
 // Chrome
 let useChrome = typeof (browser) === 'undefined'
 
+// Chrome helpers
+function checkChromeHadNoErrors () {
+  if (chrome.runtime.lastError) {
+    if (chrome.runtime.lastError.message !== undefined) {
+      console.log('Chrome had an error, with mesage: ' + chrome.runtime.lastError.message)
+    } else {
+      console.log('Chrome had an error.')
+    }
+
+    return false
+  }
+
+  return true
+}
+
 // Chrome
 function chromeGetStorageAndClearCookies (action, data, cookies) {
+  if (!checkChromeHadNoErrors()) return
+
   if (domainURL === '') {
     return
   }
@@ -14,7 +31,8 @@ function chromeGetStorageAndClearCookies (action, data, cookies) {
     chrome.storage.local.get(null, function(data) { chromeGetStorageAndClearCookies(action, data, null) })
     return
   } else if (cookies === null) {
-    chrome.cookies.getAll({url: domainURL}, function(cookies) { chromeGetStorageAndClearCookies(action, data, cookies) })
+    let targetDomain = domainURL.replace(/(http|https):\/\//, '').replace('/', '')
+    chrome.cookies.getAll({domain: targetDomain}, function(cookies) { chromeGetStorageAndClearCookies(action, data, cookies) })
     return
   }
 

@@ -2,33 +2,76 @@
 let useChrome = typeof (browser) === 'undefined'
 
 // Chrome helpers
+function checkChromeHadNoErrors () {
+  if (chrome.runtime.lastError) {
+    if (chrome.runtime.lastError.message !== undefined) {
+      console.log('Chrome had an error, with mesage: ' + chrome.runtime.lastError.message)
+    } else {
+      console.log('Chrome had an error.')
+    }
+
+    return false
+  }
+
+  return true
+}
+
 function getChromeStorageForFunc (func) {
-  chrome.storage.local.get(null, function (data) { func(data) })
+  chrome.storage.local.get(null, function (data) {
+    if (checkChromeHadNoErrors()) {
+      console.log('Chrome retrieved storage data.')
+
+      func(data)
+    } else console.log('Chrome storage retrieval error.')
+  })
 }
 
 function getChromeStorageForFunc1 (func, par1) {
-  chrome.storage.local.get(null, function (data) { func(data, par1) })
+  chrome.storage.local.get(null, function (data) {
+    if (checkChromeHadNoErrors()) {
+      console.log('Chrome retrieved storage data.')
+
+      func(data, par1)
+    } else console.log('Chrome storage retrieval error.')
+  })
 }
 
 function getChromeStorageForFunc2 (func, par1, par2) {
-  chrome.storage.local.get(null, function (data) { func(data, par1, par2) })
+  chrome.storage.local.get(null, function (data) {
+    if (checkChromeHadNoErrors()) {
+      console.log('Chrome retrieved storage data.')
+
+      func(data, par1, par2)
+    } else console.log('Chrome storage retrieval error.')
+  })
 }
 
 function getChromeStorageForFunc3 (func, par1, par2, par3) {
-  chrome.storage.local.get(null, function (data) { func(data, par1, par2, par3) })
+  chrome.storage.local.get(null, function (data) {
+    if (checkChromeHadNoErrors()) {
+      console.log('Chrome retrieved storage data.')
+
+      func(data, par1, par2, par3)
+    } else console.log('Chrome storage retrieval error.')
+  })
 }
 
 function setChromeStorage (data) {
-  chrome.storage.local.set(data, function () { console.log('Chrome updated the storage data, without modifcation.') })
+  chrome.storage.local.set(data, function () {
+    if (checkChromeHadNoErrors()) console.log('Chrome updated the storage data.')
+    else console.log('Chrome updating storage error.')
+  })
 }
 
 function chromeGetStorageAndCookiesForFunc (data, cookies, func) {
+  if (!checkChromeHadNoErrors()) return
+
   if (data === null) {
     chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func) })
     return
   } else if (cookies === null) {
     let targetDomain = domainURL.replace(/(http|https):\/\//, '').replace('/', '')
-    chrome.cookies.getAll({url: domainURL, domain: targetDomain}, function(cookies) { chromeGetStorageAndCookiesForFunc(data, cookies, func) })
+    chrome.cookies.getAll({domain: targetDomain}, function(cookies) { chromeGetStorageAndCookiesForFunc(data, cookies, func) })
     return
   }
 
@@ -144,9 +187,7 @@ function updateUIData (data, cookies) {
     let domainData = data[domainURL]
 
     for (let cookieKey in domainData) {
-      if (domainData[cookieKey] !== true) {
-        continue
-      }
+      if (domainData[cookieKey] !== true) continue
 
       if (!isDomainCookieInList(flaggedCookieList, cookieKey)) addCookieToList('cookie-list-flagged', cookieKey, '')
     }
@@ -160,18 +201,14 @@ function updateUIData (data, cookies) {
   if (data['flagCookies'] !== undefined && data['flagCookies']['logData'] !== '') {
     let log = document.getElementById('log')
     for (let entry of data['flagCookies']['logData']) {
-      if (entry.indexOf(domainURL) !== -1) {
-        log.textContent += entry + '\n'
-      }
+      if (entry.indexOf(domainURL) !== -1) log.textContent += entry + '\n'
     }
   }
 }
 
 function isDomainCookieInList (targetList, cookieKey) {
   for (let child of targetList.children) {
-    if (child.children[0].dataset['name'] === cookieKey) {
-      return true
-    }
+    if (child.children[0].dataset['name'] === cookieKey) return true
   }
 
   return false
@@ -254,11 +291,15 @@ async function flaggedCookieSwitchNeutral (data, event) {
         child.children[0].className = 'checkmark'
       }
 
-      if (useChrome) setChromeStorage(data)
-      else await browser.storage.local.set(data)
+      if (useChrome) {
+        setChromeStorage(data)
+        if (!checkChromeHadNoErrors()) return
+      } else await browser.storage.local.set(data)
       break
     }
   }
+
+
 
   let parent = event.target.parentNode.parentNode
 
@@ -305,8 +346,10 @@ async function permittedCookieSwitchNeutral (data, event) {
         child.children[0].className = 'checkmark'
       }
 
-      if (useChrome) setChromeStorage(data)
-      else await browser.storage.local.set(data)
+      if (useChrome) {
+        setChromeStorage(data)
+        if (!checkChromeHadNoErrors()) return
+      } else await browser.storage.local.set(data)
       break
     }
   }
