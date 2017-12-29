@@ -5,17 +5,19 @@
     <link rel="stylesheet" href="cookies.css"/>
   </head>
   <body>
-    <div class="panel">
-      <div class="panel-section-header">
-        <div id="header-title"></div>
-        <div id="tabs">
-          <button id="activeCookies" data-target="cookie-list" title="Show active domain cookies">Active</button>
-          <button id="flaggedCookies" data-target="cookie-list-flagged"  title="Show flagged cookies which are to be deleted for this domain">Flagged</button>
-          <button id="permittedCookies" data-target="cookie-list-permitted"  title="Show permitted domain cookies which are to be kept">Permitted</button>
-        </div>
-        <hr/>
+    <div class="panel-section-header">
+      <div id="header-title"></div>
+      <div id="tabs">
+        <button id="activeCookies" data-target="cookie-list" title="Show active domain cookies">Active</button>
+        <button id="flaggedCookies" data-target="cookie-list-flagged"  title="Show flagged cookies which are to be deleted for this domain">Flagged</button>
+        <button id="permittedCookies" data-target="cookie-list-permitted"  title="Show permitted domain cookies which are to be kept">Permitted</button>
+      </div>
+      <hr/>
+      <div class="actions">
         <button id="global-flag" title="Delete cookies for all domains if not permitted">Global</button><button id="auto-flag" title="Delete cookies for this (sub)domain if not permitted">Auto flag</button><input type="text" placeholder="Search cookie list" id="searchBar" />
       </div>
+    </div>
+    <div class="panel">
       <div id="content">
         <div class="hidden" id="infoDisplay"><p class="info"></p></div>
         <ul class="hidden" id="cookie-list"></ul>
@@ -30,7 +32,6 @@
         </div>
       </div>
       <div class="legend"><p class="intro" title="Move the mouse over the items, to receive help.">Flag legend</p><span id="leg-flagged" title="Flagged cookies will be deleted on page action">Flagged</span><span id="leg-permitted" title="Permitted cookies won't be removed by global or auto-flag">Permitted</span><span id="leg-auto-flagged" title="Global and auto-flagged cookies are deleted on page action">Auto flagged</span><button data-target="settings-view" id="prefs">Preferences</button></div>
-    </div>
-    <script src="flagCookies.js"></script>
+      <script src="flagCookies.js"></script>
   </body>
 </html>

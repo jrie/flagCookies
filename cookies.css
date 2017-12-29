@@ -8,13 +8,22 @@ html, body {
   font-size: 0.9em;
   font-family: 'Open Sans', Helvetica, Verdana, Geneva, Arial, sans-serif;;
   font-weight: normal;
+  overflow: hidden;
+}
+
+body {
   margin: 0px;
   padding: 0px;
 }
 
-div {
+.chrome div {
   margin: 0px;
   padding: 0px;
+}
+
+.legend div {
+  padding: 0px;
+  margin: 0px;
 }
 
 span, p, h1, h2, h3, h4, h5 {
@@ -27,6 +36,7 @@ span, p, h1, h2, h3, h4, h5 {
 }
 
 .panel {
+  max-height: 320px;
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -37,12 +47,14 @@ span, p, h1, h2, h3, h4, h5 {
   font-weight: bold;
   font-size: 1.35em;
   text-transform: none;
-  position: sticky;
-  top: 0px;
-  z-index: 10;
+  position: relative;
   background-color: #eee;
   border-bottom: 1px solid #aaa;
-  min-height: 4em;
+  min-height: 6.15em;
+}
+
+.chrome .panel-section-header {
+  min-height 6.5em;
 }
 
 .chrome .panel-section-header {
@@ -50,10 +62,10 @@ span, p, h1, h2, h3, h4, h5 {
 }
 
 .legend {
+  bottom: 0px;
   min-height: 2.5em;
   height: 2.5em;
-  padding: 0px 20px 4px 20px;
-  bottom: 0px;
+  padding: 0px 20px 0px 14px;
   margin: 0px;
   display: block;
   clear: both;
@@ -71,11 +83,9 @@ span, p, h1, h2, h3, h4, h5 {
 }
 
 .legend span {
-  border: 1px solid #aaa;
-  border: none;
   background-color: #ddd;
   background-color: transparent;
-  padding: 6px 16px 4px 28px;
+  padding: 2px 16px 4px 28px;
   background-repeat: no-repeat;
   background-clip:border-box;
   margin-right: 16px;
@@ -84,10 +94,6 @@ span, p, h1, h2, h3, h4, h5 {
   margin-bottom: 12px;
   display: inline-block;
   border-right: 1px solid #aaa;
-}
-
-.chrome .legend span {
-  padding: 2px 16px 4px 28px;
 }
 
 .legend #leg-flagged {
@@ -199,7 +205,7 @@ button {
   border-radius: 24px 24px;
   border: 1px solid #666;
   font-weight: bold;
-  padding: 6px 12px;
+  padding: 7px 12px 8px 12px;
   cursor: pointer;
   color: #ddd;
 }
@@ -362,7 +368,7 @@ button#global-flag.active {
 #prefs {
   position: absolute;
   right: 10px;
-  top: 5px;
+  top: 3px;
   padding-left: 38px;
   background-image: url('icons/settings_28.png');
   background-repeat: no-repeat;
@@ -399,16 +405,10 @@ button#global-flag.active {
   display: inline-block;
   margin-left: 5px;
   background-image: url('icons/help_16.png');
-  padding-top: 5px;
   padding-right: 20px;
   background-position: right center;
   background-repeat: no-repeat;
   background-clip: border-box;
-}
-
-.chrome .setting-info p,
-.chrome .legend .intro {
-  padding-top: 0px;
 }
 
 textarea#log {
