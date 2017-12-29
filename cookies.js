@@ -13,6 +13,7 @@ function checkChromeHadNoErrors () {
       console.log('Chrome had an error.')
     }
 
+    void chrome.runtime.lastError
     return false
   }
 
