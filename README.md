@@ -33,14 +33,26 @@ Get a grip on what cookies are allowed while you browse a website or the web in 
 
 ## Requirements
 
-**Firefox in version 58.0a1 is minimum**
+**Firefox in version 58.0a1 is minimum** or a recent version of **Chrome browser**
 
 
 ## Installation
 
-Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/) as this is always the latest version, the self-hosted releases could be outdated.
+#### Firefox
+Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/) or download the **.xpi** from the release page.
 
-Or download/clone the repository, to add the Add-on dynamically by using "about:debugging" in Firefox, which allows you to install, using the "manifest.json" file, if you point to it - but any cookie settings are stored temporarly. So installation of the add on from addons.mozilla.org is recommended.
+Please notice, the more downloads and users the add-on receives on Mozilla, they more the word can spread about this little project. But you also can, of course, download from source or the release pages.
+
+### Chrome
+The extension is not listed in the webstore, because this would cost money to do so, I am not at the moment willing to pay, just people can use the extension, therefore please download the **.crx** from the releases page.
+
+### Cloning/Testing on Firefox and Chrome
+
+Or download/clone the repository.
+
+To add the Add-on dynamically in Firefox: Type **about:debugging** in the Firefox address bar, which allows you to install, using the "manifest.json" file, if you point to it.
+
+In Chrome navigate to **chrome://extensions/**, check **dev mode** and you can debug the add-on. For usage testing, the ***dev mode*** is not required.
 
 ## Thanks and notes
 
