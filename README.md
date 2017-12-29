@@ -43,7 +43,7 @@ Get a grip on what cookies are allowed while you browse a website or the web in 
 
 ## Requirements
 
-**Firefox in version 58.0a1 is minimum** or a recent version of **Chrome browser**
+**Firefox in version 58.0a1 is minimum** or a recent version of **Chrome** or **Opera** browser(s).
 
 
 ## Installation
@@ -55,6 +55,10 @@ Please notice, the more downloads and users the add-on receives on Mozilla, they
 
 ### Chrome
 The extension is not listed in the webstore, because this would cost money to do so, I am not at the moment willing to pay, just people can use the extension, therefore please download the **.crx** from the releases page.
+
+### Opera
+At the moment of writing, the add on is not listed on Opera add-ons site. This hopefully changes soon.
+In the meantime, you can download the Flag Cookies from the releases page, as **.nex** file.
 
 ### Cloning/Testing on Firefox and Chrome
 
