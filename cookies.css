@@ -1,9 +1,13 @@
+@font-face{font-family:'Open Sans';src:url(fonts/Light/OpenSans-Light.woff2?v=1.101) format("woff2"),url(fonts/Light/OpenSans-Light.woff?v=1.101) format("woff");font-weight:300;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/LightItalic/OpenSans-LightItalic.woff2?v=1.101) format("woff2"),url(fonts/LightItalic/OpenSans-LightItalic.woff?v=1.101) format("woff");font-weight:300;font-style:italic}@font-face{font-family:'Open Sans';src:url(fonts/Regular/OpenSans-Regular.woff2?v=1.101) format("woff2"),url(fonts/Regular/OpenSans-Regular.woff?v=1.101) format("woff");font-weight:400;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/Italic/OpenSans-Italic.woff2?v=1.101) format("woff2"),url(fonts/Italic/OpenSans-Italic.woff?v=1.101) format("woff");font-weight:400;font-style:italic}@font-face{font-family:'Open Sans';src:url(fonts/Semibold/OpenSans-Semibold.woff2?v=1.101) format("woff2"),url(fonts/Semibold/OpenSans-Semibold.woff?v=1.101) format("woff");font-weight:600;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff2?v=1.101) format("woff2"),url(fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff?v=1.101) format("woff");font-weight:600;font-style:italic}@font-face{font-family:'Open Sans';src:url(fonts/Bold/OpenSans-Bold.woff2?v=1.101) format("woff2"),url(fonts/Bold/OpenSans-Bold.woff?v=1.101) format("woff");font-weight:700;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/BoldItalic/OpenSans-BoldItalic.woff2?v=1.101) format("woff2"),url(fonts/BoldItalic/OpenSans-BoldItalic.woff?v=1.101) format("woff");font-weight:700;font-style:italic}@font-face{font-family:'Open Sans';src:url(fonts/ExtraBold/OpenSans-ExtraBold.woff2?v=1.101) format("woff2"),url(fonts/ExtraBold/OpenSans-ExtraBold.woff?v=1.101) format("woff");font-weight:800;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff2?v=1.101) format("woff2"),url(fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff?v=1.101) format("woff");font-weight:800;font-style:italic}
+
 html, body {
   width: 800px;
   max-height: 490px;
   color: #557;
   background-color: #ddd;
-  font: 0.9em Verdana, Geneva, Arial, Helvetica, sans-serif;
+  font-size: 0.9em;
+  font-family: 'Open Sans', Helvetica, Verdana, Geneva, Arial, sans-serif;;
+  font-weight: normal;
   margin: 0px;
   padding: 0px;
 }
@@ -15,6 +19,11 @@ div {
 
 span, p, h1, h2, h3, h4, h5 {
   cursor: default;
+}
+
+.chrome span {
+  margin: 0px;
+  padding: 0px;
 }
 
 .panel {
@@ -36,6 +45,10 @@ span, p, h1, h2, h3, h4, h5 {
   min-height: 4em;
 }
 
+.chrome .panel-section-header {
+  padding: 10px 10px 0px 10px;
+}
+
 .legend {
   min-height: 2.5em;
   height: 2.5em;
@@ -44,6 +57,11 @@ span, p, h1, h2, h3, h4, h5 {
   margin: 0px;
   display: block;
   clear: both;
+}
+
+.chrome .legend {
+  padding: 0px;
+  padding-left: 8px;
 }
 
 .legend p.intro {
@@ -66,6 +84,10 @@ span, p, h1, h2, h3, h4, h5 {
   margin-bottom: 12px;
   display: inline-block;
   border-right: 1px solid #aaa;
+}
+
+.chrome .legend span {
+  padding: 2px 16px 4px 28px;
 }
 
 .legend #leg-flagged {
@@ -182,6 +204,12 @@ button {
   color: #ddd;
 }
 
+
+.chrome button {
+    padding: 8px 12px 7px 12px;
+    outline: none;
+}
+
 button {
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.12);
 }
@@ -189,6 +217,11 @@ button {
 input,
 textarea {
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.17);
+}
+
+.chrome input,
+.chrome textarea {
+  outline: none;
 }
 
 button:hover,
@@ -258,8 +291,7 @@ button#global-flag {
   background-position: 4px 3px;
   background-repeat: no-repeat;
   background-clip: border-box;
-  padding: 7px 12px 8px 12px;
-  padding-left: 28px;
+  padding: 7px 12px 8px 28px;
   border-color: #ddd;
   color: #557;
   float: left;
@@ -269,6 +301,17 @@ button#global-flag {
   border: 1px solid #99a;
   transition: background-color,color;
   transition-duration: 320ms;
+}
+
+.chrome button#auto-flag,
+.chrome button#global-flag{
+  background-position: 4px 2px;
+  padding: 9px 12px 8px 28px;
+  margin-right: 2%;
+}
+
+.chrome button#auto-flag {
+  margin-right: 3%;
 }
 
 button#global-flag {
@@ -305,8 +348,10 @@ button#global-flag.active {
 }
 
 .chrome #searchBar {
-  width: 51.2%;
+  width: 53%;
   margin-bottom: 12px;
+  margin-left: 1px;
+  padding: 9px 12px 8px 4%;
 }
 
 #clearAutoFlagged {
@@ -323,6 +368,10 @@ button#global-flag.active {
   background-repeat: no-repeat;
   background-clip: border-box;
   background-position: 4px center;
+}
+
+.chrome #prefs {
+  top: 6px;
 }
 
 #settings-view {
@@ -345,7 +394,8 @@ button#global-flag.active {
   font-weight: bold;
 }
 
-.setting-info p {
+.setting-info p,
+.legend .intro {
   display: inline-block;
   margin-left: 5px;
   background-image: url('icons/help_16.png');
@@ -354,6 +404,11 @@ button#global-flag.active {
   background-position: right center;
   background-repeat: no-repeat;
   background-clip: border-box;
+}
+
+.chrome .setting-info p,
+.chrome .legend .intro {
+  padding-top: 0px;
 }
 
 textarea#log {
@@ -372,6 +427,10 @@ textarea#log {
   resize:none;
 }
 
+.chrome textarea#log {
+  width: 75.5%;
+}
+
 #settings-action-clear {
   margin-left: 35px;
 }
@@ -384,6 +443,10 @@ textarea#log {
   position: relative;
   top: 0.65em;
   font-weight: bold;
+}
+
+.chrome #settings-confirm-clear span {
+  top: 0.25em;
 }
 
 button.checkmark-confirm {
