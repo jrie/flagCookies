@@ -20,6 +20,7 @@
   "description": "A cookie manager on steroids.",
   "icons": {
     "48": "icons/cookie_48.png",
+    "64": "icons/cookie_64.png",
     "96": "icons/cookie_96.png",
     "128": "icons/cookie_128.png"
   },
