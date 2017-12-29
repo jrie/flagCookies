@@ -1,6 +1,16 @@
 # flagCookies
 A cookie manager on steroids.
 
+## Feature list
+
+**Flag Cookies distinguishes between base and subdomains** for the following features:
+
+- Automatically delete flagged cookies for a domain on tab load/reload/tab or window close
+- Explicitly allow cookies through "permit" permission
+- "Auto flag" one domain, affects only this (sub)domain, to delete all-non permitted cookies, even "unknown" on tab actions
+- "Global" flag mode allows to delete every non-permitted cookie, while browsing for example, for all domains
+- "Preferences" allows you to delete all saved settings
+- "Preferences" shows a log of what actions have been done on tab actions
 
 ## Screenshots
 
