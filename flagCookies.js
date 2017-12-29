@@ -203,14 +203,18 @@ function updateUIData (data, cookies) {
   if (data['flagCookies'] !== undefined && data['flagCookies']['logData'] !== '') {
     let log = document.getElementById('log')
     for (let entry of data['flagCookies']['logData']) {
-      if (entry.indexOf(domainURL) !== -1) log.textContent += entry + '\n'
+      if (entry.indexOf(domainURL) !== -1) {
+        log.textContent += entry + '\n'
+      }
     }
   }
 }
 
 function isDomainCookieInList (targetList, cookieKey) {
   for (let child of targetList.children) {
-    if (child.children[0].dataset['name'] === cookieKey) return true
+    if (child.children[0].dataset['name'] === cookieKey) {
+      return true
+    }
   }
 
   return false
@@ -295,7 +299,9 @@ async function flaggedCookieSwitchNeutral (data, event) {
 
       if (useChrome) {
         setChromeStorage(data)
-        if (!checkChromeHadNoErrors()) return
+        if (!checkChromeHadNoErrors()) {
+          return
+        }
       } else await browser.storage.local.set(data)
       break
     }
@@ -350,7 +356,9 @@ async function permittedCookieSwitchNeutral (data, event) {
 
       if (useChrome) {
         setChromeStorage(data)
-        if (!checkChromeHadNoErrors()) return
+        if (!checkChromeHadNoErrors()) {
+          return
+        }
       } else await browser.storage.local.set(data)
       break
     }
