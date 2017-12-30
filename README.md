@@ -6,12 +6,13 @@ A cookie manager on steroids.
 **Flag Cookies distinguishes between base and subdomains** for the following features:
 
 - Automatically delete flagged cookies for a domain on tab load/reload/tab or window close
+- Profile feature - to switch between "logged into a website" and "not logged into" to remove or keep cookies on demand
 - Explicitly allow cookies through "permit" permission
 - "Auto flag" one domain, affects only this (sub)domain, to delete all-non permitted cookies, even "unknown" on tab actions
 - "Global" flag mode allows to delete every non-permitted cookie, while browsing for example, for all domains
+- "Preferences" allows to manage "logged in profile" cookies, even if this cookies are not present
+- "Preferences" allows you to delete all saved settings or domain settings
 - "Preferences" shows a log of what actions have been done on tab actions
-- "Preferences" view allows you to delete all saved settings
-- "Preferences" view allows you to delete all domain related settings
 
 ## Screenshots
 
@@ -44,7 +45,18 @@ Global flagging does remove all non particular permitted cookies for all domains
 
 Cookies are shown with name and value, to get a grasp on what is in the box.
 
-Get a grip on what cookies are allowed while you browse a website or the web in general
+Get a grip on what cookies are allowed while you browse a website or the web in general.
+
+### The profile feature
+The profile feature can be used to switch between "logged into a account" and "not logged into an account" states by simply pressing the "profile" button in the main view. This works for a particular domain, subdomains have to be threaded separately.
+
+In order to use this functionality, you have to log in the particular website. After login, you then can select - by using the "key symbol" on the right of the main cookie list - to select cookies, which are required to use the website.
+
+After doing so, you can simply press "profile" in the main window and use "global" or "auto flag" features or go on flagging those cookies, without any further changes. Everything what you decided should be kept, wont be deleted anymore, except you turn off the "profile" switch for the domain, meaning, all regular rules, like flag, global, auto flag should apply.
+
+Get a grip on what cookies are allowed while you browse a website or the web in general.
+
+It works as an addition to the regular cookie manager and others. It is not a replacement for the regular cookie manager or something alike that.
 
 
 ## Requirements
