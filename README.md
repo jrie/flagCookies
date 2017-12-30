@@ -17,11 +17,16 @@ A cookie manager on steroids.
 
 #### Main interface
 
-[![FlagCookies v1.57](https://www.picflash.org/img/2017/12/30/li2dnkq9il09ynp.png "FlagCookies v1.57")](https://www.picflash.org/viewer.php?img=li2dnkq9il09ynp.png)
+[![FlagCookies v1.6 - Main interface](https://www.picflash.org/img/2017/12/30/jxumb3iqtzhu7hy.png "FlagCookies v1.6 with cookies 'keyed' for profile mode (red key icon)")](https://www.picflash.org/viewer.php?img=jxumb3iqtzhu7hy.png)
 
-#### Log view in preferences
+#### Preferences with profile cookie management
 
-[![FlagCookies v1.57 - Preferences](https://www.picflash.org/img/2017/12/30/3to9n65u0qms2ux.png "Flag Cookies 1.57 Preferences")](https://www.picflash.org/viewer.php?img=3to9n65u0qms2ux.png)
+[![FlagCookies v1.6 - Preferences](https://www.picflash.org/img/2017/12/30/0o0aml1ik4lwfhd.png "Flag Cookies 1.6 preferences with profile cookie management")](https://www.picflash.org/viewer.php?img=0o0aml1ik4lwfhd.png)
+
+[![FlagCookies v1.6 - Log with active 'profile'](https://www.picflash.org/img/2017/12/30/e3dlznmo3o8j5pk.png "Log view with active 'profile' after page reload")](https://www.picflash.org/viewer.php?img=e3dlznmo3o8j5pk.png)]
+
+
+[![FlagCookies v1.6 - Log with non-active 'profile' switch](https://www.picflash.org/img/2017/12/30/fswg4jfckb9d5zq.png "Log view with inactive 'profile' after page reload")](https://www.picflash.org/viewer.php?img=fswg4jfckb9d5zq.png)
 
 
 #### Gallery
@@ -69,6 +74,7 @@ Or download/clone the repository.
 To add the Add-on dynamically in Firefox: Type **about:debugging** in the Firefox address bar, which allows you to install, using the "manifest.json" file, if you point to it.
 
 In Chrome navigate to **chrome://extensions/**, check **dev mode** and you can debug the add-on. For usage testing, the ***dev mode*** is not required.
+
 
 ## Thanks and notes
 
