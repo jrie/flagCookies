@@ -38,6 +38,8 @@ span, p, h1, h2, h3, h4, h5 {
   max-height: 500px;
   overflow-y: scroll;
   overflow-x: hidden;
+  padding: 0px;
+  margin: 0px;
 }
 
 .panel-section-header,
@@ -67,6 +69,7 @@ span, p, h1, h2, h3, h4, h5 {
   margin: 0px;
   clear: both;
   border: none;
+  overflow: hidden;
 }
 
 .chrome .legend {
@@ -240,8 +243,13 @@ button::-moz-focus-inner {
 
 #tabs {
   position: absolute;
-  top: 0.55em;
+  top: 0.35em;
   right: 1%;
+}
+
+#tabs button {
+  margin-left: 0px;
+  width: 145px;
 }
 
 .hidden {
@@ -430,21 +438,49 @@ textarea#log {
   width: 75.5%;
 }
 
-#settings-action-clear {
+#settings-action-clear,
+#domain-action-clear {
   margin-left: 35px;
+  width: 250px;
 }
 
-#settings-confirm-clear {
+#settings-confirm-clear,
+#domain-confirm-clear {
   float: left;
 }
 
-#settings-confirm-clear span {
+#settings-confirm-clear span,
+#domain-confirm-clear span {
   position: relative;
   top: 0.65em;
   font-weight: bold;
 }
 
-.chrome #settings-confirm-clear span {
+.profileTab {
+  margin-right: 1px;
+  border-radius: 12px 12px 0px 0px;
+  border-bottom: 0px;
+}
+
+#domainDetails {
+  float: right;
+  width: 605px;
+  margin-bottom: 20px;
+}
+
+.chrome #domainDetails {
+  width: 604px;
+}
+
+#profilePane {
+  border: 1px solid #88a;
+  height: 150px;
+  border-radius: 0px 15px 15px 15px;
+  margin-bottom: 26px;
+}
+
+.chrome #settings-confirm-clear span,
+.chrome #domain-confirm-clear span {
   top: 0.25em;
 }
 

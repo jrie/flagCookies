@@ -720,7 +720,7 @@ function doSearch (searchVal, targetList) {
   }
 }
 
-// Settings dialog
+// Settings dialog - clearing flag cookies data
 function toggleClearing (event) {
   if (event.target.className.indexOf('active') === -1) event.target.className += ' active'
   else event.target.className = event.target.className.replace(' active', '')
@@ -735,7 +735,15 @@ async function clearSettings (event) {
   }
 
   if (useChrome) {
-    chrome.storage.local.clear(function () { chrome.runtime.lastError !== undefined ? log.textContent = 'Error clearing settings.' : log.textContent = 'Flag cookies settings and storage cleared'; resetUI() })
+    chrome.storage.local.clear(function () {
+      if (!checkChromeHadNoErrors) {
+        log.textContent = 'Error clearing settings.'
+      } else {
+        log.textContent =  'Flag cookies settings and storage cleared'
+        resetUI()
+      }
+    })
+
     return
   }
 
@@ -747,10 +755,38 @@ async function clearSettings (event) {
   }
 }
 
+// Chrome + Firefox - clearing domain data
+async function clearDomain (event) {
+  let log = document.getElementById('log')
+  if (document.getElementById('confirmDomainClearing').className.indexOf('active') === -1) {
+    document.getElementById('log').textContent = 'Please confirm domain clearing.'
+    return
+  }
+
+  if (useChrome) {
+    chrome.storage.local.remove(domainURL, function () {
+      if (!checkChromeHadNoErrors) {
+        log.textContent = 'Error clearing domain data.'
+      } else {
+        log.textContent = 'Flag cookies domain data cleared'
+        resetUIDomain()
+      }
+    })
+
+    return
+  }
+
+  if (await browser.storage.local.remove(domainURL) === null) {
+    log.textContent = 'Flag cookies domain data cleared'
+    resetUIDomain()
+  } else {
+    log.textContent = 'Error clearing domain data.'
+  }
+}
+
 function resetUI() {
   document.getElementById('auto-flag').removeAttribute('class');
   document.getElementById('global-flag').removeAttribute('class');
-  document.getElementById('searchBar').addEventListener('keyup', searchContent)
 
   // Reset cookie list
   let cookieList = document.getElementById('cookie-list')
@@ -774,6 +810,31 @@ function resetUI() {
   confirmClearing.className = confirmClearing.className.replace(' active', '')
 }
 
+function resetUIDomain() {
+  document.getElementById('auto-flag').removeAttribute('class');
+
+  // Reset cookie list
+  let cookieList = document.getElementById('cookie-list')
+  for (let child of cookieList.children) {
+    let contentChild = child.children[0]
+    contentChild.className = 'checkmark'
+  }
+
+  let clearLists = ['cookie-list-flagged', 'cookie-list-permitted']
+
+  for (let child of clearLists) {
+    let parent = document.getElementById(child)
+    for (let childElement of parent.children) {
+      parent.removeChild(childElement)
+    }
+
+    parent.className = 'hidden'
+  }
+
+  let confirmClearing = document.getElementById('confirmDomainClearing')
+  confirmClearing.className = confirmClearing.className.replace(' active', '')
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
 document.getElementById('activeCookies').addEventListener('click', switchView)
@@ -784,7 +845,9 @@ document.getElementById('auto-flag').addEventListener('click', flagAutoSwitch)
 document.getElementById('global-flag').addEventListener('click', flagGlobalAuto)
 document.getElementById('searchBar').addEventListener('keyup', searchContent)
 document.getElementById('confirmSettingsClearing').addEventListener('click', toggleClearing)
+document.getElementById('confirmDomainClearing').addEventListener('click', toggleClearing)
 document.getElementById('settings-action-clear').addEventListener('click', clearSettings)
+document.getElementById('domain-action-clear').addEventListener('click', clearDomain)
 
 if (useChrome) {
   chrome.tabs.query({currentWindow: true, active: true}, initDomainURLandProceed)
