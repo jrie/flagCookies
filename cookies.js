@@ -54,12 +54,25 @@ async function clearCookiesWrapper (action, doChromeLoad) {
 
 // Clear the cookies which are enabled for the domain in browser storage
 async function clearCookiesAction (action, data, cookies) {
-  if (data[domainURL] === undefined && data['flagCookies_flag_global'] === undefined) {
+  if (data[domainURL] === undefined && data['flagCookies_flagGlobal'] === undefined) {
     return
+  }
+
+  let hasProfile = data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][domainURL] !== undefined
+  let hasLogged = false
+  if (hasProfile) {
+    hasLogged = data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][domainURL] !== undefined
   }
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
     for (let cookie of cookies) {
+      if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
+        let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+        addToLogData(msg)
+        console.log(msg)
+        continue
+      }
+
       if (data[domainURL][cookie.name] === false) {
         let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
         addToLogData(msg)
@@ -99,9 +112,17 @@ async function clearCookiesAction (action, data, cookies) {
         }
       }
     }
-  } else if (data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] === true) {
+  } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] === true) {
     if (data[domainURL] === undefined) {
         for (let cookie of cookies) {
+
+          if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
+            let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+            addToLogData(msg)
+            console.log(msg)
+            continue
+          }
+
           let details = { url: domainURL, name: cookie.name }
 
           if (useChrome) {
@@ -123,6 +144,13 @@ async function clearCookiesAction (action, data, cookies) {
         }
     } else {
       for (let cookie of cookies) {
+        if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
+          let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+          addToLogData(msg)
+          console.log(msg)
+          continue
+        }
+
         if (data[domainURL][cookie.name] !== undefined && data[domainURL][cookie.name] === false) {
           let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
           addToLogData(msg)
@@ -164,6 +192,13 @@ async function clearCookiesAction (action, data, cookies) {
     }
   } else {
     for (let cookie in data[domainURL]) {
+      if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie] !== undefined) {
+        let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie + "' for '" + domainURL + "'"
+        addToLogData(msg)
+        console.log(msg)
+        continue
+      }
+
       if (data[domainURL][cookie] === false) {
         let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie + "' for '" + domainURL + "'"
         addToLogData(msg)
@@ -235,6 +270,8 @@ function chromeUpdateLogData (data, writeData) {
   function updatedData () {
     if (chrome.runtime.lastError !== undefined) {
       console.log('Chrome could not store data')
+
+      void chrome.runtime.lastError
       return
     }
 
@@ -253,7 +290,7 @@ function chromeUpdateLogData (data, writeData) {
 
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   if (changeInfo.status && changeInfo.status === 'loading') {
-    clearCookiesWrapper('tab load', useChrome)
+    clearCookiesWrapper('tab reload/load', useChrome)
     if (changeInfo['url'] === undefined) {
       clearDomainLog();
     }

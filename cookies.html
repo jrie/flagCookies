@@ -14,7 +14,10 @@
           <button id="permittedCookies" data-target="cookie-list-permitted"  title="Show permitted domain cookies which are to be kept">Permitted</button>
         </div>
         <hr/>
-        <button id="global-flag" title="Delete cookies for all domains if not permitted">Global</button><button id="auto-flag" title="Delete cookies for this (sub)domain if not permitted">Auto flag</button><input type="text" placeholder="Search cookie list" id="searchBar" />
+        <button id="global-flag" title="Delete cookies for all domains if not permitted">Global</button>
+        <button id="auto-flag" title="Delete cookies for this (sub)domain if not permitted or in 'profile' mode">Auto flag</button>
+        <button id="account-mode" title="Selected 'key' cookies wont be deleted by global, auto-flag or by regular flagging. This is the 'logged in account' state. You can also mange the cookie list in 'preferences'."">Profile</button>
+        <input type="text" placeholder="Search cookie list" id="searchBar" />
       </div>
 
       <div id="content">
@@ -26,10 +29,14 @@
             <div id="settings-log"><div class="settings-title setting-info" title="The log shows all cookie delete and permit actions for the active domain"><p>Page action log</p></div><textarea id="log" title="Logged actions of flag cookies on page actions like reload/load" disabled="disabled" placeholder="Cookie actions on page actions"></textarea></div>
             <hr/>
             <div id="settings-domains"><div class="settings-title setting-info" title="Domain related settings and control"><p>Domain settings</p></div>
+              <div id="domain-confirm-clear" title="Please check the box to confirm domain data clearing"><button id="confirmDomainClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="domain-action-clear" title="This will delete all domain related data from Flag Cookies">Delete domain settings</button>
               <div id="domainDetails">
-                <!--<button class="profileTab" data-target="loggedIn">Logged in profile</button><button class="profileTab" data-target="loggedOut">Anonymous profile</button>
-                <div id="profilePane"></div>-->
-                <div id="domain-confirm-clear" title="Please check the box to confirm domain data clearing"><button id="confirmDomainClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="domain-action-clear" title="This will delete all domain related data from Flag Cookies">Delete domain settings</button></div>
+                <button class="profileTab" data-target="loggedIn">Logged in profile</button>
+                <div id="profilePane">
+                  <ul id="loggedInCookies" class="hidden"></ul>
+                  <span id="profileNoData" class="hidden">No cookies set for logged in profile.</span>
+                </div>
+              </div>
             </div>
 
             <hr/>

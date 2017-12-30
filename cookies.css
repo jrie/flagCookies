@@ -1,4 +1,7 @@
-@font-face{font-family:'Open Sans';src:url(fonts/Light/OpenSans-Light.woff2?v=1.101) format("woff2"),url(fonts/Light/OpenSans-Light.woff?v=1.101) format("woff");font-weight:300;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/LightItalic/OpenSans-LightItalic.woff2?v=1.101) format("woff2"),url(fonts/LightItalic/OpenSans-LightItalic.woff?v=1.101) format("woff");font-weight:300;font-style:italic}@font-face{font-family:'Open Sans';src:url(fonts/Regular/OpenSans-Regular.woff2?v=1.101) format("woff2"),url(fonts/Regular/OpenSans-Regular.woff?v=1.101) format("woff");font-weight:400;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/Italic/OpenSans-Italic.woff2?v=1.101) format("woff2"),url(fonts/Italic/OpenSans-Italic.woff?v=1.101) format("woff");font-weight:400;font-style:italic}@font-face{font-family:'Open Sans';src:url(fonts/Semibold/OpenSans-Semibold.woff2?v=1.101) format("woff2"),url(fonts/Semibold/OpenSans-Semibold.woff?v=1.101) format("woff");font-weight:600;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff2?v=1.101) format("woff2"),url(fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff?v=1.101) format("woff");font-weight:600;font-style:italic}@font-face{font-family:'Open Sans';src:url(fonts/Bold/OpenSans-Bold.woff2?v=1.101) format("woff2"),url(fonts/Bold/OpenSans-Bold.woff?v=1.101) format("woff");font-weight:700;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/BoldItalic/OpenSans-BoldItalic.woff2?v=1.101) format("woff2"),url(fonts/BoldItalic/OpenSans-BoldItalic.woff?v=1.101) format("woff");font-weight:700;font-style:italic}@font-face{font-family:'Open Sans';src:url(fonts/ExtraBold/OpenSans-ExtraBold.woff2?v=1.101) format("woff2"),url(fonts/ExtraBold/OpenSans-ExtraBold.woff?v=1.101) format("woff");font-weight:800;font-style:normal}@font-face{font-family:'Open Sans';src:url(fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff2?v=1.101) format("woff2"),url(fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff?v=1.101) format("woff");font-weight:800;font-style:italic}
+@font-face{font-family:'Open Sans';src:url(fonts/Regular/OpenSans-Regular.woff2?v=1.101) format("woff2"),url(fonts/Regular/OpenSans-Regular.woff?v=1.101) format("woff");font-weight:400;font-style:normal}
+@font-face{font-family:'Open Sans';src:url(fonts/Italic/OpenSans-Italic.woff2?v=1.101) format("woff2"),url(fonts/Italic/OpenSans-Italic.woff?v=1.101) format("woff");font-weight:400;font-style:italic}
+@font-face{font-family:'Open Sans';src:url(fonts/Bold/OpenSans-Bold.woff2?v=1.101) format("woff2"),url(fonts/Bold/OpenSans-Bold.woff?v=1.101) format("woff");font-weight:700;font-style:normal}
+@font-face{font-family:'Open Sans';src:url(fonts/BoldItalic/OpenSans-BoldItalic.woff2?v=1.101) format("woff2"),url(fonts/BoldItalic/OpenSans-BoldItalic.woff?v=1.101) format("woff");font-weight:700;font-style:italic}
 
 html, body {
   width: 800px;
@@ -263,17 +266,34 @@ button.checkmark {
 }
 
 button.checkmark,
-button.checkmark-confirm {
+button.checkmark-confirm,
+button.setKeyCookie {
   cursor: pointer;
   border: 1px solid #557;
   border-radius: 4px;
   width: 26px;
   height: 26px;
   background-color: #fff;
-  background-image: url(icons/checkmark.png);
+  background-image: url('icons/checkmark.png');
   background-repeat: no-repeat;
   background-clip:border-box;
   background-position: -4px -4px;
+}
+
+button.setKeyCookie {
+  position: absolute;
+  background-color: #ddd;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  top: 12px;
+  right: 14px;
+  background-position: center center;
+  background-image: url('icons/key_26.png');
+}
+
+button.setKeyCookie.locked {
+  background-color: #fff;
+  background-image: url('icons/key_a26.png');
 }
 
 
@@ -296,34 +316,42 @@ li:hover button.checkmark {
 }
 
 button#auto-flag,
-button#global-flag {
+button#global-flag,
+button#account-mode {
   text-transform: uppercase;
   background-color: #ddd;
   background-image: url('icons/cookie_wflag_28.png');
   background-position: 4px 3px;
   background-repeat: no-repeat;
   background-clip: border-box;
-  padding: 7px 12px 8px 28px;
+  padding: 7px 18px 8px 38px;
   border-color: #ddd;
   color: #557;
   float: left;
   display: inline;
-  margin-right:  3%;
-  width: 18%;
+  margin-right:  12px;
   border: 1px solid #99a;
   transition: background-color,color;
   transition-duration: 320ms;
 }
 
-.chrome button#auto-flag,
-.chrome button#global-flag{
-  background-position: 4px 2px;
-  padding: 9px 12px 8px 28px;
-  margin-right: 2%;
+button#account-mode {
+  background: none;
+  background-color: #ddd;
+  color: #557;
+  margin-right:  4%;
+  padding: 7px 18px 8px 18px;
 }
 
-.chrome button#auto-flag {
-  margin-right: 3%;
+.chrome button#auto-flag,
+.chrome button#global-flag {
+  background-position: 4px 2px;
+  padding: 9px 18px 8px 38px;
+}
+
+.chrome button#account-mode {
+  margin-right: 4%;
+  padding: 9px 18px 8px 18px;
 }
 
 button#global-flag {
@@ -331,11 +359,16 @@ button#global-flag {
 }
 
 button#auto-flag.active,
-button#global-flag.active {
+button#global-flag.active,
+button#account-mode.active {
   background-color: #b20600;
   background-image: url('icons/cookie_flag_28.png');
   color: #eee;
   border: 1px solid #779;
+}
+
+button#account-mode.active {
+  background-image: none;
 }
 
 button#global-flag.active {
@@ -350,17 +383,17 @@ button#global-flag.active {
   background-clip: border-box;
   background-size: 26px 26px;
   color: #557;
-  display: block;
+  display: inline;
   border-radius: 8px;
   border: 1px solid #ccc;
   margin: 0px;
   padding: 6px 12px 9px 4%;
   font-weight: bold;
-  width: 58%;
+  width: 48%;
 }
 
 .chrome #searchBar {
-  width: 53%;
+  width: 41%;
   margin-bottom: 12px;
   margin-left: 1px;
   padding: 9px 12px 8px 4%;
@@ -374,7 +407,7 @@ button#global-flag.active {
 #prefs {
   position: absolute;
   right: 10px;
-  top: 3px;
+  top: 4px;
   padding-left: 38px;
   background-image: url('icons/settings_28.png');
   background-repeat: no-repeat;
@@ -465,7 +498,8 @@ textarea#log {
 #domainDetails {
   float: right;
   width: 605px;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 12px;
 }
 
 .chrome #domainDetails {
@@ -474,9 +508,58 @@ textarea#log {
 
 #profilePane {
   border: 1px solid #88a;
-  height: 150px;
-  border-radius: 0px 15px 15px 15px;
-  margin-bottom: 26px;
+  max-height: 150px;
+  overflow-y: scroll;
+  border-radius: 0px 0px 0px 15px;
+  padding: 0px;
+  margin: 0px;
+}
+
+#profilePane span {
+  font-weight: bold;
+}
+
+#profilePane #profileNoData {
+  background-color: #eee;
+  color: #888;
+  padding: 12px;
+  margin: 0px;
+  display: block;
+  font-weight: normal;
+}
+
+#profilePane #profileNoData.hidden {
+  display: none;
+}
+
+#profilePane ul {
+  padding: 0px;
+  margin: 0px;
+}
+
+#profilePane li {
+  padding: 12px;
+  border-radius: 0px;
+  margin: 0px;
+  position: relative;
+}
+
+#profilePane li:hover span {
+  color: #fff;
+}
+
+#profilePane button.dumpster {
+  background-image: url('icons/dumpster_22.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-clip: border-box;
+  background-color: #1a2f45;
+  height: 28px;
+  width: 28px;
+  border-radius: 28px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
 }
 
 .chrome #settings-confirm-clear span,

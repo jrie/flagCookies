@@ -113,7 +113,6 @@ async function initDomainURLandProceed (tabs) {
   updateUIData(data, cookies)
 }
 
-
 function updateUIData (data, cookies) {
   // set the header of the panel
   let activeTabUrl = document.querySelector('#header-title')
@@ -127,13 +126,10 @@ function updateUIData (data, cookies) {
   url.className = 'domainurl'
   activeTabUrl.appendChild(introSpan)
   activeTabUrl.appendChild(url)
-  if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
-    document.getElementById('auto-flag').className = 'active'
-    switchAutoFlag(true, 'cookie-list')
-  }
 
   let cookieList = document.getElementById('cookie-list')
   let flaggedCookieList = document.getElementById('cookie-list-flagged')
+  let loggedInCookieList = document.getElementById('loggedInCookies')
 
   if (cookies.length === 0) {
     let infoDisplay = document.getElementById('infoDisplay')
@@ -151,14 +147,26 @@ function updateUIData (data, cookies) {
       checkMark.dataset['name'] = cookie.name
       checkMark.dataset['value'] = cookie.value
 
-      if (data[domainURL] && data[domainURL][cookie.name] !== undefined) {
-        if (data[domainURL][cookie.name] === true) {
-          checkMark.className = 'checkmark flagged'
-          addCookieToList('cookie-list-flagged', cookie.name, cookie.value)
-        } else if (data[domainURL][cookie.name] === false) {
-          checkMark.className = 'checkmark permit'
-          addCookieToList('cookie-list-permitted', cookie.name, cookie.value)
+      let lockSwitch = document.createElement('button')
+      lockSwitch.className = 'setKeyCookie'
+      lockSwitch.dataset['name'] = cookie.name
+      lockSwitch.addEventListener('click', cookieLockSwitch)
+
+      if (data[domainURL]) {
+        if (data[domainURL][cookie.name] !== undefined) {
+          if (data[domainURL][cookie.name] === true) {
+            checkMark.className = 'checkmark flagged'
+            addCookieToList('cookie-list-flagged', cookie.name, cookie.value)
+          } else if (data[domainURL][cookie.name] === false) {
+            checkMark.className = 'checkmark permit'
+            addCookieToList('cookie-list-permitted', cookie.name, cookie.value)
+          }
         }
+      }
+
+      if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][domainURL] !== undefined && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
+        lockSwitch.className += ' locked'
+        loggedInCookieList.removeAttribute('class')
       }
 
       let p = document.createElement('p')
@@ -178,6 +186,7 @@ function updateUIData (data, cookies) {
 
       li.appendChild(checkMark)
       li.appendChild(p)
+      li.appendChild(lockSwitch)
 
       cookieList.appendChild(li)
     }
@@ -195,7 +204,19 @@ function updateUIData (data, cookies) {
     }
   }
 
-  if (data['flagCookies_flag_global'] && data['flagCookies_flag_global']['use'] === true) {
+  if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][domainURL] !== undefined) {
+    for (let cookie in data['flagCookies_logged'][domainURL]) {
+      addCookieToProfileList(loggedInCookieList, cookie, 'flagCookies_logged')
+    }
+  }
+
+  if (loggedInCookieList.children.length !== 0) {
+    loggedInCookieList.removeAttribute('class')
+  } else {
+    document.getElementById('profileNoData').removeAttribute('class')
+  }
+
+  if (data['flagCookies_flagGlobal'] && data['flagCookies_flagGlobal']['use'] === true) {
     flagGlobalAutoNonEvent()
   }
 
@@ -206,6 +227,40 @@ function updateUIData (data, cookies) {
       if (entry.indexOf(domainURL) !== -1) {
         log.textContent += entry + '\n'
       }
+    }
+  }
+
+  if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
+    document.getElementById('auto-flag').className = 'active'
+    switchAutoFlag(true, 'cookie-list')
+  }
+
+  if (data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][domainURL] !== undefined) {
+    document.getElementById('account-mode').className = 'active'
+  }
+}
+
+function addCookieToProfileList (targetList, cookieName, src) {
+  let li = document.createElement('li')
+  let cookieKey = document.createElement('span')
+  cookieKey.appendChild(document.createTextNode(cookieName))
+
+  let dumpster = document.createElement('button')
+  dumpster.addEventListener('click', dumpProfileCookie)
+  dumpster.dataset['name'] = cookieName
+  dumpster.dataset['src'] = src
+  dumpster.className = 'dumpster'
+
+  li.appendChild(cookieKey)
+  li.appendChild(dumpster)
+  targetList.appendChild(li)
+}
+
+function removeCookieOfProfileList (targetList, cookieName, src) {
+  for (let child of targetList.children) {
+    if (child.children[0].textContent === cookieName) {
+      targetList.removeChild(child)
+      return
     }
   }
 }
@@ -282,7 +337,7 @@ async function flaggedCookieSwitchNeutral (data, event) {
   // Uncheck from flagged in active cookies, if present
   let domainCookieList = document.getElementById('cookie-list')
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][domainURL] !== undefined
-  let hasGlobal = data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] === true
+  let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] === true
 
   for (let child of domainCookieList.children) {
     if (child.children[0].dataset['name'] === cookieName) {
@@ -340,7 +395,7 @@ async function permittedCookieSwitchNeutral (data, event) {
   // Uncheck from permitted in active cookies, if present
   let domainCookieList = document.getElementById('cookie-list')
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][domainURL] !== undefined
-  let hasGlobal = data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] === true
+  let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] === true
   for (let child of domainCookieList.children) {
     if (child.children[0].dataset['name'] === cookieName) {
       if (hasAutoFlag) {
@@ -421,7 +476,7 @@ async function cookieFlagSwitchNeutral (data, event) {
   } else if (hasAutoFlag && data[domainURL][cookieName] !== 'af') {
     data[domainURL][cookieName] = 'af'
     event.target.className = 'checkmark auto-flagged'
-  } else if (data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] !== undefined && data['flagCookies_flag_global']['use'] === true) {
+  } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] !== undefined && data['flagCookies_flagGlobal']['use'] === true) {
     delete data[domainURL][cookieName]
     event.target.className = 'checkmark auto-flagged'
   } else {
@@ -442,6 +497,65 @@ async function cookieFlagSwitchNeutral (data, event) {
 
   if (useChrome) setChromeStorage(data)
   else await browser.storage.local.set(data)
+}
+
+// Switch lockSwitch
+async function cookieLockSwitch (event) {
+  if (useChrome) {
+    getChromeStorageForFunc1(cookieLockSwitchNeutral, event)
+    return
+  }
+
+  let data = await browser.storage.local.get()
+  cookieLockSwitchNeutral(data, event)
+}
+
+async function cookieLockSwitchNeutral (data, event) {
+  let cookieName = event.target.dataset['name']
+
+  if (data['flagCookies_logged'] === undefined) data['flagCookies_logged'] = {}
+  if (data['flagCookies_logged'][domainURL] === undefined) data['flagCookies_logged'][domainURL] = {}
+
+  if (event.target.className.indexOf('locked') !== -1) {
+    if (data['flagCookies_logged'][domainURL][cookieName] !== undefined) {
+      delete data['flagCookies_logged'][domainURL][cookieName]
+
+      if (Object.keys(data['flagCookies_logged'][domainURL]).length === 0) {
+        delete data['flagCookies_logged'][domainURL]
+      }
+
+      if (useChrome) {
+        setChromeStorage(data)
+        if (!checkChromeHadNoErrors) return
+      } else {
+        await browser.storage.local.set(data)
+      }
+
+      let loggedInCookieList = document.getElementById('loggedInCookies')
+      removeCookieOfProfileList(loggedInCookieList, cookieName, 'flagCookies_logged')
+      event.target.className = event.target.className.replace(' locked', '')
+
+      if (data['flagCookies_logged'][domainURL] === undefined) {
+        document.getElementById('profileNoData').removeAttribute('class')
+      }
+    }
+  } else {
+    data['flagCookies_logged'][domainURL][cookieName] = true
+
+    if (useChrome) {
+      setChromeStorage(data)
+      if (!checkChromeHadNoErrors) return
+    } else {
+      await browser.storage.local.set(data)
+    }
+
+    let loggedInCookieList = document.getElementById('loggedInCookies')
+    addCookieToProfileList(loggedInCookieList, cookieName, 'flagCookies_logged')
+    loggedInCookieList.removeAttribute('class')
+
+    document.getElementById('profileNoData').className = 'hidden'
+    event.target.className += ' locked'
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -535,20 +649,20 @@ async function flagAutoSwitchNeutral(data, event) {
 // Switch global auto flagging
 // Chrome
 function flagGlobalAutoNonEventWrapper(data) {
-  if (data['flagCookies_flag_global'] === undefined) {
-    data['flagCookies_flag_global'] = {'use': false}
+  if (data['flagCookies_flagGlobal'] === undefined) {
+    data['flagCookies_flagGlobal'] = {'use': false}
   }
 
   let globalFlagButton = document.getElementById('global-flag')
 
   if (globalFlagButton.className !== 'active') {
     globalFlagButton.className = 'active'
-    data['flagCookies_flag_global']['use'] = true
+    data['flagCookies_flagGlobal']['use'] = true
     setChromeStorage(data)
     switchAutoFlagGlobal(true, 'cookie-list')
   } else {
     globalFlagButton.removeAttribute('class')
-    data['flagCookies_flag_global']['use'] = false
+    data['flagCookies_flagGlobal']['use'] = false
     setChromeStorage(data)
 
     let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][domainURL] !== undefined
@@ -571,20 +685,20 @@ async function flagGlobalAutoNonEvent () {
 
   let data = await browser.storage.local.get()
 
-  if (data['flagCookies_flag_global'] === undefined) {
-    data['flagCookies_flag_global'] = {'use': false}
+  if (data['flagCookies_flagGlobal'] === undefined) {
+    data['flagCookies_flagGlobal'] = {'use': false}
   }
 
   let globalFlagButton = document.getElementById('global-flag')
 
   if (globalFlagButton.className !== 'active') {
     globalFlagButton.className = 'active'
-    data['flagCookies_flag_global']['use'] = true
+    data['flagCookies_flagGlobal']['use'] = true
     await browser.storage.local.set(data)
     switchAutoFlagGlobal(true, 'cookie-list')
   } else {
     globalFlagButton.removeAttribute('class')
-    data['flagCookies_flag_global']['use'] = false
+    data['flagCookies_flagGlobal']['use'] = false
     await browser.storage.local.set(data)
 
     let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined ? data['flagCookies_autoFlag'][domainURL] !== undefined : false
@@ -646,7 +760,7 @@ async function switchAutoFlagNeutral(data, switchOn, targetList) {
         if (data[domainURL][cookieKey] === 'af') {
           delete data[domainURL][cookieKey]
 
-          if (data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] !== true) {
+          if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] !== true) {
             contentChild.className = 'checkmark'
           }
         }
@@ -739,7 +853,7 @@ async function clearSettings (event) {
       if (!checkChromeHadNoErrors) {
         log.textContent = 'Error clearing settings.'
       } else {
-        log.textContent =  'Flag cookies settings and storage cleared'
+        log.textContent = 'Flag cookies settings and storage cleared'
         resetUI()
       }
     })
@@ -786,8 +900,9 @@ async function clearDomain (event) {
 }
 
 function resetUI() {
-  document.getElementById('auto-flag').removeAttribute('class');
-  document.getElementById('global-flag').removeAttribute('class');
+  document.getElementById('auto-flag').removeAttribute('class')
+  document.getElementById('global-flag').removeAttribute('class')
+  document.getElementById('account-mode').removeAttribute('class')
 
   // Reset cookie list
   let cookieList = document.getElementById('cookie-list')
@@ -811,21 +926,26 @@ function resetUI() {
   confirmClearing.className = confirmClearing.className.replace(' active', '')
 }
 
-function resetUIDomain(data) {
-  document.getElementById('auto-flag').removeAttribute('class');
+async function resetUIDomain (data) {
+  document.getElementById('auto-flag').removeAttribute('class')
 
   // Reset cookie list
   let cookieList = document.getElementById('cookie-list')
+
   for (let child of cookieList.children) {
     let contentChild = child.children[0]
-    if (data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] === true) {
+    let contentChildProfile = child.children[2]
+
+    if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] === true) {
       contentChild.className = 'checkmark auto-flagged'
     } else {
       contentChild.className = 'checkmark'
     }
+
+    contentChildProfile.className = contentChildProfile.className.replace(' locked', '')
   }
 
-  let clearLists = ['cookie-list-flagged', 'cookie-list-permitted']
+  let clearLists = ['cookie-list-flagged', 'cookie-list-permitted', 'loggedInCookies']
 
   for (let child of clearLists) {
     let parent = document.getElementById(child)
@@ -836,8 +956,147 @@ function resetUIDomain(data) {
     parent.className = 'hidden'
   }
 
+  document.getElementById('profileNoData').removeAttribute('class')
+  if (data['flagCookies_autoFlag'] !== undefined) {
+    if (data['flagCookies_autoFlag'][domainURL] !== undefined) {
+      delete data['flagCookies_autoFlag'][domainURL]
+    }
+
+    if (Object.keys(data['flagCookies_autoFlag']).length === 0) {
+      delete data['flagCookies_autoFlag']
+
+      if (useChrome) chrome.storage.local.remove('flagCookies_autoFlag', function () { checkChromeHadNoErrors() })
+      else await browser.storage.local.remove('flagCookies_autoFlag')
+    }
+  }
+
+  if (data['flagCookies_logged'] !== undefined) {
+    if (data['flagCookies_logged'][domainURL] !== undefined) {
+      delete data['flagCookies_logged'][domainURL]
+    }
+
+    if (Object.keys(data['flagCookies_logged']).length === 0) {
+      delete data['flagCookies_logged']
+
+      if (useChrome) chrome.storage.local.remove('flagCookies_logged', function () { checkChromeHadNoErrors() })
+      else await browser.storage.local.remove('flagCookies_logged')
+    }
+  }
+
+  if (data['flagCookies_accountMode'] !== undefined) {
+    if (data['flagCookies_accountMode'][domainURL] !== undefined) {
+      delete data['flagCookies_accountMode'][domainURL]
+    }
+
+    if (Object.keys(data['flagCookies_accountMode']).length === 0) {
+      delete data['flagCookies_accountMode']
+
+      if (useChrome) chrome.storage.local.remove('flagCookies_accountMode', function () { checkChromeHadNoErrors() })
+      else await browser.storage.local.remove('flagCookies_accountMode')
+    }
+
+    document.getElementById('account-mode').removeAttribute('class')
+  }
+
+  if (useChrome) setChromeStorage(data)
+  else await browser.storage.local.set(data)
+
   let confirmClearing = document.getElementById('confirmDomainClearing')
   confirmClearing.className = confirmClearing.className.replace(' active', '')
+}
+
+// Chrome + Firefox: Dump cookie from profile
+async function dumpProfileCookie (event) {
+  if (useChrome) {
+    getChromeStorageForFunc1(dumpProfileCookieNeutral, event)
+    return
+  }
+
+  let data = await browser.storage.local.get()
+  dumpProfileCookieNeutral(data, event)
+}
+
+async function dumpProfileCookieNeutral (data, event) {
+  let cookieSrc = event.target.dataset['src']
+  let cookieName = event.target.dataset['name']
+
+  if (data[cookieSrc][domainURL] === undefined || data[cookieSrc][domainURL][cookieName] === undefined) {
+    return
+  }
+
+  delete data[cookieSrc][domainURL][cookieName]
+
+  if (useChrome) {
+    setChromeStorage(data)
+
+    if (!checkChromeHadNoErrors) {
+      return
+    }
+  } else {
+    await browser.storage.local.set(data)
+  }
+
+  let cookieList = document.getElementById('cookie-list')
+  for (let child of cookieList.children) {
+    let contentChild = child.children[2]
+    if (contentChild.dataset['name'] === cookieName) {
+      contentChild.className = contentChild.className.replace(' locked', '')
+      break
+    }
+  }
+
+  if (event.target.parentNode.parentNode.children.length === 1) {
+    document.getElementById('profileNoData').removeAttribute('class')
+    event.target.parentNode.parentNode.className = 'hidden'
+  }
+
+  event.target.parentNode.parentNode.removeChild(event.target.parentNode)
+}
+
+// Switch profile/account mode
+async function accountModeSwitch (event) {
+  if (useChrome) {
+    getChromeStorageForFunc1(accountModeSwitchNeutral, event)
+    return
+  }
+
+  let data = await browser.storage.local.get()
+  accountModeSwitchNeutral(data, event)
+}
+
+async function accountModeSwitchNeutral (data, event) {
+  if (event.target.className.indexOf('active') !== -1) {
+    if (data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][domainURL] !== undefined) {
+      delete data['flagCookies_accountMode'][domainURL]
+    }
+
+    if (Object.keys(data['flagCookies_accountMode']).length === 0) {
+      if (useChrome) chrome.storage.local.remove('flagCookies_accountMode', function () { checkChromeHadNoErrors() })
+      else await browser.storage.local.remove('flagCookies_accountMode')
+    }
+
+    if (useChrome) {
+      setChromeStorage(data)
+      if (checkChromeHadNoErrors) event.target.removeAttribute('class')
+      return
+    }
+
+    await browser.storage.local.set(data)
+    event.target.removeAttribute('class')
+    return
+  }
+
+  if (data['flagCookies_accountMode'] === undefined) data['flagCookies_accountMode'] = {}
+  data['flagCookies_accountMode'][domainURL] = true
+  event.target.className = 'active'
+
+
+  if (useChrome) {
+    setChromeStorage(data)
+    return
+  }
+
+  await browser.storage.local.set(data)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -848,6 +1107,7 @@ document.getElementById('permittedCookies').addEventListener('click', switchView
 document.getElementById('prefs').addEventListener('click', switchView)
 document.getElementById('auto-flag').addEventListener('click', flagAutoSwitch)
 document.getElementById('global-flag').addEventListener('click', flagGlobalAuto)
+document.getElementById('account-mode').addEventListener('click', accountModeSwitch)
 document.getElementById('searchBar').addEventListener('keyup', searchContent)
 document.getElementById('confirmSettingsClearing').addEventListener('click', toggleClearing)
 document.getElementById('confirmDomainClearing').addEventListener('click', toggleClearing)
