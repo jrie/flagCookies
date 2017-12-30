@@ -817,7 +817,11 @@ function resetUIDomain() {
   let cookieList = document.getElementById('cookie-list')
   for (let child of cookieList.children) {
     let contentChild = child.children[0]
-    contentChild.className = 'checkmark'
+    if (data['flagCookies_flag_global'] !== undefined && data['flagCookies_flag_global']['use'] === true) {
+      contentChild.className = 'checkmark auto-flagged'
+    } else {
+      contentChild.className = 'checkmark'
+    }
   }
 
   let clearLists = ['cookie-list-flagged', 'cookie-list-permitted']
