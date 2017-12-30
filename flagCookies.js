@@ -768,8 +768,8 @@ async function clearDomain (event) {
       if (!checkChromeHadNoErrors) {
         log.textContent = 'Error clearing domain data.'
       } else {
-        log.textContent = 'Flag cookies domain data cleared'
-        resetUIDomain()
+        getChromeStorageForFunc(resetUIDomain)
+        if (checkChromeHadNoErrors) log.textContent = 'Flag cookies domain data cleared'
       }
     })
 
@@ -778,7 +778,8 @@ async function clearDomain (event) {
 
   if (await browser.storage.local.remove(domainURL) === null) {
     log.textContent = 'Flag cookies domain data cleared'
-    resetUIDomain()
+    let data = await browser.storage.local.get()
+    resetUIDomain(data)
   } else {
     log.textContent = 'Error clearing domain data.'
   }
@@ -810,7 +811,7 @@ function resetUI() {
   confirmClearing.className = confirmClearing.className.replace(' active', '')
 }
 
-function resetUIDomain() {
+function resetUIDomain(data) {
   document.getElementById('auto-flag').removeAttribute('class');
 
   // Reset cookie list
