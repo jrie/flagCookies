@@ -9,22 +9,20 @@ A cookie manager on steroids.
 - Explicitly allow cookies through "permit" permission
 - "Auto flag" one domain, affects only this (sub)domain, to delete all-non permitted cookies, even "unknown" on tab actions
 - "Global" flag mode allows to delete every non-permitted cookie, while browsing for example, for all domains
-- "Preferences" allows you to delete all saved settings
 - "Preferences" shows a log of what actions have been done on tab actions
+- "Preferences" view allows you to delete all saved settings
+- "Preferences" view allows you to delete all domain related settings
 
 ## Screenshots
 
 #### Main interface
 
-[![FlagCookies v1.54](https://www.picflash.org/img/2017/12/27/eknl0uj9lt6tfww.png "Flag Cookies v1.54")](https://www.picflash.org/viewer.php?img=eknl0uj9lt6tfww.png)
+[![FlagCookies v1.57](https://www.picflash.org/img/2017/12/30/li2dnkq9il09ynp.png "FlagCookies v1.57")](https://www.picflash.org/viewer.php?img=li2dnkq9il09ynp.png)
 
 #### Log view in preferences
 
-[![FlagCookies v1.54 - Preferences](https://www.picflash.org/img/2017/12/27/21ddkv2jjlaz2jr.png "Version 1.54 - Log view in preferences")](https://www.picflash.org/viewer.php?img=21ddkv2jjlaz2jr.png)
+[![FlagCookies v1.57 - Preferences](https://www.picflash.org/img/2017/12/30/3to9n65u0qms2ux.png "Flag Cookies 1.57 Preferences")](https://www.picflash.org/viewer.php?img=3to9n65u0qms2ux.png)
 
-#### Settings dialog with clearing in 1.55
-
-[![FlagCookies v1.55 - Preferences](https://www.picflash.org/img/2017/12/28/b731uwf22iks7dj.png "Settings view in version 1.55, with option to clear all stored settings and data")](https://www.picflash.org/viewer.php?img=b731uwf22iks7dj.png)
 
 #### Gallery
 A gallery showing the several versions and history of the project from beginning, can be found here: https://www.picflash.org/gallery.php?id=V29RSVUG0M
