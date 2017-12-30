@@ -27,7 +27,7 @@ A cookie manager on steroids.
 [![FlagCookies v1.55 - Preferences](https://www.picflash.org/img/2017/12/28/b731uwf22iks7dj.png "Settings view in version 1.55, with option to clear all stored settings and data")](https://www.picflash.org/viewer.php?img=b731uwf22iks7dj.png)
 
 #### Gallery
-A gallery showing the serveral versions and history of the project from beginning, can be found here: https://www.picflash.org/gallery.php?id=V29RSVUG0M
+A gallery showing the several versions and history of the project from beginning, can be found here: https://www.picflash.org/gallery.php?id=V29RSVUG0M
 
 ## Description
 
@@ -47,6 +47,7 @@ Get a grip on what cookies are allowed while you browse a website or the web in 
 ## Requirements
 
 **Firefox in version 58.0a1 is minimum** or a recent version of **Chrome** or **Opera** browser(s).
+If everything works fine, you will see a log of entries, according to the screenshots above, in the "Preferences" view.
 
 
 ## Installation
