@@ -14,7 +14,11 @@
     "default_popup": "cookies.html",
     "default_icon": {
       "19": "icons/cookie_19.png",
-      "38": "icons/cookie_38.png"
+      "38": "icons/cookie_38.png",
+      "48": "icons/cookie_48.png",
+      "64": "icons/cookie_64.png",
+      "96": "icons/cookie_96.png",
+      "128": "icons/cookie_128.png"
     }
   },
   "description": "A cookie manager on steroids.",
@@ -27,7 +31,7 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "1.61",
+  "version": "1.6.1",
   "permissions": ["cookies", "tabs", "<all_urls>", "storage", "unlimitedStorage"],
   "background": {
     "scripts": [
