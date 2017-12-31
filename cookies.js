@@ -29,11 +29,11 @@ function chromeGetStorageAndClearCookies (action, data, cookies) {
   }
 
   if (data === null) {
-    chrome.storage.local.get(null, function(data) { chromeGetStorageAndClearCookies(action, data, null) })
+    chrome.storage.local.get(null, function(data) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, null) })
     return
   } else if (cookies === null) {
     let targetDomain = domainURL.replace(/(http|https):\/\//, '').replace('/', '')
-    chrome.cookies.getAll({domain: targetDomain}, function(cookies) { chromeGetStorageAndClearCookies(action, data, cookies) })
+    chrome.cookies.getAll({domain: targetDomain}, function(cookies) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, cookies) })
     return
   }
 
@@ -231,9 +231,10 @@ async function clearCookiesAction (action, data, cookies) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 // Shared setters
-function setDomainURLWrapper(activeTabs) {
+async function setDomainURLWrapper(activeTabs) {
   if (activeTabs.length !== 0) {
     let currentTab = activeTabs[0]
+
     let urlMatch = currentTab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
     if (urlMatch) {
       domainURL = urlMatch[0]
@@ -284,7 +285,7 @@ function chromeUpdateLogData (data, writeData) {
 
     chrome.storage.local.set(data, updatedData);
   } else {
-    chrome.storage.local.get(null, function(data) { chromeUpdateLogData(data, true) })
+    chrome.storage.local.get(null, function(data) { checkChromeHadNoErrors(); chromeUpdateLogData(data, true) })
   }
 }
 
@@ -296,12 +297,32 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     }
   } else if (changeInfo.status && changeInfo.status === 'complete') {
     if (logData !== '') {
+      let urlMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
+      if (urlMatch) {
+        let tabDomain = urlMatch[0]
+
+        let count = 0
+        for (let entry of logData) {
+          if (entry.indexOf('deleted') !== -1 && entry.indexOf(tabDomain) !== -1) {
+            count++
+          }
+        }
+
+        if (useChrome) {
+          if (count !== 0)  chrome.browserAction.setBadgeText({ text: count.toString(), tabId: tab.id })
+          else chrome.browserAction.setBadgeText({ text: '', tabId: tab.id })
+        } else {
+          if (count !== 0)  browser.browserAction.setBadgeText({ text: count.toString(), tabId: tab.id })
+          else browser.browserAction.setBadgeText({ text: '', tabId: tab.id })
+        }
+      }
+
       if (useChrome) {
         chromeUpdateLogData(null, false)
         return
       }
 
-      let data = await browser.storage.local.get()
+      let data = await browser.storage.local.get('flagCookies')
 
       if (data['flagCookies'] === undefined) data['flagCookies'] = {}
 
