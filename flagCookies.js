@@ -1,13 +1,17 @@
 // Chrome
 let useChrome = typeof (browser) === 'undefined'
+let hasConsole = typeof (console) !== 'undefined'
+
 
 // Chrome helpers
 function checkChromeHadNoErrors () {
   if (chrome.runtime.lastError) {
-    if (chrome.runtime.lastError.message !== undefined) {
-      console.log('Chrome had an error, with mesage: ' + chrome.runtime.lastError.message)
-    } else {
-      console.log('Chrome had an error.')
+    if (hasConsole) {
+      if (chrome.runtime.lastError.message !== undefined) {
+        console.log('Chrome had an error, with mesage: ' + chrome.runtime.lastError.message)
+      } else {
+        console.log('Chrome had an error.')
+      }
     }
 
     void chrome.runtime.lastError
@@ -21,47 +25,62 @@ function checkChromeHadNoErrors () {
 function getChromeStorageForFunc (func) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      console.log('Chrome retrieved storage data.')
+      if (hasConsole)console.log('Chrome retrieved storage data.')
 
       func(data)
-    } else console.log('Chrome storage retrieval error.')
+    } else if (hasConsole) {
+      console.log('Chrome storage retrieval error.')
+    }
   })
 }
 
 function getChromeStorageForFunc1 (func, par1) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      console.log('Chrome retrieved storage data.')
+      if (hasConsole) console.log('Chrome retrieved storage data.')
 
       func(data, par1)
-    } else console.log('Chrome storage retrieval error.')
+    } else if (hasConsole) {
+      console.log('Chrome storage retrieval error.')
+    }
   })
 }
 
 function getChromeStorageForFunc2 (func, par1, par2) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      console.log('Chrome retrieved storage data.')
+      if (hasConsole) console.log('Chrome retrieved storage data.')
+
 
       func(data, par1, par2)
-    } else console.log('Chrome storage retrieval error.')
+    } else if (hasConsole) {
+      console.log('Chrome storage retrieval error.')
+    }
   })
 }
 
 function getChromeStorageForFunc3 (func, par1, par2, par3) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      console.log('Chrome retrieved storage data.')
+      if (hasConsole) console.log('Chrome retrieved storage data.')
 
       func(data, par1, par2, par3)
-    } else console.log('Chrome storage retrieval error.')
+    } else if (hasConsole) {
+      console.log('Chrome storage retrieval error.')
+    }
   })
 }
 
 function setChromeStorage (data) {
   chrome.storage.local.set(data, function () {
-    if (checkChromeHadNoErrors()) console.log('Chrome updated the storage data.')
-    else console.log('Chrome updating storage error.')
+
+    if (checkChromeHadNoErrors()) {
+      if (hasConsole) {
+        console.log('Chrome updated the storage data.')
+      }
+    } else if (hasConsole) {
+      console.log('Chrome updating storage error.')
+    }
   })
 }
 
@@ -103,6 +122,9 @@ async function initDomainURLandProceed (tabs) {
 
   if (useChrome) {
     document.body.className = 'chrome'
+    if (navigator.appVersion.toLowerCase().indexOf("opr/") !== -1) {
+        document.body.className += ' opera'
+    }
     chromeGetStorageAndCookiesForFunc(null, null, updateUIData)
     return
   }
