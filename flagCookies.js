@@ -59,18 +59,6 @@ function getChromeStorageForFunc2 (func, par1, par2) {
   })
 }
 
-function getChromeStorageForFunc3 (func, par1, par2, par3) {
-  chrome.storage.local.get(null, function (data) {
-    if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log('Chrome retrieved storage data.')
-
-      func(data, par1, par2, par3)
-    } else if (hasConsole) {
-      console.log('Chrome storage retrieval error.')
-    }
-  })
-}
-
 function setChromeStorage (data) {
   chrome.storage.local.set(data, function () {
 
@@ -921,7 +909,7 @@ async function clearDomain (event) {
   }
 }
 
-function resetUI() {
+function resetUI () {
   document.getElementById('auto-flag').removeAttribute('class')
   document.getElementById('global-flag').removeAttribute('class')
   document.getElementById('account-mode').removeAttribute('class')
