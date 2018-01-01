@@ -32,7 +32,7 @@
   "manifest_version": 2,
   "name": "Flag Cookies",
   "version": "1.6.1",
-  "permissions": ["cookies", "tabs", "<all_urls>", "storage", "unlimitedStorage"],
+  "permissions": ["cookies", "tabs", "webNavigation", "<all_urls>", "storage", "unlimitedStorage"],
   "background": {
     "scripts": [
       "cookies.js"

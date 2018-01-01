@@ -238,7 +238,7 @@ function updateUIData (data, cookies) {
     document.getElementById('profileNoData').removeAttribute('class')
   }
 
-  if (data['flagCookies_flagGlobal'] && data['flagCookies_flagGlobal']['use'] === true) {
+  if (data['flagCookies_flagGlobal'] && data['flagCookies_flagGlobal'] === true) {
     flagGlobalAutoNonEvent()
   }
 
@@ -359,7 +359,7 @@ async function flaggedCookieSwitchNeutral (data, event) {
   // Uncheck from flagged in active cookies, if present
   let domainCookieList = document.getElementById('cookie-list')
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][domainURL] !== undefined
-  let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] === true
+  let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'] === true
 
   for (let child of domainCookieList.children) {
     if (child.children[0].dataset['name'] === cookieName) {
@@ -417,7 +417,7 @@ async function permittedCookieSwitchNeutral (data, event) {
   // Uncheck from permitted in active cookies, if present
   let domainCookieList = document.getElementById('cookie-list')
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][domainURL] !== undefined
-  let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] === true
+  let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'] === true
   for (let child of domainCookieList.children) {
     if (child.children[0].dataset['name'] === cookieName) {
       if (hasAutoFlag) {
@@ -498,7 +498,7 @@ async function cookieFlagSwitchNeutral (data, event) {
   } else if (hasAutoFlag && data[domainURL][cookieName] !== 'af') {
     data[domainURL][cookieName] = 'af'
     event.target.className = 'checkmark auto-flagged'
-  } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] !== undefined && data['flagCookies_flagGlobal']['use'] === true) {
+  } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'] === true) {
     delete data[domainURL][cookieName]
     event.target.className = 'checkmark auto-flagged'
   } else {
@@ -679,12 +679,12 @@ function flagGlobalAutoNonEventWrapper(data) {
 
   if (globalFlagButton.className !== 'active') {
     globalFlagButton.className = 'active'
-    data['flagCookies_flagGlobal']['use'] = true
+    data['flagCookies_flagGlobal'] = true
     setChromeStorage(data)
     switchAutoFlagGlobal(true, 'cookie-list')
   } else {
     globalFlagButton.removeAttribute('class')
-    data['flagCookies_flagGlobal']['use'] = false
+    data['flagCookies_flagGlobal'] = false
     setChromeStorage(data)
 
     let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][domainURL] !== undefined
@@ -715,12 +715,12 @@ async function flagGlobalAutoNonEvent () {
 
   if (globalFlagButton.className !== 'active') {
     globalFlagButton.className = 'active'
-    data['flagCookies_flagGlobal']['use'] = true
+    data['flagCookies_flagGlobal'] = true
     await browser.storage.local.set(data)
     switchAutoFlagGlobal(true, 'cookie-list')
   } else {
     globalFlagButton.removeAttribute('class')
-    data['flagCookies_flagGlobal']['use'] = false
+    data['flagCookies_flagGlobal'] = false
     await browser.storage.local.set(data)
 
     let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined ? data['flagCookies_autoFlag'][domainURL] !== undefined : false
@@ -782,7 +782,7 @@ async function switchAutoFlagNeutral(data, switchOn, targetList) {
         if (data[domainURL][cookieKey] === 'af') {
           delete data[domainURL][cookieKey]
 
-          if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] !== true) {
+          if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'] !== true) {
             contentChild.className = 'checkmark'
           }
         }
@@ -958,7 +958,7 @@ async function resetUIDomain (data) {
     let contentChild = child.children[0]
     let contentChildProfile = child.children[2]
 
-    if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] === true) {
+    if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'] === true) {
       contentChild.className = 'checkmark auto-flagged'
     } else {
       contentChild.className = 'checkmark'

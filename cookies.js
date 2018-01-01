@@ -115,10 +115,9 @@ async function clearCookiesAction (action, data, cookies) {
         }
       }
     }
-  } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal']['use'] === true) {
+  } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'] === true) {
     if (data[domainURL] === undefined) {
         for (let cookie of cookies) {
-
           if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
             let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
             addToLogData(msg)
@@ -292,12 +291,17 @@ function chromeUpdateLogData (data, writeData) {
   }
 }
 
-async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
+function clearCookiesOnNavigate (tabId, changeInfo, tab) {
   if (changeInfo.status && changeInfo.status === 'loading') {
     clearCookiesWrapper('tab reload/load', useChrome)
-    if (changeInfo['url'] === undefined) {
-      clearDomainLog();
-    }
+  }
+}
+
+async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
+
+  if (changeInfo.status && changeInfo.status === 'loading') {
+    clearDomainLog()
+    clearCookiesWrapper('tab reload/load', useChrome)
   } else if (changeInfo.status && changeInfo.status === 'complete') {
     if (logData !== '') {
       let urlMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
@@ -354,7 +358,7 @@ function clearDomainLog () {
   }
 }
 
-function addToLogData (msg) {
+async function addToLogData (msg) {
   if (logData.indexOf(msg) === -1) logData.push(msg)
 }
 
@@ -363,8 +367,10 @@ if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
   chrome.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   chrome.tabs.onActivated.addListener(setDomainURLOnActivation)
+  chrome.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   browser.tabs.onActivated.addListener(setDomainURLOnActivation)
+  browser.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
 }
