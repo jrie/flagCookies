@@ -2,7 +2,6 @@
 let useChrome = typeof (browser) === 'undefined'
 let hasConsole = typeof (console) !== 'undefined'
 
-
 // Chrome helpers
 function checkChromeHadNoErrors () {
   if (chrome.runtime.lastError) {
@@ -119,7 +118,12 @@ async function initDomainURLandProceed (tabs) {
 
   // Get storage and cookies Firefox
   let data = await browser.storage.local.get()
-  let cookies = await browser.cookies.getAll({url: domainURL})
+  //let cookies = await browser.cookies.getAll({url: domainURL})
+  let cookieData = await browser.runtime.sendMessage({'getCookies': domainURL})
+  let cookies = cookieData['cookies']
+
+  console.log(cookies)
+
   updateUIData(data, cookies)
 }
 
@@ -633,7 +637,7 @@ async function flagAutoSwitch (event) {
 }
 
 // Kinda neutral
-async function flagAutoSwitchNeutral(data, event) {
+async function flagAutoSwitchNeutral (data, event) {
   if (!data['flagCookies_autoFlag']) {
     data['flagCookies_autoFlag'] = {}
   }
@@ -658,7 +662,7 @@ async function flagAutoSwitchNeutral(data, event) {
 
 // Switch global auto flagging
 // Chrome
-function flagGlobalAutoNonEventWrapper(data) {
+function flagGlobalAutoNonEventWrapper (data) {
   if (data['flagCookies_flagGlobal'] === undefined) {
     data['flagCookies_flagGlobal'] = {'use': false}
   }

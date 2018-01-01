@@ -1,4 +1,5 @@
 let logData = [] // The log data we seen as a report to the settings view
+let cookieData = {} // Storage for cookie shadow, for the interface only!
 
 // Chrome
 let useChrome = typeof (browser) === 'undefined'
@@ -24,14 +25,12 @@ function checkChromeHadNoErrors () {
 
 // Chrome
 function chromeGetStorageAndClearCookies (action, data, cookies, domainURL) {
-  if (!checkChromeHadNoErrors()) return
-
   if (data === null) {
-    chrome.storage.local.get(null, function(data) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, null, domainURL) })
+    chrome.storage.local.get(null, function (data) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, cookies, domainURL) })
     return
   } else if (cookies === null) {
     let targetDomain = domainURL.replace(/(http|https):\/\//, '').replace('/', '')
-    chrome.cookies.getAll({domain: targetDomain}, function(cookies) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, cookies, domainURL) })
+    chrome.cookies.getAll({domain: targetDomain}, function (cookies) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, cookies, domainURL) })
     return
   }
 
@@ -55,6 +54,7 @@ async function getDomainURLFirefox() {
 
 function getChromeActiveTabForClearing (action) {
   chrome.tabs.query({currentWindow: true, active: true}, function (activeTabs) {
+    if (!checkChromeHadNoErrors()) return
     if (activeTabs.length !== 0) {
       let tab = activeTabs.pop()
       if (tab.url !== undefined) {
@@ -70,7 +70,6 @@ function getChromeActiveTabForClearing (action) {
 
 // Chrome + Firefox
 async function clearCookiesWrapper (action, doChromeLoad) {
-
   if (useChrome && doChromeLoad) {
     getChromeActiveTabForClearing(action)
     return
@@ -80,12 +79,23 @@ async function clearCookiesWrapper (action, doChromeLoad) {
   if (domainURL === '') return
   let data = await browser.storage.local.get()
   let cookies = await browser.cookies.getAll({url: domainURL})
+
   clearCookiesAction(action, data, cookies, domainURL)
+}
+
+function handleMessage (request, sender, sendResponse) {
+  if (request.getCookies !== undefined) {
+    if (cookieData[request.getCookies] !== undefined) {
+      sendResponse({'cookies': cookieData[request.getCookies]})
+    } else {
+      sendResponse({'cookies': []})
+    }
+  }
 }
 
 // Clear the cookies which are enabled for the domain in browser storage
 async function clearCookiesAction (action, data, cookies, domainURL) {
-  if (domainURL === '') return
+  if (domainURL === '' || cookies === undefined) return
 
   if (data[domainURL] === undefined && data['flagCookies_flagGlobal'] === undefined) {
     return
@@ -95,6 +105,22 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
   let hasLogged = false
   if (hasProfile) {
     hasLogged = data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][domainURL] !== undefined
+  }
+
+  if (cookieData[domainURL] === undefined) cookieData[domainURL] = []
+
+  let foundCookie = false
+  for (let cookie of cookies) {
+    foundCookie = false
+    for (let cookieEntry of cookieData[domainURL]) {
+      if (cookieEntry.name === cookie.name) {
+        cookieData[domainURL][cookieEntry] = cookie
+        foundCookie = true
+        break
+      }
+    }
+
+    if (!foundCookie) cookieData[domainURL].push(cookie)
   }
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
@@ -259,6 +285,10 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
       }
     }
   }
+
+  if (action.toLowerCase().indexOf('close') !== -1 && cookieData[domainURL] !== undefined) {
+    delete cookieData[domainURL]
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -285,13 +315,25 @@ function chromeUpdateLogData (data, writeData) {
   }
 }
 
-function clearCookiesOnNavigate (tabId, changeInfo, tab) {
-  clearDomainLog()
+function clearCookiesOnNavigate (details) {
+  if (details.parentFrameId === undefined || details.parentFrameId !== -1 || details.url === undefined) return
+
+  let domainURL
+  let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
+  if (urlMatch) {
+    domainURL = urlMatch[0]
+  } else {
+    if (hasConsole) console.log('Error reading out domain name on clearCookiesOnNavigate.')
+    return
+  }
+
+  if (cookieData[domainURL] !== undefined) delete cookieData[domainURL]
+
+  clearDomainLog(domainURL)
   clearCookiesWrapper('tab navigate', useChrome)
 }
 
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
-
   if (changeInfo.status && changeInfo.status === 'loading') {
     clearCookiesWrapper('tab reload/load', useChrome)
   } else if (changeInfo.status && changeInfo.status === 'complete') {
@@ -337,11 +379,12 @@ let clearCookiesOnLeave = (tabId, moveInfo) => {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 // Log info
-function clearDomainLog () {
+function clearDomainLog (detailsURL) {
   if (logData !== []) {
     let newLog = [];
+
     for (let entry of logData) {
-      if (entry.indexOf(domainURL) === -1) {
+      if (entry.indexOf(detailsURL) === -1) {
         newLog.push(entry)
       }
     }
@@ -359,8 +402,10 @@ if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
   chrome.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   chrome.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
+  chrome.runtime.onMessage.addListener(handleMessage)
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   browser.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
+  browser.runtime.onMessage.addListener(handleMessage)
 }
