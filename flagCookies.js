@@ -111,7 +111,7 @@ async function initDomainURLandProceed (tabs) {
   if (useChrome) {
     document.body.className = 'chrome'
     if (navigator.appVersion.toLowerCase().indexOf("opr/") !== -1) {
-        document.body.className += ' opera'
+      document.body.className += ' opera'
     }
     chromeGetStorageAndCookiesForFunc(null, null, updateUIData)
     return
