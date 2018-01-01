@@ -286,6 +286,7 @@ function chromeUpdateLogData (data, writeData) {
 }
 
 function clearCookiesOnNavigate (tabId, changeInfo, tab) {
+  clearDomainLog()
   clearCookiesWrapper('tab navigate', useChrome)
 }
 
