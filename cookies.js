@@ -302,7 +302,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
         let count = 0
         for (let entry of logData) {
-          if (entry.indexOf('deleted') !== -1 && entry.indexOf(tabDomain) !== -1) {
+          if (entry.indexOf(tabDomain) !== -1 && entry.toLowerCase().indexOf('deleted') !== -1) {
             count++
           }
         }
