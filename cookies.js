@@ -329,10 +329,7 @@ function clearCookiesOnNavigate (details) {
     return
   }
 
-  if (cookieData[domainURL] !== undefined) {
-    delete cookieData[domainURL]
-    console.log("deleted")
-  }
+  if (cookieData[domainURL] !== undefined) delete cookieData[domainURL]
 
   clearDomainLog(domainURL)
   clearCookiesWrapper('tab navigate', useChrome)
