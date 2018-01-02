@@ -24,7 +24,7 @@ function checkChromeHadNoErrors () {
 function getChromeStorageForFunc (func) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      if (hasConsole)console.log('Chrome retrieved storage data.')
+      if (hasConsole) console.log('Chrome retrieved storage data.')
 
       func(data)
     } else if (hasConsole) {
@@ -50,7 +50,6 @@ function getChromeStorageForFunc2 (func, par1, par2) {
     if (checkChromeHadNoErrors()) {
       if (hasConsole) console.log('Chrome retrieved storage data.')
 
-
       func(data, par1, par2)
     } else if (hasConsole) {
       console.log('Chrome storage retrieval error.')
@@ -60,7 +59,6 @@ function getChromeStorageForFunc2 (func, par1, par2) {
 
 function setChromeStorage (data) {
   chrome.storage.local.set(data, function () {
-
     if (checkChromeHadNoErrors()) {
       if (hasConsole) {
         console.log('Chrome updated the storage data.')
@@ -78,8 +76,7 @@ function chromeGetStorageAndCookiesForFunc (data, cookies, func) {
     chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func) })
     return
   } else if (cookies === null) {
-    let targetDomain = domainURL.replace(/(http|https):\/\//, '').replace('/', '')
-    chrome.cookies.getAll({domain: targetDomain}, function(cookies) { chromeGetStorageAndCookiesForFunc(data, cookies, func) })
+    chrome.runtime.sendMessage({'getCookies': domainURL}, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response['cookies'], func) })
     return
   }
 
@@ -121,8 +118,6 @@ async function initDomainURLandProceed (tabs) {
   //let cookies = await browser.cookies.getAll({url: domainURL})
   let cookieData = await browser.runtime.sendMessage({'getCookies': domainURL})
   let cookies = cookieData['cookies']
-
-  console.log(cookies)
 
   updateUIData(data, cookies)
 }

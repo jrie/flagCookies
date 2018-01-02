@@ -109,15 +109,17 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
 
   if (cookieData[domainURL] === undefined) cookieData[domainURL] = []
 
-  let foundCookie = false
+
   for (let cookie of cookies) {
-    foundCookie = false
+    let foundCookie = false
+    let index = 0
     for (let cookieEntry of cookieData[domainURL]) {
       if (cookieEntry.name === cookie.name) {
-        cookieData[domainURL][cookieEntry] = cookie
+        cookieData[domainURL][index] = cookie
         foundCookie = true
         break
       }
+      index++
     }
 
     if (!foundCookie) cookieData[domainURL].push(cookie)
@@ -327,7 +329,10 @@ function clearCookiesOnNavigate (details) {
     return
   }
 
-  if (cookieData[domainURL] !== undefined) delete cookieData[domainURL]
+  if (cookieData[domainURL] !== undefined) {
+    delete cookieData[domainURL]
+    console.log("deleted")
+  }
 
   clearDomainLog(domainURL)
   clearCookiesWrapper('tab navigate', useChrome)
