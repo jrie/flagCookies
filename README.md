@@ -5,11 +5,12 @@ A cookie manager on steroids.
 
 **Flag Cookies distinguishes between base and subdomains** for the following features:
 
-- Automatically delete flagged cookies for a domain on tab load/reload/tab or window close
+- Automatically delete flagged cookies for a domain on tab load/reload/tab or window close and while browsing
 - Profile feature - to switch between "logged into a website" and "not logged into" to remove or keep cookies on demand
 - Explicitly allow cookies through "permit" permission
 - "Auto flag" one domain, affects only this (sub)domain, to delete all-non permitted cookies, even "unknown" on tab actions
 - "Global" flag mode allows to delete every non-permitted cookie, while browsing for example, for all domains
+- Support for Firefox Multi-Account-Containers add on
 - "Preferences" allows to manage "logged in profile" cookies, even if this cookies are not present
 - "Preferences" allows you to delete all saved settings or domain settings
 - "Preferences" shows a log of what actions have been done on tab actions
