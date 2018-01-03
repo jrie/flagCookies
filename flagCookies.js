@@ -117,7 +117,6 @@ async function initDomainURLandProceed (tabs) {
   let data = await browser.storage.local.get()
   //let cookies = await browser.cookies.getAll({url: domainURL})
   let cookieData = await browser.runtime.sendMessage({'getCookies': domainURL})
-  console.log(cookieData)
   let cookies = cookieData['cookies']
 
   updateUIData(data, cookies)
