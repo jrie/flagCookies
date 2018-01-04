@@ -322,16 +322,24 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
       }
     }
   } else {
+    if (data[domainURL] === undefined) {
+      return
+    }
+
     for (let cookie of cookieData[domainURL]) {
-      if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
-        let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+      if (data[domainURL][cookie.name] === undefined) {
+        continue
+      }
+
+      if (data[domainURL][cookie.name] === false) {
+        let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
         addToLogData(msg)
         if (hasConsole) console.log(msg)
         continue
       }
 
-      if (data[domainURL] !== undefined && data[domainURL][cookie.name] !== undefined && data[domainURL][cookie.name] === false) {
-        let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
+      if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
+        let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
         addToLogData(msg)
         if (hasConsole) console.log(msg)
         continue
