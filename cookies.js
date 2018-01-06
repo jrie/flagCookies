@@ -44,7 +44,7 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, doLo
     return
   }
 
-  clearCookiesAction(action, data, cookies, domainURL)
+  clearCookiesAction(action, data, cookies, domainURL, 'default')
 }
 
 async function getDomainURLFirefox () {
@@ -106,25 +106,27 @@ async function clearCookiesWrapper (action, doChromeLoad) {
   let domain = getDomainURL(domainURL)
   let data = await browser.storage.local.get()
   let cookies
+  let cookiesURL = []
   if (currentTab.cookieStoreId !== undefined) {
     cookies = await browser.cookies.getAll({domain: domain, storeId: currentTab.cookieStoreId})
     cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/'), storeId: currentTab.cookieStoreId})
   } else {
     cookies = await browser.cookies.getAll({domain: domain})
-    cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/'), storeId: currentTab.cookieStoreId})
+    cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/')})
   }
 
-  for (cookie of cookiesURL) {
+  for (let cookie of cookiesURL) {
     cookies.push(cookie)
   }
 
-  clearCookiesAction(action, data, cookies, domainURL)
+  if (currentTab.cookieStoreId !== undefined) clearCookiesAction(action, data, cookies, domainURL, currentTab.cookieStoreId)
+  else clearCookiesAction(action, data, cookies, domainURL, 'default')
 }
 
 function handleMessage (request, sender, sendResponse) {
   if (request.getCookies !== undefined) {
     if (cookieData[request.getCookies] !== undefined) {
-      sendResponse({'cookies': cookieData[request.getCookies]})
+      sendResponse({'cookies': cookieData[request.getCookies][request.storeId]})
     } else {
       let found = false
       for (let entry of Object.keys(cookieData)) {
@@ -142,7 +144,7 @@ function handleMessage (request, sender, sendResponse) {
 }
 
 // Clear the cookies which are enabled for the domain in browser storage
-async function clearCookiesAction (action, data, cookies, domainURL) {
+async function clearCookiesAction (action, data, cookies, domainURL, activeCookieStore) {
   if (domainURL === '' || cookies === undefined) return
 
   let useWWW = false
@@ -157,21 +159,27 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
     }
   }
 
-  if (cookieData[domainURL] === undefined) cookieData[domainURL] = []
+  if (cookieData[domainURL] === undefined) {
+    cookieData[domainURL] = {}
+  }
+
+  if (cookieData[domainURL][activeCookieStore] === undefined) {
+    cookieData[domainURL][activeCookieStore] = []
+  }
 
   for (let cookie of cookies) {
     let foundCookie = false
     let index = 0
-    for (let cookieEntry of cookieData[domainURL]) {
+    for (let cookieEntry of cookieData[domainURL][activeCookieStore]) {
       if (cookieEntry.name === cookie.name) {
-        cookieData[domainURL][index] = cookie
+        cookieData[domainURL][activeCookieStore][index] = cookie
         foundCookie = true
         break
       }
       index++
     }
 
-    if (!foundCookie) cookieData[domainURL].push(cookie)
+    if (!foundCookie) cookieData[domainURL][activeCookieStore].push(cookie)
   }
 
   if (data[domainURL] === undefined && data['flagCookies_flagGlobal'] === undefined) {
@@ -185,7 +193,7 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
   }
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][domainURL]) {
-    for (let cookie of cookieData[domainURL]) {
+    for (let cookie of cookieData[domainURL][activeCookieStore]) {
       if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
         let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
         addToLogData(msg)
@@ -201,9 +209,8 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
       }
 
       for (let urlString of urls) {
-        let details = { url: urlString, name: cookie.name }
-
         if (useChrome) {
+          let details = { url: urlString, name: cookie.name }
           if (chrome.cookies.remove(details) !== null) {
             if (data[domainURL][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
@@ -231,6 +238,7 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
           continue
         }
 
+        let details = { url: urlString, name: cookie.name, storeId: activeCookieStore }
         if ((await browser.cookies.remove(details)) !== null) {
           if (data[domainURL][cookie.name] === true) {
             let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
@@ -246,7 +254,7 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
     }
   } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'] === true) {
     if (data[domainURL] === undefined) {
-      for (let cookie of cookieData[domainURL]) {
+      for (let cookie of cookieData[domainURL][activeCookieStore]) {
         if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
           let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
           addToLogData(msg)
@@ -255,8 +263,8 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
         }
 
         for (let urlString of urls) {
-          let details = { url: urlString, name: cookie.name }
           if (useChrome) {
+            let details = { url: urlString, name: cookie.name }
             if (chrome.cookies.remove(details) !== null) {
               let msg = "Global-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
               addToLogData(msg)
@@ -266,6 +274,7 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
             continue
           }
 
+          let details = { url: urlString, name: cookie.name, storeId: activeCookieStore }
           if ((await browser.cookies.remove(details)) !== null) {
             let msg = "Global-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
             addToLogData(msg)
@@ -274,7 +283,7 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
         }
       }
     } else {
-      for (let cookie of cookieData[domainURL]) {
+      for (let cookie of cookieData[domainURL][activeCookieStore]) {
         if (hasProfile && hasLogged && data['flagCookies_logged'][domainURL][cookie.name] !== undefined) {
           let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
           addToLogData(msg)
@@ -290,8 +299,8 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
         }
 
         for (let urlString of urls) {
-          let details = { url: urlString, name: cookie.name }
           if (useChrome) {
+            let details = { url: urlString, name: cookie.name }
             if (chrome.cookies.remove(details) !== null) {
               if (data[domainURL] !== undefined && data[domainURL][cookie.name] !== undefined && data[domainURL][cookie.name] === true) {
                 let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
@@ -307,6 +316,7 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
             continue
           }
 
+          let details = { url: urlString, name: cookie.name, storeId: activeCookieStore }
           if ((await browser.cookies.remove(details)) !== null) {
             if (data[domainURL] !== undefined && data[domainURL][cookie.name] !== undefined && data[domainURL][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
@@ -326,7 +336,7 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
       return
     }
 
-    for (let cookie of cookieData[domainURL]) {
+    for (let cookie of cookieData[domainURL][activeCookieStore]) {
       if (data[domainURL][cookie.name] === undefined) {
         continue
       }
@@ -346,9 +356,8 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
       }
 
       for (let urlString of urls) {
-        let details = { url: urlString, name: cookie.name }
-
         if (useChrome) {
+          let details = { url: urlString, name: cookie.name }
           if (chrome.cookies.remove(details) !== null) {
             let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
             addToLogData(msg)
@@ -358,6 +367,7 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
           continue
         }
 
+        let details = { url: urlString, name: cookie.name, storeId: activeCookieStore }
         if ((await browser.cookies.remove(details)) != null) {
           let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
           addToLogData(msg)
@@ -367,8 +377,12 @@ async function clearCookiesAction (action, data, cookies, domainURL) {
     }
   }
 
-  if (action.toLowerCase().indexOf('close') !== -1 && cookieData[domainURL] !== undefined) {
-    delete cookieData[domainURL]
+  if (action.toLowerCase().indexOf('close') !== -1 && cookieData[domainURL][activeCookieStore] !== undefined) {
+    delete cookieData[domainURL][activeCookieStore]
+
+    if (Object.keys(cookieData[domainURL]).length === 0) {
+      delete cookieData[domainURL]
+    }
   }
 }
 
@@ -390,14 +404,22 @@ function chromeUpdateLogData (data, writeData) {
     if (data['flagCookies'] === undefined) data['flagCookies'] = {}
     data['flagCookies']['logData'] = logData
 
-    chrome.storage.local.set(data, updatedData);
+    chrome.storage.local.set(data, updatedData)
   } else {
-    chrome.storage.local.get(null, function(data) { checkChromeHadNoErrors(); chromeUpdateLogData(data, true) })
+    chrome.storage.local.get(null, function (data) { checkChromeHadNoErrors(); chromeUpdateLogData(data, true) })
   }
 }
 
-function clearCookiesOnNavigate (details) {
+async function clearCookiesOnNavigate (details) {
   if (details.parentFrameId === undefined || details.parentFrameId !== -1 || details.url === undefined) return
+
+  let activeCookieStore = 'default'
+  if (!useChrome) {
+    let currentTab = await getActiveTabFirefox()
+    if (currentTab.cookieStoreId !== undefined) {
+      activeCookieStore = currentTab.cookieStoreId
+    }
+  }
 
   let domainURL
   let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
@@ -408,9 +430,12 @@ function clearCookiesOnNavigate (details) {
     return
   }
 
-  if (cookieData[domainURL] !== undefined) delete cookieData[domainURL]
 
-  clearDomainLog(domainURL)
+  if (cookieData[domainURL][activeCookieStore] !== undefined) {
+    delete cookieData[domainURL][activeCookieStore]
+    if (Object.keys(cookieData[domainURL]).length === 0) delete cookieData[domainURL]
+  }
+  clearDomainLog(domainURL, activeCookieStore)
   clearCookiesWrapper('tab navigate', useChrome)
 }
 
@@ -454,7 +479,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   }
 }
 
-let clearCookiesOnLeave = (tabId, moveInfo) => {
+function clearCookiesOnLeave (tabId, moveInfo) {
   clearCookiesWrapper('tab close/window close', useChrome)
 }
 

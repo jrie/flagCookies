@@ -7,9 +7,9 @@ function checkChromeHadNoErrors () {
   if (chrome.runtime.lastError) {
     if (hasConsole) {
       if (chrome.runtime.lastError.message !== undefined) {
-        console.log('Chrome had an error, with mesage: ' + chrome.runtime.lastError.message)
+        console.log('Browser had an error, with mesage: ' + chrome.runtime.lastError.message)
       } else {
-        console.log('Chrome had an error.')
+        console.log('Browser had an error.')
       }
     }
 
@@ -24,11 +24,11 @@ function checkChromeHadNoErrors () {
 function getChromeStorageForFunc (func) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log('Chrome retrieved storage data.')
+      if (hasConsole) console.log('Browser retrieved storage data.')
 
       func(data)
     } else if (hasConsole) {
-      console.log('Chrome storage retrieval error.')
+      console.log('Browser storage retrieval error.')
     }
   })
 }
@@ -36,11 +36,11 @@ function getChromeStorageForFunc (func) {
 function getChromeStorageForFunc1 (func, par1) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log('Chrome retrieved storage data.')
+      if (hasConsole) console.log('Browser retrieved storage data.')
 
       func(data, par1)
     } else if (hasConsole) {
-      console.log('Chrome storage retrieval error.')
+      console.log('Browser storage retrieval error.')
     }
   })
 }
@@ -48,11 +48,11 @@ function getChromeStorageForFunc1 (func, par1) {
 function getChromeStorageForFunc2 (func, par1, par2) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log('Chrome retrieved storage data.')
+      if (hasConsole) console.log('Browser retrieved storage data.')
 
       func(data, par1, par2)
     } else if (hasConsole) {
-      console.log('Chrome storage retrieval error.')
+      console.log('Browser storage retrieval error.')
     }
   })
 }
@@ -61,10 +61,10 @@ function setChromeStorage (data) {
   chrome.storage.local.set(data, function () {
     if (checkChromeHadNoErrors()) {
       if (hasConsole) {
-        console.log('Chrome updated the storage data.')
+        console.log('Browser updated the storage data.')
       }
     } else if (hasConsole) {
-      console.log('Chrome updating storage error.')
+      console.log('Browser updating storage error.')
     }
   })
 }
@@ -76,7 +76,7 @@ function chromeGetStorageAndCookiesForFunc (data, cookies, func) {
     chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func) })
     return
   } else if (cookies === null) {
-    chrome.runtime.sendMessage({'getCookies': domainURL}, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response['cookies'], func) })
+    chrome.runtime.sendMessage({'getCookies': domainURL, 'storeId': 'default'}, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response['cookies'], func) })
     return
   }
 
@@ -116,10 +116,14 @@ async function initDomainURLandProceed (tabs) {
   // Get storage and cookies Firefox
   let data = await browser.storage.local.get()
   //let cookies = await browser.cookies.getAll({url: domainURL})
-  let cookieData = await browser.runtime.sendMessage({'getCookies': domainURL})
-  let cookies = cookieData['cookies']
+  let activeCookieStore = 'default'
+  if (tab.cookieStoreId !== undefined) {
+    activeCookieStore = tab.cookieStoreId
+  }
 
-  updateUIData(data, cookies)
+  let cookieData = await browser.runtime.sendMessage({'getCookies': domainURL, 'storeId': activeCookieStore})
+  let cookies = cookieData['cookies']
+  updateUIData(data, cookies, activeCookieStore)
 }
 
 function updateUIData (data, cookies) {
