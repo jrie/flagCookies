@@ -352,6 +352,23 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
     if (Object.keys(cookieData[domainURL]).length === 0) {
       delete cookieData[domainURL]
     }
+
+    if (data[contextName] !== undefined) {
+      let hasDeleted = false
+      if (data[contextName][domainURL] !== undefined && Object.keys(data[contextName][domainURL]).length === 0) {
+        delete data[contextName][domainURL]
+        hasDeleted = true
+      }
+
+      if (Object.keys(data[contextName]).length === 0) {
+        if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+        else await browser.storage.local.remove(contextName)
+        delete data[contextName]
+      } else if (hasDeleted) {
+        if (useChrome) setChromeStorage(data)
+        else await browser.storage.local.set(data)
+      }
+    }
   }
 }
 

@@ -182,11 +182,9 @@ function updateUIData (data, cookies) {
         }
       }
 
-      if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][domainURL] !== undefined) {
-        if (data['flagCookies_logged'][contextName][domainURL][cookie.name] !== undefined) {
-          lockSwitch.className += ' locked'
-          loggedInCookieList.removeAttribute('class')
-        }
+      if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][domainURL] !== undefined && data['flagCookies_logged'][contextName][domainURL][cookie.name] !== undefined) {
+        lockSwitch.className += ' locked'
+        loggedInCookieList.removeAttribute('class')
       }
 
       let p = document.createElement('p')
