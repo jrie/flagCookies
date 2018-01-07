@@ -87,13 +87,20 @@ function chromeGetStorageAndCookiesForFunc (data, cookies, func) {
 // --------------------------------------------------------------------------------------------------------------------------------
 let domainURL = ''
 
-// Slightly modifed version of list-cookies example on MDN github
+function firefoxOnGetContextSuccess (context) {
+  contextName = context.name
+}
+
+function firefoxOnGetContextError (e) {
+  if (hasConsole) {
+    console.log('Firefox getContext profile error: ')
+    console.log(e)
+  }
+}
 
 async function initDomainURLandProceed (tabs) {
-  // Get first tab
   let tab = tabs.pop()
 
-  // Parse tab URL and set domainURL
   let domainMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
   if (domainMatch) {
     domainURL = domainMatch[0]
@@ -103,7 +110,7 @@ async function initDomainURLandProceed (tabs) {
 
   if (useChrome) {
     document.body.className = 'chrome'
-    if (navigator.appVersion.toLowerCase().indexOf("opr/") !== -1) {
+    if (navigator.appVersion.toLowerCase().indexOf('opr/') !== -1) {
       document.body.className += ' opera'
     }
     chromeGetStorageAndCookiesForFunc(null, null, updateUIData)
@@ -112,20 +119,10 @@ async function initDomainURLandProceed (tabs) {
 
   // Get storage and cookies Firefox
   let data = await browser.storage.local.get()
-  //let cookies = await browser.cookies.getAll({url: domainURL})
   let activeCookieStore = 'default'
   if (tab.cookieStoreId !== undefined) {
     activeCookieStore = tab.cookieStoreId
-
-    function onSuccess (context) {
-      contextName = context.name
-    }
-
-    function onError(e) {
-      return
-    }
-
-    await browser.contextualIdentities.get(activeCookieStore).then(onSuccess, onError)
+    await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   }
 
   let cookieData = await browser.runtime.sendMessage({'getCookies': domainURL, 'storeId': activeCookieStore})
@@ -399,8 +396,6 @@ async function flaggedCookieSwitchNeutral (data, event) {
       break
     }
   }
-
-
 
   let parent = event.target.parentNode.parentNode
 
@@ -814,9 +809,7 @@ async function switchAutoFlagNeutral (data, switchOn, targetList) {
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
 
-      if (data[contextName][domainURL][cookieKey] === undefined) {
-          continue
-      }
+      if (data[contextName][domainURL][cookieKey] === undefined) continue
 
       if (data[contextName][domainURL][cookieKey] === 'af') {
         delete data[contextName][domainURL][cookieKey]
@@ -1035,7 +1028,6 @@ async function resetUIDomain (data) {
       delete data['flagCookies_logged'][contextName]
     }
 
-
     if (Object.keys(data['flagCookies_logged']).length === 0) {
       delete data['flagCookies_logged']
 
@@ -1164,13 +1156,8 @@ async function accountModeSwitchNeutral (data, event) {
   data['flagCookies_accountMode'][contextName][domainURL] = true
   event.target.className = 'active'
 
-
-  if (useChrome) {
-    setChromeStorage(data)
-    return
-  }
-
-  await browser.storage.local.set(data)
+  if (useChrome) setChromeStorage(data)
+  else await browser.storage.local.set(data)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -1188,8 +1175,5 @@ document.getElementById('confirmDomainClearing').addEventListener('click', toggl
 document.getElementById('settings-action-clear').addEventListener('click', clearSettings)
 document.getElementById('domain-action-clear').addEventListener('click', clearDomain)
 
-if (useChrome) {
-  chrome.tabs.query({currentWindow: true, active: true}, initDomainURLandProceed)
-} else {
-  getActiveTab().then(initDomainURLandProceed)
-}
+if (useChrome) chrome.tabs.query({currentWindow: true, active: true}, initDomainURLandProceed)
+else getActiveTab().then(initDomainURLandProceed)

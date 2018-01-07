@@ -36,10 +36,12 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, doLo
   } else if (doLoadURLCookies === true) {
     domainURL = domainURL.replace(/\/www./, '/')
     chrome.cookies.getAll({url: domainURL}, function (cookieSub) {
-      checkChromeHadNoErrors();
+      checkChromeHadNoErrors()
+
       for (let cookie of cookieSub) {
         cookies.push(cookie)
       }
+
       chromeGetStorageAndClearCookies(action, data, cookies, domainURL, false)
     })
     return
@@ -54,7 +56,7 @@ async function getDomainURLFirefox () {
     if (tab.url !== undefined) {
       let urlMatch = tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
       if (urlMatch) {
-        return url = urlMatch[0]
+        return urlMatch[0]
       }
     }
   }
@@ -94,12 +96,15 @@ function getDomainURL (domainURL) {
 }
 
 // Chrome + Firefox
-function onSuccess(context) {
+function firefoxOnGetContextSuccess (context) {
   contextName = context.name
 }
 
-function onError(e) {
-  if (hasConsole) return
+function firefoxOnGetContextError (e) {
+  if (hasConsole) {
+    console.log('Firefox getContext profile error: ')
+    console.log(e)
+  }
 }
 
 async function clearCookiesWrapper (action, doChromeLoad) {
@@ -120,7 +125,7 @@ async function clearCookiesWrapper (action, doChromeLoad) {
     cookies = await browser.cookies.getAll({domain: domain, storeId: currentTab.cookieStoreId})
     cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/'), storeId: currentTab.cookieStoreId})
 
-    await browser.contextualIdentities.get(currentTab.cookieStoreId).then(onSuccess, onError)
+    await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   } else {
     cookies = await browser.cookies.getAll({domain: domain})
     cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/')})
@@ -397,7 +402,6 @@ async function clearCookiesOnNavigate (details) {
     return
   }
 
-
   clearDomainLog(domainURL, activeCookieStore)
   clearCookiesWrapper('tab navigate', useChrome)
 
@@ -424,10 +428,10 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
         }
 
         if (useChrome) {
-          if (count !== 0)  chrome.browserAction.setBadgeText({ text: count.toString(), tabId: tab.id })
+          if (count !== 0) chrome.browserAction.setBadgeText({ text: count.toString(), tabId: tab.id })
           else chrome.browserAction.setBadgeText({ text: '', tabId: tab.id })
         } else {
-          if (count !== 0)  browser.browserAction.setBadgeText({ text: count.toString(), tabId: tab.id })
+          if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: tab.id })
           else browser.browserAction.setBadgeText({ text: '', tabId: tab.id })
         }
       }
