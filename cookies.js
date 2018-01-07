@@ -18,10 +18,23 @@ function checkChromeHadNoErrors () {
     }
 
     void chrome.runtime.lastError
+
     return false
   }
 
   return true
+}
+
+function setChromeStorage (data) {
+  chrome.storage.local.set(data, function () {
+    if (checkChromeHadNoErrors()) {
+      if (hasConsole) {
+        console.log('Browser updated the storage data.')
+      }
+    } else if (hasConsole) {
+      console.log('Browser updating storage error.')
+    }
+  })
 }
 
 // Chrome
