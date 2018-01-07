@@ -2,7 +2,9 @@
 let useChrome = typeof (browser) === 'undefined'
 let hasConsole = typeof (console) !== 'undefined'
 let contextName = 'default'
+let domainURL = ''
 
+// --------------------------------------------------------------------------------------------------------------------------------
 // Chrome helpers
 function checkChromeHadNoErrors () {
   if (chrome.runtime.lastError) {
@@ -84,8 +86,30 @@ function chromeGetStorageAndCookiesForFunc (data, cookies, func) {
   func(data, cookies)
 }
 
+function chromeGetStorageAndCookiesForFunc1 (data, cookies, func, par1) {
+  if (!checkChromeHadNoErrors()) return
+
+  if (data === null) {
+    chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func, par1) })
+    return
+  } else if (cookies === null) {
+    chrome.runtime.sendMessage({'getCookies': domainURL, 'storeId': 'default'}, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response['cookies'], func, par1) })
+    return
+  }
+
+  func(data, cookies, par1)
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
-let domainURL = ''
+// Firefox
+async function getActiveTabFirefox () {
+  let activeTabs = await browser.tabs.query({currentWindow: true, active: true})
+  if (activeTabs.length !== 0) {
+    return activeTabs.pop()
+  }
+
+  return null
+}
 
 function firefoxOnGetContextSuccess (context) {
   contextName = context.name
@@ -97,6 +121,8 @@ function firefoxOnGetContextError (e) {
     console.log(e)
   }
 }
+
+// --------------------------------------------------------------------------------------------------------------------------------
 
 async function initDomainURLandProceed (tabs) {
   let tab = tabs.pop()
@@ -151,7 +177,7 @@ function updateUIData (data, cookies) {
 
   if (cookies.length === 0) {
     let infoDisplay = document.getElementById('infoDisplay')
-    let contentText = 'No active cookies for domain.'
+    let contentText = 'No active cookies for domain, you might need to reload the tab.'
     infoDisplay.children[0].textContent = contentText
     infoDisplay.removeAttribute('class')
   } else {
@@ -360,40 +386,23 @@ async function flaggedCookieSwitchNeutral (data, event) {
   for (let child of domainCookieList.children) {
     if (child.children[0].dataset['name'] === cookieName) {
       if (hasAutoFlag) {
-        data[contextName][domainURL][cookieName] = 'af'
         child.children[0].className = 'checkmark auto-flagged'
       } else if (hasGlobal) {
-        delete data[contextName][domainURL][cookieName]
-
-        if (Object.keys(data[contextName][domainURL]).length === 0) delete data[contextName][domainURL]
-        if (Object.keys(data[contextName]).length === 0) {
-          if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
-          else await browser.storage.local.remove(contextName)
-          delete data[contextName]
-        }
-
         child.children[0].className = 'checkmark auto-flagged'
       } else {
-        delete data[contextName][domainURL][cookieName]
-
-        if (Object.keys(data[contextName][domainURL]).length === 0) delete data[contextName][domainURL]
-        if (Object.keys(data[contextName]).length === 0) {
-          if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
-          else await browser.storage.local.remove(contextName)
-          delete data[contextName]
-        }
-
         child.children[0].className = 'checkmark'
       }
 
-      if (useChrome) {
-        setChromeStorage(data)
-        if (!checkChromeHadNoErrors()) return
-      } else await browser.storage.local.set(data)
+      if (useChrome) setChromeStorage(data)
+      else await browser.storage.local.set(data)
 
       break
     }
   }
+
+  if (hasAutoFlag) reFlagDomainCookies('af')
+  else if (hasGlobal) reFlagDomainCookies(null)
+  else reFlagDomainCookies(null)
 
   let parent = event.target.parentNode.parentNode
 
@@ -405,6 +414,59 @@ async function flaggedCookieSwitchNeutral (data, event) {
     parent.className = 'hidden'
     infoDisplay.removeAttribute('class')
   }
+}
+
+async function reFlagDomainCookies (newStatus) {
+  if (useChrome) {
+    chromeGetStorageAndCookiesForFunc1(null, null, reFlagDomainCookiesNeutral, newStatus)
+    return
+  }
+
+  // Get storage and cookies Firefox
+  let activeCookieStore = 'default'
+  let currentTab = await getActiveTabFirefox()
+  if (currentTab.cookieStoreId !== undefined) {
+    activeCookieStore = currentTab.cookieStoreId
+  }
+
+  let data = await browser.storage.local.get()
+  let cookieData = await browser.runtime.sendMessage({'getCookies': domainURL, 'storeId': activeCookieStore})
+  let cookies = cookieData['cookies']
+  reFlagDomainCookiesNeutral(data, cookies, newStatus)
+}
+
+async function reFlagDomainCookiesNeutral (data, cookies, newStatus) {
+  if (data[contextName] === undefined) data[contextName] = {}
+  if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
+
+  for (let cookie of cookies) {
+    if (newStatus === null) {
+      if (data[contextName][domainURL][cookie.name] === undefined || data[contextName][domainURL][cookie.name] === false || data[contextName][domainURL][cookie.name] === true) {
+        continue
+      }
+
+      delete data[contextName][domainURL][cookie.name]
+      continue
+    }
+
+    if (data[contextName][domainURL][cookie.name] === undefined || (data[contextName][domainURL][cookie.name] !== false && data[contextName][domainURL][cookie.name] !== true)) {
+      data[contextName][domainURL][cookie.name] = newStatus
+    }
+  }
+
+  if (newStatus === null) {
+    if (Object.keys(data[contextName][domainURL]).length === 0) delete data[contextName][domainURL]
+    if (Object.keys(data[contextName]).length === 0) {
+      if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+      else await browser.storage.local.remove(contextName)
+      delete data[contextName]
+    }
+
+    return
+  }
+
+  if (useChrome) setChromeStorage(data)
+  else await browser.storage.local.set(data)
 }
 
 // Permitted view flag switch
@@ -457,10 +519,8 @@ async function permittedCookieSwitchNeutral (data, event) {
         child.children[0].className = 'checkmark'
       }
 
-      if (useChrome) {
-        setChromeStorage(data)
-        if (!checkChromeHadNoErrors()) return
-      } else await browser.storage.local.set(data)
+      if (useChrome) setChromeStorage(data)
+      else await browser.storage.local.set(data)
       break
     }
   }
@@ -585,10 +645,8 @@ async function cookieLockSwitchNeutral (data, event) {
       if (Object.keys(data['flagCookies_logged'][contextName][domainURL]).length === 0) delete data['flagCookies_logged'][contextName][domainURL]
       if (Object.keys(data['flagCookies_logged'][contextName]).length === 0) delete data['flagCookies_logged'][contextName]
 
-      if (useChrome) {
-        setChromeStorage(data)
-        if (!checkChromeHadNoErrors) return
-      } else await browser.storage.local.set(data)
+      if (useChrome) setChromeStorage(data)
+      else await browser.storage.local.set(data)
 
       let loggedInCookieList = document.getElementById('loggedInCookies')
       removeCookieOfProfileList(loggedInCookieList, cookieName, 'flagCookies_logged')
@@ -601,10 +659,8 @@ async function cookieLockSwitchNeutral (data, event) {
   } else {
     data['flagCookies_logged'][contextName][domainURL][cookieName] = true
 
-    if (useChrome) {
-      setChromeStorage(data)
-      if (!checkChromeHadNoErrors) return
-    } else await browser.storage.local.set(data)
+    if (useChrome) setChromeStorage(data)
+    else await browser.storage.local.set(data)
 
     let loggedInCookieList = document.getElementById('loggedInCookies')
     addCookieToProfileList(loggedInCookieList, cookieName, 'flagCookies_logged')
@@ -1089,11 +1145,8 @@ async function dumpProfileCookieNeutral (data, event) {
     delete data[cookieSrc][contextName]
   }
 
-  if (useChrome) {
-    setChromeStorage(data)
-
-    if (!checkChromeHadNoErrors) return
-  } else await browser.storage.local.set(data)
+  if (useChrome) setChromeStorage(data)
+  else await browser.storage.local.set(data)
 
   let cookieList = document.getElementById('cookie-list')
   for (let child of cookieList.children) {
@@ -1138,13 +1191,9 @@ async function accountModeSwitchNeutral (data, event) {
       else await browser.storage.local.remove('flagCookies_accountMode')
     }
 
-    if (useChrome) {
-      setChromeStorage(data)
-      if (checkChromeHadNoErrors) event.target.removeAttribute('class')
-      return
-    }
+    if (useChrome) setChromeStorage(data)
+    else await browser.storage.local.set(data)
 
-    await browser.storage.local.set(data)
     event.target.removeAttribute('class')
     return
   }
