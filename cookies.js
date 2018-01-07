@@ -256,7 +256,6 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
       }
     }
   } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
-
     for (let cookie of cookieData[domainURL][activeCookieStore]) {
       if (hasProfile && hasLogged && data[contextName] !== undefined && data[contextName][domainURL] !== undefined && data['flagCookies_logged'][contextName][domainURL][cookie.name] !== undefined) {
         let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
@@ -398,13 +397,14 @@ async function clearCookiesOnNavigate (details) {
     return
   }
 
+
+  clearDomainLog(domainURL, activeCookieStore)
+  clearCookiesWrapper('tab navigate', useChrome)
+
   if (cookieData[domainURL] !== undefined && cookieData[domainURL][activeCookieStore] !== undefined) {
     delete cookieData[domainURL][activeCookieStore]
     if (Object.keys(cookieData[domainURL]).length === 0) delete cookieData[domainURL]
   }
-
-  clearDomainLog(domainURL, activeCookieStore)
-  await clearCookiesWrapper('tab navigate', useChrome)
 }
 
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {

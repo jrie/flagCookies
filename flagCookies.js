@@ -746,8 +746,8 @@ async function flagGlobalAutoNonEvent () {
 
   let data = await browser.storage.local.get()
 
-  if (data['flagCookies_autoFlag'] === undefined) data['flagCookies_autoFlag'] = {}
-  if (data['flagCookies_autoFlag'][contextName] === undefined) data['flagCookies_flagGlobal'][contextName] = false
+  if (data['flagCookies_flagGlobal'] === undefined) data['flagCookies_flagGlobal'] = {}
+  if (data['flagCookies_flagGlobal'][contextName] === undefined) data['flagCookies_flagGlobal'][contextName] = false
 
   let globalFlagButton = document.getElementById('global-flag')
 
