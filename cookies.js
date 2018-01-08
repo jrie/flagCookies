@@ -43,12 +43,12 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, doLo
     chrome.storage.local.get(null, function (data) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, cookies, domainURL, false) })
     return
   } else if (cookies === null) {
-    let domain = getDomainURL(domainURL)
+    let domain = getURLDomain(domainURL)
     chrome.cookies.getAll({domain: domain}, function (cookies) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, cookies, domainURL, true) })
     return
   } else if (doLoadURLCookies === true) {
-    domainURL = domainURL.replace(/\/www./, '/')
-    chrome.cookies.getAll({url: domainURL}, function (cookieSub) {
+    let cookieDomain = domainURL.replace(/\/www./, '/')
+    chrome.cookies.getAll({url: cookieDomain}, function (cookieSub) {
       checkChromeHadNoErrors()
 
       for (let cookie of cookieSub) {
@@ -102,10 +102,15 @@ function getChromeActiveTabForClearing (action) {
   })
 }
 
-function getDomainURL (domainURL) {
-  let modUrl = domainURL.replace(/(http|https):\/\//, '')
-  modUrl = modUrl.substr(0, modUrl.length - 1)
-  return modUrl
+function getURLDomain (domainURL) {
+  let outDomainName = domainURL.replace(/(http|https):\/\//, '').replace('www.', '')
+  let tip1 = outDomainName.indexOf('.')
+  let tip2 = outDomainName.lastIndexOf('.')
+  if (tip1 !== tip2) {
+    return outDomainName.substr(tip1 + 1, tip2).replace('/', '')
+  } else {
+    return outDomainName.replace('/', '')
+  }
 }
 
 // Chrome + Firefox
@@ -129,14 +134,14 @@ async function clearCookiesWrapper (action, doChromeLoad) {
   let domainURL = await getDomainURLFirefox()
   if (domainURL === '') return
   let currentTab = await getActiveTabFirefox()
-
-  let domain = getDomainURL(domainURL)
   let data = await browser.storage.local.get()
+
+  let domain = getURLDomain(domainURL)
   let cookies
   let cookiesURL = []
   if (currentTab.cookieStoreId !== undefined) {
     cookies = await browser.cookies.getAll({domain: domain, storeId: currentTab.cookieStoreId})
-    cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/'), storeId: currentTab.cookieStoreId})
+    cookiesURL = await browser.cookies.getAll({url: domainURL, storeId: currentTab.cookieStoreId})
 
     await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   } else {
@@ -179,18 +184,14 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
   let useWWW = false
   let urls = [domainURL]
 
-  if (data[contextName] === undefined) {
-    data[contextName] = {}
+  if (domainURL.indexOf('www.') !== -1) {
+    useWWW = domainURL
+    domainURL = domainURL.replace('www.', '')
+    urls = [useWWW, domainURL]
   }
 
-  if (data[contextName][domainURL] === undefined) {
-    let targetDomain = domainURL.replace(/\/www./, '/')
-    if (data[contextName][targetDomain] !== undefined) {
-      useWWW = domainURL
-      domainURL = targetDomain
-      urls = [useWWW, domainURL]
-    }
-  }
+  if (data[contextName] === undefined) data[contextName] = {}
+  if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
 
   if (cookieData[domainURL] === undefined) {
     cookieData[domainURL] = {}
@@ -441,10 +442,9 @@ async function clearCookiesOnNavigate (details) {
 }
 
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
-  if (useChrome) chrome.browserAction.disable(tabId)
-  else browser.browserAction.disable(tabId)
-
   if (changeInfo.status && changeInfo.status === 'loading') {
+    if (useChrome) chrome.browserAction.disable(tabId)
+    else browser.browserAction.disable(tabId)
     clearCookiesWrapper('tab reload/load', useChrome, tab)
   } else if (changeInfo.status && changeInfo.status === 'complete') {
     if (useChrome) chrome.browserAction.enable(tabId)
