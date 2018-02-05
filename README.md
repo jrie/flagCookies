@@ -16,7 +16,7 @@ A cookie manager on steroids.
 - "Preferences" shows a log of what actions have been done on tab actions
 - Display count of deleted cookies in the browser toolbar
 
-## Screenshots
+## Screenshots of version 1.6
 
 #### Main interface
 
@@ -29,7 +29,7 @@ A cookie manager on steroids.
 [![FlagCookies v1.6 - Log with active 'profile'](https://www.picflash.org/img/2017/12/30/e3dlznmo3o8j5pk.png "Log view with active 'profile' after page reload")(https://www.picflash.org/viewer.php?img=e3dlznmo3o8j5pk.png)]
 
 
-[![FlagCookies v1.6 - Log with non-active 'profile' switch](https://www.picflash.org/img/2017/12/30/fswg4jfckb9d5zq.png "Log view with inactive 'profile' after page reload")](https://www.picflash.org/viewer.php?img=fswg4jfckb9d5zq.png)
+[![FlagCookies v1.6 - Log with non-active 'profile' switch](https://www.picflash.org/img/2017/12/30/fswg4jfckb9d5zq.png "Log view with inactive 'profile' after page reload")(https://www.picflash.org/viewer.php?img=fswg4jfckb9d5zq.png)
 
 
 #### Gallery
