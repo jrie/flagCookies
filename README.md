@@ -14,6 +14,7 @@ A cookie manager on steroids.
 - "Preferences" allows to manage "logged in profile" cookies, even if this cookies are not present
 - "Preferences" allows you to delete all saved settings or domain settings
 - "Preferences" shows a log of what actions have been done on tab actions
+- Display count of deleted cookies in the browser toolbar
 
 ## Screenshots
 
@@ -25,7 +26,7 @@ A cookie manager on steroids.
 
 [![FlagCookies v1.6 - Preferences](https://www.picflash.org/img/2017/12/30/0o0aml1ik4lwfhd.png "Flag Cookies 1.6 preferences with profile cookie management")](https://www.picflash.org/viewer.php?img=0o0aml1ik4lwfhd.png)
 
-[![FlagCookies v1.6 - Log with active 'profile'](https://www.picflash.org/img/2017/12/30/e3dlznmo3o8j5pk.png "Log view with active 'profile' after page reload")](https://www.picflash.org/viewer.php?img=e3dlznmo3o8j5pk.png)]
+[![FlagCookies v1.6 - Log with active 'profile'](https://www.picflash.org/img/2017/12/30/e3dlznmo3o8j5pk.png "Log view with active 'profile' after page reload")(https://www.picflash.org/viewer.php?img=e3dlznmo3o8j5pk.png)]
 
 
 [![FlagCookies v1.6 - Log with non-active 'profile' switch](https://www.picflash.org/img/2017/12/30/fswg4jfckb9d5zq.png "Log view with inactive 'profile' after page reload")](https://www.picflash.org/viewer.php?img=fswg4jfckb9d5zq.png)
@@ -71,22 +72,11 @@ If everything works fine, you will see a log of entries, according to the screen
 #### Firefox
 Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/) or download the **.xpi** from the release page.
 
-Please notice, the more downloads and users the add-on receives on Mozilla, they more the word can spread about this little project. But you also can, of course, download from source or the release pages.
+### Opera
+Please use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/)
 
 ### Chrome
-The extension is not listed in the webstore, because this would cost money to do so, I am not at the moment willing to pay, just people can use the extension, therefore please download the **.crx** from the releases page.
-
-### Opera
-At the moment of writing, the add on is not listed on Opera add-ons site. This hopefully changes soon.
-In the meantime, you can download the Flag Cookies from the releases page, as **.nex** file.
-
-### Cloning/Testing on Firefox and Chrome
-
-Or download/clone the repository.
-
-To add the Add-on dynamically in Firefox: Type **about:debugging** in the Firefox address bar, which allows you to install, using the "manifest.json" file, if you point to it.
-
-In Chrome navigate to **chrome://extensions/**, check **dev mode** and you can debug the add-on. For usage testing, the ***dev mode*** is not required.
+The extension is not listed in the Crhome store, because this would cost money to do so, I am not at the moment willing to pay, just people can use the extension, therefore please download the **.crx** from the releases page, this should work also.
 
 
 ## Thanks and notes
