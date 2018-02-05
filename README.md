@@ -74,8 +74,11 @@ Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https:
 Please use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/) or download the **.nex** from the releases page.
 
 ### Chrome
-The extension is not listed in the Crhome store, because this would cost money to do so, I am not at the moment willing to pay, just people can use the extension, therefore please download the **.crx** from the releases page, this should work also.
+The extension is not listed in the Chrome addon store, because this would cost money to do so, I am not at the moment willing to pay, just people can use the extension, therefore please download the **.crx** from the releases page, this should work also.
 
+
+## Providing feedback/feature wishes
+Please open an issue in the issues page, I gladly try to respond to feedback and to improve Flag cookies. If you think a feature is missing or at worst, not working as expected, please also open an issue. At best with providing an example website and what you expect to happen, but what happens instead or is simply not working. This greatly will help to troubleshoot.
 
 ## Thanks and notes
 
