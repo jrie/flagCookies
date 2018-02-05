@@ -64,16 +64,15 @@ It works as an addition to the regular cookie manager and others. It is not a re
 ## Requirements
 
 **Firefox in version 58.0a1 is minimum** or a recent version of **Chrome** or **Opera** browser(s).
-If everything works fine, you will see a log of entries, according to the screenshots above, in the "Preferences" view.
 
 
 ## Installation
 
 #### Firefox
-Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/) or download the **.xpi** from the release page.
+Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/) or download the **.xpi** from the releases page.
 
 ### Opera
-Please use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/)
+Please use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/) or download the **.nex** from the releases page.
 
 ### Chrome
 The extension is not listed in the Crhome store, because this would cost money to do so, I am not at the moment willing to pay, just people can use the extension, therefore please download the **.crx** from the releases page, this should work also.
