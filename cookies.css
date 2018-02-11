@@ -288,6 +288,10 @@ button.setKeyCookie {
   background-position: center;
 }
 
+button.checkmark-confirm {
+  background-image: none;
+}
+
 button.setKeyCookie {
   position: absolute;
   background-color: #ddd;
@@ -583,5 +587,5 @@ button.checkmark-confirm {
 }
 
 button.checkmark-confirm.active {
-  background-image: url('icons/checkmark_permit.png');
+  background-image: url('icons/permit.png');
 }
