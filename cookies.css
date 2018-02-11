@@ -100,20 +100,28 @@ span, p, h1, h2, h3, h4, h5 {
   border-right: 1px solid #aaa;
 }
 
+.legend #leg-unhandled {
+  background-image: url('icons/unhandled.png');
+  background-position: 0px center;
+}
+
 .legend #leg-flagged {
-  background-image: url('icons/checkmark.png');
-  background-position: -4px -43px;
+  /*background-image: url('icons/checkmark.png');*/
+  background-image: url('icons/ban.png');
+  background-position: 0px center;
 }
 
 .legend #leg-permitted {
-  background-image: url('icons/checkmark_permit.png');
-  background-position: -4px -41px;
+  background-image: url('icons/permit.png');
+  background-position: 0px center;
 }
 
 .legend #leg-auto-flagged {
-  background-image: url('icons/checkmark_af.png');
-  background-position: -4px -43px;
+  /*background-image: url('icons/checkmark_af.png');
+  background-position: -4px -43px;*/
   border-right: none;
+  background-image: url('icons/ban-af.png');
+  background-position: 0 center;
 }
 
 .intro,
@@ -236,8 +244,8 @@ textarea {
 
 button:hover,
 button.active {
-  background-color: #ddd;
-  color: #557;
+  background-color: #0a0;
+  color: #fff;
 }
 
 button::-moz-focus-inner {
@@ -252,7 +260,7 @@ button::-moz-focus-inner {
 
 #tabs button {
   margin-left: 0px;
-  width: 145px;
+  padding: 7px 30px;
 }
 
 .hidden {
@@ -274,10 +282,10 @@ button.setKeyCookie {
   width: 26px;
   height: 26px;
   background-color: #fff;
-  background-image: url('icons/checkmark.png');
+  background-image: url('icons/unhandled.png');
   background-repeat: no-repeat;
   background-clip:border-box;
-  background-position: -4px -4px;
+  background-position: center;
 }
 
 button.setKeyCookie {
@@ -298,17 +306,18 @@ button.setKeyCookie.locked {
 
 
 button.checkmark.flagged {
-  background-position: -4px -43px;
+  background-position: center center;
+  background-image: url('icons/ban.png');
 }
 
 button.checkmark.auto-flagged {
-  background-image: url('icons/checkmark_af.png');
-  background-position: -4px -43px;
+  background-position: center center;
+  background-image: url('icons/ban-af.png');
 }
 
 button.checkmark.permit {
-  background-image: url('icons/checkmark_permit.png');
-  background-position: -4px -41px;
+  background-position: center center;
+  background-image: url('icons/permit.png');
 }
 
 li:hover button.checkmark {
@@ -575,5 +584,4 @@ button.checkmark-confirm {
 
 button.checkmark-confirm.active {
   background-image: url('icons/checkmark_permit.png');
-  background-position: -4px -41px;
 }

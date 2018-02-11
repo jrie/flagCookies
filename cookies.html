@@ -10,14 +10,14 @@
       <div class="panel-section-header">
         <div id="header-title"></div>
         <div id="tabs">
-          <button id="activeCookies" data-target="cookie-list" title="Show all found domain cookies">Cookies</button>
-          <button id="flaggedCookies" data-target="cookie-list-flagged"  title="Show flagged cookies which are to be deleted for this domain">Flagged</button>
-          <button id="permittedCookies" data-target="cookie-list-permitted"  title="Show permitted domain cookies which are to be kept">Permitted</button>
+          <button id="activeCookies" data-target="cookie-list" title="Show and manage all discovered domain cookies">Cookies</button>
+          <button id="flaggedCookies" data-target="cookie-list-flagged"  title="Show manual flagged cookies which are deleted for this domain">Flagged</button>
+          <button id="permittedCookies" data-target="cookie-list-permitted"  title="Show manual permitted domain cookies which are to be kept">Permitted</button>
         </div>
         <hr/>
-        <button id="global-flag" title="Delete cookies for all domains if not permitted">Global</button>
-        <button id="auto-flag" title="Delete cookies for this (sub)domain if not permitted or in 'profile' mode">Auto flag</button>
-        <button id="account-mode" title="Selected 'key' cookies wont be deleted by global, auto-flag or by regular flagging. This is the 'logged in account' state. You can also mange the cookie list in 'preferences'.">Profile</button>
+        <button id="global-flag" title="Delete cookies for all domains if not permitted or while protected in 'profile' mode">Global</button>
+        <button id="auto-flag" title="Delete cookies for this (sub)domain if not permitted or while protected in 'profile' mode">Auto flag</button>
+        <button id="account-mode" title="Profile mode - Selected 'key icon' cookies wont be deleted by global, auto-flag or by regular flagging on page load/reload/navigation or tab and window close. This is the 'logged in account' state. You can also manage the cookie list in 'preferences'.">Profile</button>
         <input type="text" placeholder="Search cookie list" id="searchBar" />
       </div>
 
@@ -45,7 +45,7 @@
           </div>
         </div>
 
-        <div class="legend"><p class="intro" title="Move the mouse over the items, to receive help.">Flag legend</p><span id="leg-flagged" title="Flagged cookies will be deleted on page action">Flagged</span><span id="leg-permitted" title="Permitted cookies won't be removed by global or auto-flag">Permitted</span><span id="leg-auto-flagged" title="Global and auto-flagged cookies are deleted on page action">Auto flagged</span><button data-target="settings-view" id="prefs">Preferences</button></div>
+        <div class="legend"><p class="intro" title="Move the mouse over the items, to receive help.">Flag legend</p><span id="leg-unhandled" title="Unhandled cookies are active but not handled through Flag Cookies">Unhandled</span><span id="leg-flagged" title="Flagged cookies will be deleted on page action">Flagged</span><span id="leg-permitted" title="Permitted cookies won't be removed by global or auto-flag">Permitted</span><span id="leg-auto-flagged" title="Global and auto-flagged cookies are deleted on page action">Auto flagged</span><button data-target="settings-view" id="prefs">Preferences</button></div>
       </div>
 
       <script src="flagCookies.js"></script>
