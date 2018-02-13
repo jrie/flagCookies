@@ -21,6 +21,14 @@
       "128": "icons/cookie_128.png"
     }
   },
+  "commands": {
+    "toggle-profile": {
+      "suggested_key": {
+        "default": "Alt+Shift+A"
+      },
+      "description": "Activate/deactivate profile-mode"
+    }
+  },
   "description": "A cookie manager on steroids.",
   "icons": {
     "48": "icons/cookie_48.png",
@@ -31,7 +39,7 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "permissions": ["cookies", "tabs", "webNavigation", "<all_urls>", "storage", "unlimitedStorage", "contextualIdentities"],
   "background": {
     "scripts": [

@@ -628,15 +628,64 @@ function addToLogData (msg) {
   }
 }
 
+// Account mode switch key command
+async function toggleAccountMode (data, contextName, url, tabid) {
+  if (data['flagCookies_accountMode'] === undefined) data['flagCookies_accountMode'] = {}
+  if (data['flagCookies_accountMode'][contextName] === undefined) data['flagCookies_accountMode'][contextName] = {}
+
+  if (data['flagCookies_accountMode'][contextName][url] === undefined) {
+    data['flagCookies_accountMode'][contextName][url] = true
+  } else {
+    delete data['flagCookies_accountMode'][contextName][url]
+  }
+
+  if (useChrome) {
+    setChromeStorage(data)
+    setBrowserActionIconChrome(data, contextName, url, tabid)
+  } else {
+    await browser.storage.local.set(data)
+    setBrowserActionIconFirefox(contextName, url, tabid)
+  }
+}
+
+async function getCommand (command) {
+  if (command === 'toggle-profile') {
+    if (useChrome) {
+      chrome.tabs.query({currentWindow: true, active: true}, function (activeTabs) {
+        if (!checkChromeHadNoErrors()) return
+        if (activeTabs.length !== 0) {
+          let activeTab = activeTabs.pop()
+          if (activeTab.url !== undefined) {
+            let urlMatch = activeTab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
+            if (urlMatch) getChromeStorageForFunc3(toggleAccountMode, contextName, urlMatch[0], activeTab.id)
+          }
+        }
+      })
+    } else {
+      let activeTab = await getActiveTabFirefox()
+
+      if (activeTab.url !== undefined) {
+        let urlMatch = activeTab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
+        if (urlMatch) {
+          let data = await browser.storage.local.get(null)
+          toggleAccountMode(data, contextName, urlMatch[0], activeTab.id)
+        }
+      }
+    }
+  }
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
   chrome.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   chrome.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
   chrome.runtime.onMessage.addListener(handleMessage)
+  chrome.commands.onCommand.addListener(getCommand)
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   browser.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
   browser.runtime.onMessage.addListener(handleMessage)
+  browser.commands.onCommand.addListener(getCommand)
 }
