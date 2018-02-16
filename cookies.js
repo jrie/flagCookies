@@ -672,15 +672,15 @@ async function toggleAccountMode (data, contextName, url, tabid, useNotifcations
     data['flagCookies_accountMode'][contextName][url] = true
 
     if (useNotifications) {
-      if (useChrome) chrome.notifications.create('profile_activated', { type: 'basic', message: 'Profile mode enabled for domain "' + url + '" in "' + contextName + '".', title: 'Flag Cookies: Profile mode enabled', iconUrl:'icons/cookie_96_profil.png'})
-      else browser.notifications.create('profile_activated', { type: 'basic', message: 'Profile mode enabled for domain "' + url + '" in context "' + contextName + '".', title: 'Flag Cookies: Profile mode enabled', iconUrl:'icons/cookie_96_profil.png'})
+      if (useChrome) chrome.notifications.create('profile_activated', { type: 'basic', message: 'Profile mode enabled for domain "' + url + '" in "' + contextName + '".', title: 'Flag Cookies: Profile mode enabled', iconUrl:'icons/cookie_128_profil.png'})
+      else browser.notifications.create('profile_activated', { type: 'basic', message: 'Profile mode enabled for domain "' + url + '" in context "' + contextName + '".', title: 'Flag Cookies: Profile mode enabled', iconUrl:'icons/cookie_128_profil.png'})
     }
   } else {
     delete data['flagCookies_accountMode'][contextName][url]
 
     if (useNotifications) {
-      if (useChrome) chrome.notifications.create('profile_deactivated', { type: 'basic', message: 'Profile mode disabled for domain "' + url + '" in "' + contextName + '".', title: 'Flag Cookies: Profile mode disabled', iconUrl:'icons/cookie_96.png'})
-      else browser.notifications.create('profile_deactivated', { type: 'basic', message: 'Profile mode disabled for domain "' + url + '" in context "' + contextName + '".', title: 'Flag Cookies: Profile mode disabled', iconUrl:'icons/cookie_96.png'})
+      if (useChrome) chrome.notifications.create('profile_deactivated', { type: 'basic', message: 'Profile mode disabled for domain "' + url + '" in "' + contextName + '".', title: 'Flag Cookies: Profile mode disabled', iconUrl:'icons/cookie_128.png'})
+      else browser.notifications.create('profile_deactivated', { type: 'basic', message: 'Profile mode disabled for domain "' + url + '" in context "' + contextName + '".', title: 'Flag Cookies: Profile mode disabled', iconUrl:'icons/cookie_128.png'})
     }
   }
 

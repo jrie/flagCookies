@@ -985,14 +985,14 @@ async function toggleNotifications (event) {
     event.target.className += ' active'
     doSwitchOn = true
 
-    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies: Notifications enabled', iconUrl:'icons/cookie_96.png'})
-    else browser.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies: Notifications enabled', iconUrl:'icons/cookie_96.png'})
+    if (useChrome) chrome.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies: Notifications enabled', iconUrl: 'icons/cookie_128.png'})
+    else browser.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies: Notifications enabled', iconUrl: 'icons/cookie_128.png'})
   } else {
     event.target.className = event.target.className.replace(' active', '')
     doSwitchOn = false
 
-    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies: Notifications disabled', iconUrl:'icons/cookie_96.png'})
-    else browser.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies: Notifications disabled', iconUrl:'icons/cookie_96.png'})
+    if (useChrome) chrome.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies: Notifications disabled', iconUrl: 'icons/cookie_128.png'})
+    else browser.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies: Notifications disabled', iconUrl: 'icons/cookie_128.png'})
   }
 
   if (useChrome) {
