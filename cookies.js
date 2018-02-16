@@ -218,14 +218,30 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
     let index = 0
     for (let cookieEntry of cookieData[domainURL][activeCookieStore]) {
       if (cookieEntry.name === cookie.name) {
-        cookieData[domainURL][activeCookieStore][index] = cookie
-        foundCookie = true
-        break
+        if (cookieEntry.storeId !== undefined) {
+          if (cookieEntry.storeId === cookie.storeId) {
+            cookieData[domainURL][activeCookieStore][index] = cookie
+            foundCookie = true
+            break
+          }
+        } else {
+          cookieData[domainURL][activeCookieStore][index] = cookie
+          foundCookie = true
+          break
+        }
       }
       index++
     }
 
-    if (!foundCookie) cookieData[domainURL][activeCookieStore].push(cookie)
+    if (!foundCookie) {
+      if (cookie.storeId !== undefined) {
+        if (cookie.storeId === activeCookieStore) {
+          cookieData[domainURL][activeCookieStore].push(cookie)
+        }
+      } else {
+        cookieData[domainURL][activeCookieStore].push(cookie)
+      }
+    }
   }
 
   let hasProfile = data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][contextName] && data['flagCookies_accountMode'][contextName][domainURL] !== undefined
@@ -470,10 +486,16 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
     for (let status of statuses) {
       let titleJoin = []
+      let index = 0
       for (let msg of logData[contextName]) {
-        if (msg.startsWith(status)) {
+        if (msg.startsWith(status) && msg.indexOf(tabDomain) !== -1) {
           let cookieName = '"' + msg.match(/cookie: '(.*)' for/)[1] + '"'
-          if (titleJoin.indexOf(cookieName) === -1) titleJoin.push(cookieName)
+          if (titleJoin.indexOf(cookieName) === -1) {
+            titleJoin.push(cookieName)
+
+            if (index !== 0 && index % 4 === 0) titleJoin.push('\n')
+            ++index
+          }
         }
       }
 
