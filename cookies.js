@@ -218,7 +218,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
     let index = 0
     for (let cookieEntry of cookieData[domainURL][activeCookieStore]) {
       if (cookieEntry.name === cookie.name) {
-        if (cookieEntry.storeId !== undefined) {
+        if (!useChrome && cookieEntry.storeId !== undefined) {
           if (cookieEntry.storeId === cookie.storeId) {
             cookieData[domainURL][activeCookieStore][index] = cookie
             foundCookie = true
@@ -234,7 +234,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
     }
 
     if (!foundCookie) {
-      if (cookie.storeId !== undefined) {
+      if (!useChrome && cookie.storeId !== undefined) {
         if (cookie.storeId === activeCookieStore) {
           cookieData[domainURL][activeCookieStore].push(cookie)
         }
