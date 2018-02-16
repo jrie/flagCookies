@@ -28,7 +28,9 @@
           <ul class="hidden" id="cookie-list-permitted"></ul>
           <div class="hidden" id="settings-view">
             <div id="settings-log"><div class="settings-title setting-info" title="The log shows all cookie delete and permit actions for the active domain"><p>Page action log</p></div><textarea id="log" title="Logged actions of flag cookies on page actions like reload/load" disabled="disabled" placeholder="Cookie actions on page actions"></textarea></div>
+
             <hr/>
+
             <div id="settings-domains"><div class="settings-title setting-info" title="Domain related settings and control"><p>Domain settings</p></div>
               <div id="domain-confirm-clear" title="Please check the box to confirm domain data clearing"><button id="confirmDomainClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="domain-action-clear" title="This will delete all domain related data from Flag Cookies">Delete domain settings</button>
               <div id="domainDetails">
@@ -41,7 +43,14 @@
             </div>
 
             <hr/>
-            <div id="settings-general"><div class="settings-title setting-info" title="Flag Cookies browser storage settings"><p>Storage settings</p></div><div id="settings-confirm-clear" title="Please check the box to confirm storage clearing"><button id="confirmSettingsClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="settings-action-clear" title="This will delete all domain and cookie settings of Flag Cookies">Delete all stored settings</button></div>
+
+            <div id="settings-general"><div class="settings-title setting-info" title="Flag Cookies general and global settings"><p>Add-on settings</p></div>
+              <div class="inline-block">
+                <div id="settings-notification" title="Enable or disable notifactions"><button id="confirmNotifications" class="checkmark-confirm"></button><span>Display notifications</span></div>
+                <div id="settings-confirm-clear" title="Please check the box to confirm storage clearing"><button id="confirmSettingsClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="settings-action-clear" title="This will delete all domain and cookie settings of Flag Cookies">Delete all stored settings</button>
+              </div>
+            </div>
+
           </div>
         </div>
 

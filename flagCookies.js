@@ -294,6 +294,10 @@ function updateUIData (data, cookies, activeCookieStoreName) {
   if (data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][contextName] !== undefined && data['flagCookies_accountMode'][contextName][domainURL] !== undefined) {
     document.getElementById('account-mode').className = 'active'
   }
+
+  if (data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
+    document.getElementById('confirmNotifications').className += ' active'
+  }
 }
 
 function addCookieToProfileList (targetList, cookieName, src) {
@@ -857,23 +861,23 @@ async function flagGlobalAuto (event) {
 
 // Switch auto flag status for cookies
 // Chrome + Firefox
-async function switchAutoFlag (switchOn, targetList) {
+async function switchAutoFlag (doSwitchOn, targetList) {
   if (useChrome) {
-    getChromeStorageForFunc2(switchAutoFlagNeutral, switchOn, targetList)
+    getChromeStorageForFunc2(switchAutoFlagNeutral, doSwitchOn, targetList)
     return
   }
 
   let data = await browser.storage.local.get()
-  switchAutoFlagNeutral(data, switchOn, targetList)
+  switchAutoFlagNeutral(data, doSwitchOn, targetList)
 }
 
 // Kinda neutral
-async function switchAutoFlagNeutral (data, switchOn, targetList) {
+async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
   if (data[contextName] === undefined) data[contextName] = {}
   if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
 
   let searchTarget = document.getElementById(targetList)
-  if (switchOn) {
+  if (doSwitchOn) {
     for (let child of searchTarget.children) {
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
@@ -913,21 +917,21 @@ async function switchAutoFlagNeutral (data, switchOn, targetList) {
 
 // Switch auto globalflag status for cookies
 // Chrome + Firefox
-async function switchAutoFlagGlobal (switchOn, targetList) {
+async function switchAutoFlagGlobal (doSwitchOn, targetList) {
   if (useChrome) {
-    getChromeStorageForFunc2(switchAutoFlagGlobalNeutral, switchOn, targetList)
+    getChromeStorageForFunc2(switchAutoFlagGlobalNeutral, doSwitchOn, targetList)
     return
   }
 
   let data = await browser.storage.local.get()
-  switchAutoFlagGlobalNeutral(data, switchOn, targetList)
+  switchAutoFlagGlobalNeutral(data, doSwitchOn, targetList)
 }
 
 // Neutral
-function switchAutoFlagGlobalNeutral (data, switchOn, targetList) {
+function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
   let searchTarget = document.getElementById(targetList)
 
-  if (switchOn) {
+  if (doSwitchOn) {
     for (let child of searchTarget.children) {
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
@@ -972,6 +976,38 @@ function doSearch (searchVal, targetList) {
 function toggleClearing (event) {
   if (event.target.className.indexOf('active') === -1) event.target.className += ' active'
   else event.target.className = event.target.className.replace(' active', '')
+}
+
+async function toggleNotifications (event) {
+  let doSwitchOn = false
+
+  if (event.target.className.indexOf('active') === -1) {
+    event.target.className += ' active'
+    doSwitchOn = true
+
+    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies: Notifications enabled', iconUrl:'icons/cookie_96.png'})
+    else browser.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies: Notifications enabled', iconUrl:'icons/cookie_96.png'})
+  } else {
+    event.target.className = event.target.className.replace(' active', '')
+    doSwitchOn = false
+
+    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies: Notifications disabled', iconUrl:'icons/cookie_96.png'})
+    else browser.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies: Notifications disabled', iconUrl:'icons/cookie_96.png'})
+  }
+
+  if (useChrome) {
+    getChromeStorageForFunc1(switchNotificationsChrome, doSwitchOn)
+    return
+  }
+
+  let data = await browser.storage.local.get(null)
+  data['flagCookies_notifications'] = doSwitchOn
+  await browser.storage.local.set(data)
+}
+
+function switchNotificationsChrome (data, doSwitchOn) {
+  data['flagCookies_notifications'] = doSwitchOn
+  setChromeStorage(data)
 }
 
 // Chrome + Firefox
@@ -1267,6 +1303,7 @@ document.getElementById('account-mode').addEventListener('click', accountModeSwi
 document.getElementById('searchBar').addEventListener('keyup', searchContent)
 document.getElementById('confirmSettingsClearing').addEventListener('click', toggleClearing)
 document.getElementById('confirmDomainClearing').addEventListener('click', toggleClearing)
+document.getElementById('confirmNotifications').addEventListener('click', toggleNotifications)
 document.getElementById('settings-action-clear').addEventListener('click', clearSettings)
 document.getElementById('domain-action-clear').addEventListener('click', clearDomain)
 

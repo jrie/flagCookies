@@ -37,7 +37,6 @@ function setChromeStorage (data) {
   })
 }
 
-// Chrome
 function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, doLoadURLCookies) {
   if (data === null) {
     chrome.storage.local.get(null, function (data) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, cookies, domainURL, false) })
@@ -517,8 +516,8 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
       setBrowserActionIconFirefox(contextName, tabDomain, tabId)
     }
 
+    let count = 0
     if (logData[contextName] !== undefined) {
-      let count = 0
       let foundCookies = []
 
       for (let entry of logData[contextName]) {
@@ -530,6 +529,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
             if (foundCookies.indexOf(cookieName) !== -1) continue
             foundCookies.push(cookieName)
           }
+
           count++
         }
       }
@@ -545,16 +545,27 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
     if (useChrome) {
       chromeUpdateLogData(null, false)
+      getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
       return
     }
 
-    let data = await browser.storage.local.get('flagCookies')
+    let data = await browser.storage.local.get(null)
     if (data['flagCookies'] === undefined) data['flagCookies'] = {}
     if (data['flagCookies']['logData'] === undefined) data['flagCookies']['logData'] = {}
     if (data['flagCookies']['logData'][contextName] === undefined) data['flagCookies']['logData'][contextName] = []
     data['flagCookies']['logData'][contextName] = logData[contextName]
 
     await browser.storage.local.set(data)
+
+    if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
+      browser.notifications.create('cookie_cleared', {type: 'basic', message: count + ' cookies removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png'})
+    }
+  }
+}
+
+function displayCookieDeleteChrome (data, count, tabDomain, contextName) {
+  if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
+    chrome.notifications.create('cookie_cleared', {type: 'basic', message: count + ' cookies removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png'})
   }
 }
 
@@ -651,14 +662,26 @@ function addToLogData (msg) {
 }
 
 // Account mode switch key command
-async function toggleAccountMode (data, contextName, url, tabid) {
+async function toggleAccountMode (data, contextName, url, tabid, useNotifcations) {
   if (data['flagCookies_accountMode'] === undefined) data['flagCookies_accountMode'] = {}
   if (data['flagCookies_accountMode'][contextName] === undefined) data['flagCookies_accountMode'][contextName] = {}
 
+  let useNotifications = data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true
+
   if (data['flagCookies_accountMode'][contextName][url] === undefined) {
     data['flagCookies_accountMode'][contextName][url] = true
+
+    if (useNotifications) {
+      if (useChrome) chrome.notifications.create('profile_activated', { type: 'basic', message: 'Profile mode enabled for domain "' + url + '" in "' + contextName + '".', title: 'Flag Cookies: Profile mode enabled', iconUrl:'icons/cookie_96_profil.png'})
+      else browser.notifications.create('profile_activated', { type: 'basic', message: 'Profile mode enabled for domain "' + url + '" in context "' + contextName + '".', title: 'Flag Cookies: Profile mode enabled', iconUrl:'icons/cookie_96_profil.png'})
+    }
   } else {
     delete data['flagCookies_accountMode'][contextName][url]
+
+    if (useNotifications) {
+      if (useChrome) chrome.notifications.create('profile_deactivated', { type: 'basic', message: 'Profile mode disabled for domain "' + url + '" in "' + contextName + '".', title: 'Flag Cookies: Profile mode disabled', iconUrl:'icons/cookie_96.png'})
+      else browser.notifications.create('profile_deactivated', { type: 'basic', message: 'Profile mode disabled for domain "' + url + '" in context "' + contextName + '".', title: 'Flag Cookies: Profile mode disabled', iconUrl:'icons/cookie_96.png'})
+    }
   }
 
   if (useChrome) {

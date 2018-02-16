@@ -495,8 +495,13 @@ textarea#log {
   float: left;
 }
 
+#settings-notification {
+  margin-bottom: 25px;
+}
+
 #settings-confirm-clear span,
-#domain-confirm-clear span {
+#domain-confirm-clear span,
+#settings-notification span {
   position: relative;
   top: 0.65em;
   font-weight: bold;
@@ -588,4 +593,8 @@ button.checkmark-confirm {
 
 button.checkmark-confirm.active {
   background-image: url('icons/permit.png');
+}
+
+.inline-block {
+  display: inline-block;
 }
