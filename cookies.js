@@ -212,9 +212,15 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
     cookieData[domainURL][activeCookieStore] = []
   }
 
+  let domainName = domainURL.replace(/(http|https):\/\//, '')
+  domainName = domainName.substr(0, domainName.length - 1)
+
   for (let cookie of cookies) {
+    if (cookie.domain.indexOf(domainName) === -1) continue
+
     let foundCookie = false
     let index = 0
+
     for (let cookieEntry of cookieData[domainURL][activeCookieStore]) {
       if (cookieEntry.name === cookie.name) {
         if (!useChrome && cookieEntry.storeId !== undefined) {
