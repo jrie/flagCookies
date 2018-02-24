@@ -478,7 +478,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   if (changeInfo.status && changeInfo.status === 'loading') {
     if (useChrome) chrome.browserAction.disable(tabId)
     else browser.browserAction.disable(tabId)
-    clearCookiesWrapper('tab reload/load', useChrome, tab)
+    clearCookiesWrapper('tab reload/load', useChrome)
   } else if (changeInfo.status && changeInfo.status === 'complete') {
     let urlMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
 
@@ -726,6 +726,47 @@ async function getCommand (command) {
   }
 }
 
+function onCookieChanged (changeInfo) {
+  if (!changeInfo.removed && changeInfo.cause === 'explicit') {
+    let cookieDetails = changeInfo.cookie
+
+    let activeCookieStore = 'default'
+
+    if (!useChrome) {
+      activeCookieStore = cookieDetails.storeId !== undefined ? cookieDetails.storeId : 'default'
+    }
+
+    let domainName = cookieDetails['domain'].charAt(0) === '.' ? cookieDetails['domain'].substr(1, cookieDetails['domain'].length) : cookieDetails['domain']
+
+    let activeDomain = null
+    for (let domainKey of Object.keys(cookieData)) {
+      if (domainKey.indexOf(domainName) !== -1) {
+        activeDomain = domainKey
+        break
+      }
+    }
+
+    if (activeDomain === null) return
+    if (cookieData[activeDomain][activeCookieStore] === undefined) return
+
+    let foundCookie = false
+    let index = 0
+    for (let cookie of cookieData[activeDomain][activeCookieStore]) {
+      if (cookieDetails.name === cookie.name) {
+        cookieData[activeDomain][activeCookieStore][index] = cookieDetails
+        foundCookie = true
+        break
+      }
+
+      ++index
+    }
+
+    if (!foundCookie) {
+      cookieData[activeDomain][activeCookieStore].push(cookieDetails)
+    }
+  }
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
@@ -733,10 +774,12 @@ if (useChrome) {
   chrome.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
   chrome.runtime.onMessage.addListener(handleMessage)
   chrome.commands.onCommand.addListener(getCommand)
+  chrome.cookies.onChanged.addListener(onCookieChanged)
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   browser.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
   browser.runtime.onMessage.addListener(handleMessage)
   browser.commands.onCommand.addListener(getCommand)
+  browser.cookies.onChanged.addListener(onCookieChanged)
 }
