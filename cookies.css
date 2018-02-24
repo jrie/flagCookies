@@ -191,12 +191,12 @@ li:hover .cookieValue {
 .cookieKey {
   font-size: 1.15em;
   font-weight: bold;
-  margin-bottom: 0.25em;
   display: block;
 }
 
 .cookieValue {
   color: #779;
+  font-size: 0.85em;
 }
 
 #cookie-list p,
