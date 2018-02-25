@@ -446,7 +446,7 @@ function chromeUpdateLogData (data, writeData) {
 }
 
 async function clearCookiesOnNavigate (details) {
-  if (details.parentFrameId === undefined || details.parentFrameId !== -1 || details.url === undefined) return
+  if (details.parentFrameId === undefined || details.parentFrameId !== -1 || details.url === undefined || details.url.startsWith('about:')) return
 
   let activeCookieStore = 'default'
   if (!useChrome) {
@@ -476,8 +476,8 @@ async function clearCookiesOnNavigate (details) {
 
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   if (changeInfo.status && changeInfo.status === 'loading') {
-    if (useChrome) chrome.browserAction.disable(tabId)
-    else browser.browserAction.disable(tabId)
+    if (useChrome) chrome.browserAction.disable(tab.id)
+    else browser.browserAction.disable(tab.id)
     clearCookiesWrapper('tab reload/load', useChrome)
   } else if (changeInfo.status && changeInfo.status === 'complete') {
     let urlMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-]*\//)
@@ -513,13 +513,13 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     if (!hasTitleChange) titleString += '\nNo actions taken on this page'
 
     if (useChrome) {
-      chrome.browserAction.enable(tabId)
-      chrome.browserAction.setTitle({'title': titleString, 'tabId': tabId})
+      chrome.browserAction.enable(tab.id)
+      chrome.browserAction.setTitle({'title': titleString, 'tabId': tab.id})
       getChromeStorageForFunc3(setBrowserActionIconChrome, contextName, tabDomain, tabId)
     } else {
-      browser.browserAction.enable(tabId)
-      browser.browserAction.setTitle({'title': titleString, 'tabId': tabId})
-      setBrowserActionIconFirefox(contextName, tabDomain, tabId)
+      browser.browserAction.enable(tab.id)
+      browser.browserAction.setTitle({'title': titleString, 'tabId': tab.id})
+      setBrowserActionIconFirefox(contextName, tabDomain, tab.id)
     }
 
     let count = 0
@@ -727,7 +727,7 @@ async function getCommand (command) {
 }
 
 function onCookieChanged (changeInfo) {
-  if (!changeInfo.removed && changeInfo.cause === 'explicit') {
+  if (!changeInfo.removed && (changeInfo.cause === 'explicit' || changeInfo.cause === 'expired_overwrite')) {
     let cookieDetails = changeInfo.cookie
 
     let activeCookieStore = 'default'
@@ -767,6 +767,41 @@ function onCookieChanged (changeInfo) {
   }
 }
 
+async function onContextRemoved (changeInfo) {
+  let activeCookieStore = changeInfo.contextualIdentity.name
+  let data = await browser.storage.local.get()
+
+  if (data[activeCookieStore] !== undefined) {
+    delete data[activeCookieStore]
+    browser.storage.local.remove(activeCookieStore)
+  }
+
+  if (data['flagCookies'] !== undefined) {
+    if (data['flagCookies']['logData'] !== undefined && data['flagCookies']['logData'][activeCookieStore] !== undefined) {
+      delete data['flagCookies']['logData'][activeCookieStore]
+      if (Object.keys(data['flagCookies']['logData']).length === 0) delete data['flagCookies']['logData']
+    }
+
+    if (Object.keys(data['flagCookies']).length === 0) {
+      delete data['flagCookies']
+      browser.storage.local.remove('flagCookies')
+    }
+  }
+
+  if (data['flagCookies_flagGlobal'] !== undefined) {
+    if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][activeCookieStore] !== undefined) {
+      delete data['flagCookies_flagGlobal'][activeCookieStore]
+    }
+
+    if (Object.keys(data['flagCookies_flagGlobal']).length === 0) {
+      delete data['flagCookies_flagGlobal']
+      browser.storage.local.remove('flagCookies_flagGlobal')
+    }
+  }
+
+  browser.storage.local.set(data)
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
@@ -782,4 +817,5 @@ if (useChrome) {
   browser.runtime.onMessage.addListener(handleMessage)
   browser.commands.onCommand.addListener(getCommand)
   browser.cookies.onChanged.addListener(onCookieChanged)
+  browser.contextualIdentities.onRemoved.addListener(onContextRemoved)
 }
