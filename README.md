@@ -15,8 +15,11 @@ A cookie manager on steroids.
 - "Preferences" allows you to delete all saved settings or domain settings
 - "Preferences" shows a log of what actions have been done on tab actions
 - Display count of deleted cookies in the browser toolbar
+- Display log of page action when hovering the toolbar icon
+- Keyboard Shortcut "Alt + Shift + A" to enable/disable profile mode for a domain
+- Option to show notifications, disabled by default, for profile mode switch, cookies removed on page actions and notifications enable/disabled
 
-## Screenshots of version 1.6
+## Screenshots of version 1.6 (some changes/features of 2.x not shown)
 
 #### Main interface
 
