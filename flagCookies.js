@@ -205,7 +205,7 @@ function updateUIData (data, cookies, activeCookieStoreName) {
       lockSwitch.dataset['name'] = cookie.name
       lockSwitch.addEventListener('click', cookieLockSwitch)
 
-      if (data[contextName] && data[contextName][domainURL]) {
+      if (data[contextName] !== undefined && data[contextName][domainURL] !== undefined) {
         if (data[contextName][domainURL][cookie.name] !== undefined) {
           if (data[contextName][domainURL][cookie.name] === true) {
             checkMark.className = 'checkmark flagged'
@@ -414,16 +414,9 @@ async function flaggedCookieSwitchNeutral (data, event) {
         child.children[0].title = 'This cookie is allowed and unhandled'
       }
 
-      if (useChrome) setChromeStorage(data)
-      else await browser.storage.local.set(data)
-
       break
     }
   }
-
-  if (hasAutoFlag) reFlagDomainCookies('af')
-  else if (hasGlobal) reFlagDomainCookies(null)
-  else reFlagDomainCookies(null)
 
   let parent = event.target.parentNode.parentNode
 
@@ -435,59 +428,6 @@ async function flaggedCookieSwitchNeutral (data, event) {
     parent.className = 'hidden'
     infoDisplay.removeAttribute('class')
   }
-}
-
-async function reFlagDomainCookies (newStatus) {
-  if (useChrome) {
-    chromeGetStorageAndCookiesForFunc1(null, null, reFlagDomainCookiesNeutral, newStatus)
-    return
-  }
-
-  // Get storage and cookies Firefox
-  let activeCookieStore = 'default'
-  let currentTab = await getActiveTabFirefox()
-  if (currentTab.cookieStoreId !== undefined) {
-    activeCookieStore = currentTab.cookieStoreId
-  }
-
-  let data = await browser.storage.local.get()
-  let cookieData = await browser.runtime.sendMessage({'getCookies': domainURL, 'storeId': activeCookieStore})
-  let cookies = cookieData['cookies']
-  reFlagDomainCookiesNeutral(data, cookies, newStatus)
-}
-
-async function reFlagDomainCookiesNeutral (data, cookies, newStatus) {
-  if (data[contextName] === undefined) data[contextName] = {}
-  if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
-
-  for (let cookie of cookies) {
-    if (newStatus === null) {
-      if (data[contextName][domainURL][cookie.name] === undefined || data[contextName][domainURL][cookie.name] === false || data[contextName][domainURL][cookie.name] === true) {
-        continue
-      }
-
-      delete data[contextName][domainURL][cookie.name]
-      continue
-    }
-
-    if (data[contextName][domainURL][cookie.name] === undefined || (data[contextName][domainURL][cookie.name] !== false && data[contextName][domainURL][cookie.name] !== true)) {
-      data[contextName][domainURL][cookie.name] = newStatus
-    }
-  }
-
-  if (newStatus === null) {
-    if (Object.keys(data[contextName][domainURL]).length === 0) delete data[contextName][domainURL]
-    if (Object.keys(data[contextName]).length === 0) {
-      if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
-      else await browser.storage.local.remove(contextName)
-      delete data[contextName]
-    }
-
-    return
-  }
-
-  if (useChrome) setChromeStorage(data)
-  else await browser.storage.local.set(data)
 }
 
 // Permitted view flag switch
@@ -514,13 +454,13 @@ async function permittedCookieSwitchNeutral (data, event) {
   for (let child of domainCookieList.children) {
     if (child.children[0].dataset['name'] === cookieName) {
       if (hasAutoFlag) {
-        data[contextName][domainURL][cookieName] = 'af'
         child.children[0].className = 'checkmark auto-flagged'
         child.children[0].title = 'This cookie is auto-flagged and will be removed'
       } else if (hasGlobal) {
         delete data[contextName][domainURL][cookieName]
 
-        if (Object.keys(data[contextName][domainURL]).length === 0) delete data[contextName][domainURL]
+        delete data[contextName][domainURL]
+
         if (Object.keys(data[contextName]).length === 0) {
           if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
           else await browser.storage.local.remove(contextName)
@@ -532,7 +472,8 @@ async function permittedCookieSwitchNeutral (data, event) {
       } else {
         delete data[contextName][domainURL][cookieName]
 
-        if (Object.keys(data[contextName][domainURL]).length === 0) delete data[contextName][domainURL]
+        delete data[contextName][domainURL]
+
         if (Object.keys(data[contextName]).length === 0) {
           if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
           else await browser.storage.local.remove(contextName)
@@ -585,7 +526,7 @@ async function cookieFlagSwitchNeutral (data, event) {
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined
   let hasCookie = data[contextName][domainURL][cookieName] !== undefined
 
-  if (!hasCookie || (hasCookie && data[contextName][domainURL][cookieName] !== true && data[contextName][domainURL][cookieName] !== false)) {
+  if (!hasCookie || (hasAutoFlag && (hasCookie && data[contextName][domainURL][cookieName] !== true && data[contextName][domainURL][cookieName] !== false))) {
     data[contextName][domainURL][cookieName] = true
     event.target.className = 'checkmark flagged'
     event.target.title = 'This cookie is flagged by you and will be removed'
@@ -604,8 +545,16 @@ async function cookieFlagSwitchNeutral (data, event) {
         break
       }
     }
-  } else if (hasAutoFlag && data[contextName][domainURL][cookieName] !== 'af') {
-    data[contextName][domainURL][cookieName] = 'af'
+  } else if (hasAutoFlag) {
+    delete data[contextName][domainURL][cookieName]
+
+    if (Object.keys(data[contextName][domainURL]).length === 0) delete data[contextName][domainURL]
+    if (Object.keys(data[contextName]).length === 0) {
+      if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+      else await browser.storage.local.remove(contextName)
+      delete data[contextName]
+    }
+
     event.target.className = 'checkmark auto-flagged'
     event.target.title = 'This cookie is auto-flagged and will be removed'
   } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
@@ -634,7 +583,7 @@ async function cookieFlagSwitchNeutral (data, event) {
     event.target.title = 'This cookie is allowed and unhandled'
   }
 
-  if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieName] === undefined || (hasAutoFlag && data[contextName][domainURL][cookieName] === 'af')) {
+  if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieName] === undefined || hasAutoFlag) {
     // Remove from permitted list if present
     let permittedCookieList = document.getElementById('cookie-list-permitted')
     for (let child of permittedCookieList.children) {
@@ -880,33 +829,20 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
   if (doSwitchOn) {
     for (let child of searchTarget.children) {
       let contentChild = child.children[0]
-      let cookieKey = contentChild.dataset['name']
+      if (contentChild.className !== 'checkmark') continue
 
-      if (data[contextName][domainURL][cookieKey] !== undefined) {
-        if (data[contextName][domainURL][cookieKey] !== true && data[contextName][domainURL][cookieKey] !== false) {
-          data[contextName][domainURL][cookieKey] = 'af'
-          contentChild.className = 'checkmark auto-flagged'
-          contentChild.title = 'This cookie is auto-flagged and will be removed'
-        }
-      } else {
-        data[contextName][domainURL][cookieKey] = 'af'
-        contentChild.className = 'checkmark auto-flagged'
-        contentChild.title = 'This cookie is auto-flagged and will be removed'
-      }
+      contentChild.className = 'checkmark auto-flagged'
+      contentChild.title = 'This cookie is auto-flagged and will be removed'
     }
   } else {
     for (let child of searchTarget.children) {
       let contentChild = child.children[0]
-      let cookieKey = contentChild.dataset['name']
 
-      if (data[contextName][domainURL][cookieKey] === undefined) continue
+      if (contentChild.className !== 'checkmark auto-flagged') continue
 
-      if (data[contextName][domainURL][cookieKey] === 'af') {
-        delete data[contextName][domainURL][cookieKey]
-        if (data['flagCookies_flagGlobal'] === undefined || data['flagCookies_flagGlobal'][contextName] === undefined || data['flagCookies_flagGlobal'][contextName] !== true) {
-          contentChild.className = 'checkmark'
-          contentChild.title = 'This cookie is allowed and unhandled'
-        }
+      if (data['flagCookies_flagGlobal'] === undefined || data['flagCookies_flagGlobal'][contextName] === undefined || data['flagCookies_flagGlobal'][contextName] !== true) {
+        contentChild.className = 'checkmark'
+        contentChild.title = 'This cookie is allowed and unhandled'
       }
     }
   }
