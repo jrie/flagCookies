@@ -89,5 +89,7 @@ To phre4k for the initially idea!
 
 To Cybergreek who pushed the major style change(s).
 
+To stoically for all the feedback and tips.
+
 ### German speaking thread @ ngb.to
 [Flag Cookies on german bulletin board ngb.to](https://ngb.to/threads/32496-Firefox-Addon-FlagCookies)
