@@ -103,7 +103,7 @@ function getChromeActiveTabForClearing (action) {
     if (activeTabs.length !== 0) {
       let tab = activeTabs.pop()
       if (tab.url !== undefined) {
-        let urlMatch = tab.url.match(/(http|https):\/\/[^/]*\//)
+        let urlMatch = tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
         if (urlMatch) {
           let domainURL = urlMatch[0]
           chromeGetStorageAndClearCookies(action, null, null, domainURL, false)
@@ -115,7 +115,7 @@ function getChromeActiveTabForClearing (action) {
 
 function getURLDomain (domainURL) {
   let outDomainName = domainURL.replace('www.', '')
-  let urlMatch = domainURL.match(/(http|https):\/\/[^/]*\//)
+  let urlMatch = domainURL.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
   if (urlMatch) return urlMatch[0].replace(/(http|https):\/\//, '').replace('www.', '').replace('/', '')
   else return ''
 }
