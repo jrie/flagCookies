@@ -392,7 +392,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
     }
   }
 
-  if (action.toLowerCase().indexOf('close') !== -1 && cookieData[domainURL][activeCookieStore] !== undefined) {
+  if (action.toLowerCase().indexOf('close') !== -1 && cookieData[domainURL] !== undefined && cookieData[domainURL][activeCookieStore] !== undefined) {
     delete cookieData[domainURL][activeCookieStore]
 
     if (Object.keys(cookieData[domainURL]).length === 0) {
@@ -576,7 +576,7 @@ function displayCookieDeleteChrome (data, count, tabDomain, contextName) {
 }
 
 function clearCookiesOnLeave (tabId, moveInfo) {
-  clearCookiesWrapper('tab close/window close', useChrome)
+  clearCookiesWrapper('tab close', useChrome)
 }
 
 function setBrowserActionIconChrome (data, contextName, tabDomain, tabId) {
@@ -727,7 +727,7 @@ async function getCommand (command) {
 }
 
 function onCookieChanged (changeInfo) {
-  if (!changeInfo.removed && (changeInfo.cause === 'explicit' || changeInfo.cause === 'expired_overwrite')) {
+  if (!changeInfo.removed && (changeInfo.cause === 'explicit' || changeInfo.cause === 'expired_overwrite' || changeInfo.cause === 'overwrite')) {
     let cookieDetails = changeInfo.cookie
 
     let activeCookieStore = 'default'
@@ -803,6 +803,99 @@ async function onContextRemoved (changeInfo) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
+
+let missingTabs = {}
+let browserData = null
+async function clearCookiesOnFocusLoop (tab, action) {
+  if (browserData === null) {
+    browserData = await browser.storage.local.get()
+  }
+
+  let data = browserData;
+  let domainURL = tab.url
+  if (domainURL === '') return
+
+  let domain = getURLDomain(domainURL)
+  let cookies
+  let cookiesURL = []
+  if (tab.cookieStoreId !== undefined) {
+    cookies = await browser.cookies.getAll({domain: domain, storeId: tab.cookieStoreId})
+    cookiesURL = await browser.cookies.getAll({url: domainURL, storeId: tab.cookieStoreId})
+
+    await browser.contextualIdentities.get(tab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
+  } else {
+    cookies = await browser.cookies.getAll({domain: domain})
+    cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/')})
+  }
+
+  for (let cookie of cookiesURL) {
+    cookies.push(cookie)
+  }
+
+  if (tab.cookieStoreId !== undefined) clearCookiesAction(action !== undefined ? action : 'focus change', data, cookies, domainURL, tab.cookieStoreId)
+  else clearCookiesAction(action !== undefined ? action : 'focus change', data, cookies, domainURL, 'default')
+}
+
+function clearCookiesAfterFocus (tab, action) {
+  if (tab.status === 'complete' && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
+    clearCookiesOnFocusLoop(tab, action)
+    --missingTabs[tab.windowId]
+    if (missingTabs[tab.windowId] === 0) browserData = null
+    return
+  }
+
+  window.requestAnimationFrame(function () {
+    clearCookiesAfterFocus(tab, action)
+  })
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+
+async function clearCookiesOnFocus (window, action, tab) {
+  // TODO: Implement chrome and opera functions
+
+  if (tab !== undefined) {
+    if (missingTabs[window] !== undefined) ++missingTabs[window]
+    else missingTabs[window] = 1
+
+    if (tab.status !== 'complete' || tab.url === undefined || (!tab.url.startsWith('http') || !tab.url.startsWith('https'))) {
+      clearCookiesAfterFocus(tab, action)
+    } else {
+      clearCookiesOnFocusLoop(tab, action)
+      --missingTabs[tab.windowId]
+    }
+  } else {
+    if (missingTabs[window] !== undefined && missingTabs[window] === 0) return
+
+    let tabs = await browser.tabs.query({'windowId': window})
+    missingTabs[window] = tabs.length - 1
+
+    for (let tab of tabs) {
+      if (tab.status !== 'complete' || tab.url === undefined || (!tab.url.startsWith('http') || !tab.url.startsWith('https'))) {
+        clearCookiesAfterFocus(tab)
+      } else {
+        --missingTabs[tab.windowId]
+        clearCookiesOnFocusLoop(tab)
+      }
+    }
+  }
+
+  if (missingTabs[window] !== undefined && missingTabs[window] === 0) browserData = null
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+function clearMissingWindows (window) {
+  if (missingTabs[window] !== undefined) {
+    delete missingTabs[window]
+  }
+}
+
+function clearTabCommand (tab) {
+  clearCookiesOnFocus(tab.windowId, 'tab created', tab)
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+
 if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
   chrome.tabs.onUpdated.addListener(clearCookiesOnUpdate)
@@ -816,6 +909,11 @@ if (useChrome) {
   browser.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
   browser.runtime.onMessage.addListener(handleMessage)
   browser.commands.onCommand.addListener(getCommand)
+  browser.cookies.onCreated.addListener(onCookieChanged)
   browser.cookies.onChanged.addListener(onCookieChanged)
   browser.contextualIdentities.onRemoved.addListener(onContextRemoved)
+
+  browser.windows.onFocusChanged.addListener(clearCookiesOnFocus)
+  browser.windows.onRemoved.addListener(clearMissingWindows)
+  browser.tabs.onCreated.addListener(clearTabCommand)
 }
