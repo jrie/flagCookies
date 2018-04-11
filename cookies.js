@@ -114,8 +114,7 @@ function getChromeActiveTabForClearing (action) {
 }
 
 function getURLDomain (domainURL) {
-  let outDomainName = domainURL.replace('www.', '')
-  let urlMatch = domainURL.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
+  let urlMatch = domainURL.replace('www.', '').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
   if (urlMatch) return urlMatch[0].replace(/(http|https):\/\//, '').replace('www.', '').replace('/', '')
   else return ''
 }
@@ -188,13 +187,12 @@ function handleMessage (request, sender, sendResponse) {
 async function clearCookiesAction (action, data, cookies, domainURL, activeCookieStore) {
   if (domainURL === '' || cookies === undefined) return
 
-  let useWWW = false
   let urls = [domainURL]
 
   if (domainURL.indexOf('www.') !== -1) {
-    useWWW = domainURL
+    urls.push(domainURL.replace('www.', '/'))
     domainURL = domainURL.replace('www.', '')
-    urls = [useWWW, domainURL]
+    urls.push(domainURL)
   }
 
   if (data[contextName] === undefined) data[contextName] = {}
@@ -208,8 +206,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
     cookieData[domainURL][activeCookieStore] = []
   }
 
-  let domainName = domainURL.replace(/(http|https):\/\//, '')
-  domainName = domainName.substr(0, domainName.indexOf('/'))
+  let domainName = domainURL.replace(/(http|https):\/\//, '').replace('www.', '').replace('/', '')
 
   for (let cookie of cookies) {
     if (cookie.domain.indexOf(domainName) === -1) continue
@@ -802,65 +799,21 @@ async function onContextRemoved (changeInfo) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-
-let missingTabs = {}
 let browserData = null
 let openTabData = {}
-
-async function clearCookiesOnFocusLoop (tab, action) {
-  if (browserData === null) {
-    browserData = await browser.storage.local.get()
-  }
-
-  let data = browserData;
-  let domainURL = tab.url
-  if (domainURL === '') return
-
-  let domain = getURLDomain(domainURL)
-  if (domain === '') return
-
-  addTabURLtoDataList(tab)
-  let cookies
-  let cookiesURL = []
-  if (tab.cookieStoreId !== undefined) {
-    cookies = await browser.cookies.getAll({domain: domain, storeId: tab.cookieStoreId})
-    cookiesURL = await browser.cookies.getAll({url: domainURL, storeId: tab.cookieStoreId})
-
-    await browser.contextualIdentities.get(tab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-  } else {
-    cookies = await browser.cookies.getAll({domain: domain})
-    cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/')})
-  }
-
-  for (let cookie of cookiesURL) {
-    cookies.push(cookie)
-  }
-
-  if (tab.cookieStoreId !== undefined) clearCookiesAction(action !== undefined ? action : 'focus change', data, cookies, domainURL, tab.cookieStoreId)
-  else clearCookiesAction(action !== undefined ? action : 'focus change', data, cookies, domainURL, 'default')
-}
-
-function clearCookiesAfterFocus (tab, action) {
-  if (tab.status === 'complete' && (tab.url.startsWith('http') || tab.url.startsWith('https'))) {
-    clearCookiesOnFocusLoop(tab, action)
-    --missingTabs[tab.windowId]
-    if (missingTabs[tab.windowId] === 0) browserData = null
-    return
-  }
-
-  window.requestAnimationFrame(function () {
-    clearCookiesAfterFocus(tab, action)
-  })
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------
 async function addTabURLtoDataList (tab) {
   if (openTabData[tab.windowId] === undefined) openTabData[tab.windowId] = {}
-  openTabData[tab.windowId][tab.id] = {'s': tab.cookieStoreId, 'u': getURLDomain(tab.url), 'd': tab.url}
+  openTabData[tab.windowId][tab.id] = {'s': tab.cookieStoreId, 'u': tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)[0], 'd': getURLDomain(tab.url)}
 }
 
 async function removeTabIdfromDataList (tabId, removeInfo) {
-  if (removeInfo === undefined) return
+  if (removeInfo === undefined) {
+    for (let tab of Object.keys(openTabData[tabId])) {
+      removeTabIdfromDataList(tab, {'windowId': tabId})
+    }
+    return
+  }
+
   let tabData = openTabData[removeInfo.windowId][tabId]
   let cookies = []
   let cookiesURL = []
@@ -870,21 +823,21 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
   }
 
   if (tabData['s'] !== undefined) {
-    cookies = await browser.cookies.getAll({domain: tabData['u'], storeId: tabData['s']})
-    cookiesURL = await browser.cookies.getAll({url: tabData['d'], storeId: tabData['s']})
+    cookies = await browser.cookies.getAll({domain: tabData['d'], storeId: tabData['s']})
+    cookiesURL = await browser.cookies.getAll({url: tabData['u'], storeId: tabData['s']})
 
     await browser.contextualIdentities.get(tabData['s']).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   } else {
-    cookies = await browser.cookies.getAll({domain: tabData['u']})
-    cookiesURL = await browser.cookies.getAll({url: tabData['d'].replace(/\/www./, '/')})
+    cookies = await browser.cookies.getAll({domain: tabData['d']})
+    cookiesURL = await browser.cookies.getAll({url: tabData['u']})
   }
 
   for (let cookie of cookiesURL) {
     cookies.push(cookie)
   }
 
-  if (tabData['s'] !== undefined) clearCookiesAction('tab removed', browserData, cookies, tabData['d'], tabData['s'])
-  else clearCookiesAction('tab removed', browserData, cookies, tabData['d'], 'default')
+  if (tabData['s'] !== undefined) await clearCookiesAction('tab removed', browserData, cookies, tabData['u'], tabData['s'])
+  else await clearCookiesAction('tab removed', browserData, cookies, tabData['d'], 'default')
 
   delete openTabData[removeInfo.windowId][tabId]
   if (Object.keys(openTabData[removeInfo.windowId]).length === 0) {
@@ -893,48 +846,21 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
   }
 }
 
-async function clearCookiesOnFocus (window, action, tab) {
-  // TODO: Implement chrome and opera functions
-
-  if (tab !== undefined) {
-    if (missingTabs[window] !== undefined) ++missingTabs[window]
-    else missingTabs[window] = 1
-
-    if (tab.status !== 'complete' || tab.url === undefined || (!tab.url.startsWith('http') || !tab.url.startsWith('https'))) {
-      clearCookiesAfterFocus(tab, action)
-    } else {
-      clearCookiesOnFocusLoop(tab, action)
-      --missingTabs[tab.windowId]
-    }
-  } else {
-    if (missingTabs[window] !== undefined && missingTabs[window] === 0) return
-
-    let tabs = await browser.tabs.query({'windowId': window})
-    missingTabs[window] = tabs.length - 1
-
-    for (let tab of tabs) {
-      if (tab.status !== 'complete' || tab.url === undefined || (!tab.url.startsWith('http') || !tab.url.startsWith('https'))) {
-        clearCookiesAfterFocus(tab)
-      } else {
-        --missingTabs[tab.windowId]
-        clearCookiesOnFocusLoop(tab)
-      }
-    }
-  }
-
-  if (missingTabs[window] !== undefined && missingTabs[window] === 0) browserData = null
+async function clearCookiesOnWindowClose (window) {
+  await removeTabIdfromDataList(window)
 }
 
-// --------------------------------------------------------------------------------------------------------------------------------
-function clearMissingWindows (window) {
-  if (missingTabs[window] !== undefined) {
-    delete missingTabs[window]
+
+async function gatherTabInformation (event) {
+  let tabs = await browser.tabs.query({windowId: window.id})
+
+  for (let tab of tabs) {
+    addTabURLtoDataList(tab)
   }
 }
 
-function clearTabCommand (tab) {
-  clearCookiesOnFocus(tab.windowId, 'tab created', tab)
-  addTabURLtoDataList(tab)
+function addTabURLsToDataList (window) {
+  setTimeout(gatherTabInformation, 5000)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -955,7 +881,8 @@ if (useChrome) {
   browser.cookies.onChanged.addListener(onCookieChanged)
   browser.contextualIdentities.onRemoved.addListener(onContextRemoved)
 
-  browser.windows.onFocusChanged.addListener(clearCookiesOnFocus)
-  browser.windows.onRemoved.addListener(clearMissingWindows)
-  browser.tabs.onCreated.addListener(clearTabCommand)
+  browser.windows.onCreated.addListener(addTabURLsToDataList)
+  browser.windows.onFocusChanged.addListener(addTabURLsToDataList)
+  browser.windows.onRemoved.addListener(clearCookiesOnWindowClose)
+  browser.tabs.onCreated.addListener(addTabURLtoDataList)
 }
