@@ -191,6 +191,35 @@ function updateUIData (data, cookies, activeCookieStoreName) {
     for (let cookie of cookies) {
       let li = document.createElement('li')
 
+      if (!useChrome && cookie.secure) {
+        let p = document.createElement('p')
+
+        let pCookieKeyElm = document.createElement('span')
+        let pCookieKey = document.createTextNode(cookie.name)
+        pCookieKeyElm.className = 'cookieKey'
+        pCookieKeyElm.appendChild(pCookieKey)
+
+        let pCookieKeySecMessageElm = document.createElement('span')
+        let pCookieKeySecMessage = document.createTextNode('(secure cookie)')
+        pCookieKeySecMessageElm.className = 'secure-cookie'
+
+        pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
+        pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
+
+        let pCookieValueElm = document.createElement('span')
+        let pCookieValue = document.createTextNode(cookie.value)
+        pCookieValueElm.className = 'cookieValue'
+        pCookieValueElm.appendChild(pCookieValue)
+
+        p.appendChild(pCookieKeyElm)
+        p.appendChild(pCookieValueElm)
+        li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
+        li.appendChild(p)
+
+        cookieList.appendChild(li)
+        continue
+      }
+
       let checkMark = document.createElement('button')
       checkMark.className = 'checkmark'
       checkMark.title = 'This cookie is allowed and unhandled'
@@ -828,6 +857,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
   let searchTarget = document.getElementById(targetList)
   if (doSwitchOn) {
     for (let child of searchTarget.children) {
+      if (child.hasAttribute('title')) continue
       let contentChild = child.children[0]
       if (contentChild.className !== 'checkmark') continue
 
@@ -836,6 +866,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
     }
   } else {
     for (let child of searchTarget.children) {
+      if (child.hasAttribute('title')) continue
       let contentChild = child.children[0]
 
       if (contentChild.className !== 'checkmark auto-flagged') continue
@@ -869,6 +900,7 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 
   if (doSwitchOn) {
     for (let child of searchTarget.children) {
+      if (child.hasAttribute('title')) continue
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
       if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieKey] === undefined || (data[contextName][domainURL][cookieKey] !== true && data[contextName][domainURL][cookieKey] !== false)) {
@@ -878,6 +910,7 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
     }
   } else {
     for (let child of searchTarget.children) {
+      if (child.hasAttribute('title')) continue
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
 

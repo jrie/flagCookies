@@ -145,18 +145,41 @@ async function clearCookiesWrapper (action, doChromeLoad) {
   let domain = getURLDomain(domainURL)
   let cookies
   let cookiesURL = []
+  let cookiesSec = []
   if (currentTab.cookieStoreId !== undefined) {
     cookies = await browser.cookies.getAll({domain: domain, storeId: currentTab.cookieStoreId})
     cookiesURL = await browser.cookies.getAll({url: domainURL, storeId: currentTab.cookieStoreId})
-
+    cookiesSec = await browser.cookies.getAll({domain: domain, secure: true, storeId: currentTab.cookieStoreId})
     await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   } else {
     cookies = await browser.cookies.getAll({domain: domain})
     cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www./, '/')})
+    cookiesSec = await browser.cookies.getAll({domain: domain, secure: true})
   }
 
+  let hasCookie = false
   for (let cookie of cookiesURL) {
-    cookies.push(cookie)
+    hasCookie = false
+    for (let cookieEntry of cookies) {
+      if (cookieEntry.name === cookie.name) {
+        hasCookie = true
+        break
+      }
+    }
+
+    if (!hasCookie) cookies.push(cookie)
+  }
+
+  for (let cookie of cookiesSec) {
+    hasCookie = false
+    for (let cookieEntry of cookies) {
+      if (cookieEntry.name === cookie.name) {
+        hasCookie = true
+        break
+      }
+    }
+
+    if (!hasCookie) cookies.push(cookie)
   }
 
   if (currentTab.cookieStoreId !== undefined) clearCookiesAction(action, data, cookies, domainURL, currentTab.cookieStoreId)
@@ -190,7 +213,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
   let urls = [domainURL]
 
   if (domainURL.indexOf('www.') !== -1) {
-    urls.push(domainURL.replace('www.', '/'))
+    urls.push(domainURL.replace('www.', ''))
     domainURL = domainURL.replace('www.', '')
     urls.push(domainURL)
   }
@@ -216,12 +239,15 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
 
     for (let cookieEntry of cookieData[domainURL][activeCookieStore]) {
       if (cookieEntry.name === cookie.name) {
-        if (!useChrome && cookieEntry.storeId !== undefined) {
-          if (cookieEntry.storeId === cookie.storeId) {
-            cookieData[domainURL][activeCookieStore][index] = cookie
-            foundCookie = true
-            break
-          }
+        if (!useChrome && cookie.secure) {
+          let msg = "Cannot delete secure cookie, cookie: '" + cookie.name + "' for '" + domainURL + "'"
+          addToLogData(msg)
+          foundCookie = true
+          break
+        } else if (!useChrome && cookieEntry.storeId !== undefined && cookieEntry.storeId === cookie.storeId) {
+          cookieData[domainURL][activeCookieStore][index] = cookie
+          foundCookie = true
+          break
         } else {
           cookieData[domainURL][activeCookieStore][index] = cookie
           foundCookie = true
@@ -233,12 +259,8 @@ async function clearCookiesAction (action, data, cookies, domainURL, activeCooki
 
     if (!foundCookie) {
       if (!useChrome && cookie.storeId !== undefined) {
-        if (cookie.storeId === activeCookieStore) {
-          cookieData[domainURL][activeCookieStore].push(cookie)
-        }
-      } else {
-        cookieData[domainURL][activeCookieStore].push(cookie)
-      }
+        if (cookie.storeId === activeCookieStore) cookieData[domainURL][activeCookieStore].push(cookie)
+      } else cookieData[domainURL][activeCookieStore].push(cookie)
     }
   }
 
@@ -571,7 +593,7 @@ function displayCookieDeleteChrome (data, count, tabDomain, contextName) {
 }
 
 function clearCookiesOnLeave (tabId, moveInfo) {
-  removeTabIdfromDataList(tabId, moveInfo)
+  //removeTabIdfromDataList(tabId, moveInfo)
   clearCookiesWrapper('tab close', useChrome)
 }
 
@@ -847,7 +869,7 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
 }
 
 async function clearCookiesOnWindowClose (window) {
-  await removeTabIdfromDataList(window)
+  removeTabIdfromDataList(window)
 }
 
 
