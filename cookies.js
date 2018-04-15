@@ -46,7 +46,7 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, doLo
     chrome.cookies.getAll({domain: domain}, function (cookies) { checkChromeHadNoErrors(); chromeGetStorageAndClearCookies(action, data, cookies, domainURL, true) })
     return
   } else if (doLoadURLCookies === true) {
-    let cookieDomain = domainURL.replace(/\/www./, '/')
+    let cookieDomain = domainURL.replace(/\/www./, '')
     chrome.cookies.getAll({url: cookieDomain}, function (cookieSub) {
       checkChromeHadNoErrors()
 
@@ -60,6 +60,18 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, doLo
   }
 
   clearCookiesAction(action, data, cookies, domainURL, 'default')
+}
+
+function getChromeStorageForFunc2 (func, par1, par2) {
+  chrome.storage.local.get(null, function (data) {
+    if (checkChromeHadNoErrors()) {
+      if (hasConsole) console.log('Browser retrieved storage data.')
+
+      func(data, par1, par2)
+    } else if (hasConsole) {
+      console.log('Browser storage retrieval error.')
+    }
+  })
 }
 
 function getChromeStorageForFunc3 (func, par1, par2, par3) {
@@ -461,7 +473,7 @@ function chromeUpdateLogData (data, writeData) {
 }
 
 async function clearCookiesOnNavigate (details) {
-  if (details.parentFrameId === undefined || details.parentFrameId !== -1 || details.url === undefined || details.url.startsWith('about:')) return
+  if (details.parentFrameId === undefined || details.parentFrameId !== -1 || details.url === undefined || details.url.startsWith('about:') || details.url.startsWith('chrome:')) return
 
   let activeCookieStore = 'default'
   if (!useChrome) {
@@ -474,7 +486,7 @@ async function clearCookiesOnNavigate (details) {
   }
 
   let domainURL
-  let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
+  let urlMatch = details.url.replace(/\/www\./, '').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
   if (urlMatch) {
     domainURL = urlMatch[0]
   } else {
@@ -497,7 +509,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     else browser.browserAction.disable(tab.id)
     clearCookiesWrapper('tab reload/load', useChrome)
   } else if (changeInfo.status && changeInfo.status === 'complete') {
-    let urlMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
+    let urlMatch = tab.url.replace(/\/www\./, '').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
 
     let tabDomain
     if (urlMatch) tabDomain = urlMatch[0]
@@ -506,6 +518,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     let statuses = ['Global-flag', 'Auto-flag', 'Deleted', 'Permitted']
     let hasTitleChange = false
 
+    if (logData[contextName] === undefined) return
     for (let status of statuses) {
       let titleJoin = []
       let index = 0
@@ -823,15 +836,22 @@ async function onContextRemoved (changeInfo) {
 // --------------------------------------------------------------------------------------------------------------------------------
 let browserData = null
 let openTabData = {}
+let tabLoadAttempts = 0
 async function addTabURLtoDataList (tab) {
   if (openTabData[tab.windowId] === undefined) openTabData[tab.windowId] = {}
-  openTabData[tab.windowId][tab.id] = {'s': tab.cookieStoreId, 'u': tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)[0], 'd': getURLDomain(tab.url)}
+  if (!tab.url.startsWith('chrome:') && !tab.url.startsWith('about:')) {
+    if (useChrome) {
+      openTabData[tab.windowId][tab.id] = {'u': tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)[0], 'd': getURLDomain(tab.url)}
+      return
+    }
+    openTabData[tab.windowId][tab.id] = {'s': tab.cookieStoreId, 'u': tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)[0], 'd': getURLDomain(tab.url)}
+  }
 }
 
-async function removeTabIdfromDataList (tabId, removeInfo) {
+async function removeTabIdfromDataList (data, tabId, removeInfo) {
   if (removeInfo === undefined) {
     for (let tab of Object.keys(openTabData[tabId])) {
-      removeTabIdfromDataList(tab, {'windowId': tabId})
+      removeTabIdfromDataList(null, tab, {'windowId': tabId})
     }
     return
   }
@@ -841,7 +861,21 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
   let cookiesURL = []
 
   if (browserData === null) {
-    browserData = await browser.storage.local.get()
+    if (!useChrome) {
+      browserData = await browser.storage.local.get()
+    } else {
+      if (data === null) {
+        getChromeStorageForFunc2(removeTabIdfromDataList, tabId, removeInfo)
+        return
+      }
+
+      browserData = data
+    }
+  }
+
+  if (useChrome) {
+    chromeGetStorageAndClearCookies ('tab removed', browserData, null, tabData['u'], true)
+    return
   }
 
   if (tabData['s'] !== undefined) {
@@ -869,20 +903,31 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
 }
 
 async function clearCookiesOnWindowClose (window) {
-  removeTabIdfromDataList(window)
+  removeTabIdfromDataList(null, window)
 }
 
 
 async function gatherTabInformation (event) {
-  let tabs = await browser.tabs.query({windowId: window.id})
-
-  for (let tab of tabs) {
-    addTabURLtoDataList(tab)
+  if (tabLoadAttempts < 4) {
+    setTimeout(gatherTabInformation, 3000)
+  } else {
+    tabLoadAttempts = 0
+    return
   }
+
+  if (useChrome) {
+    ++tabLoadAttempts
+    chrome.tabs.query({windowId: window.id}, function (tabs) { for (let tab of tabs) addTabURLtoDataList(tab) })
+    return
+  }
+
+  ++tabLoadAttempts
+  let tabs = await browser.tabs.query({windowId: window.id})
+  for (let tab of tabs) addTabURLtoDataList(tab)
 }
 
 function addTabURLsToDataList (window) {
-  setTimeout(gatherTabInformation, 5000)
+  setTimeout(gatherTabInformation, 1000)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -894,6 +939,11 @@ if (useChrome) {
   chrome.runtime.onMessage.addListener(handleMessage)
   chrome.commands.onCommand.addListener(getCommand)
   chrome.cookies.onChanged.addListener(onCookieChanged)
+
+  chrome.windows.onCreated.addListener(addTabURLsToDataList)
+  chrome.windows.onFocusChanged.addListener(addTabURLsToDataList)
+  chrome.windows.onRemoved.addListener(clearCookiesOnWindowClose)
+  chrome.tabs.onCreated.addListener(addTabURLtoDataList)
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)
