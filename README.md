@@ -5,7 +5,7 @@ A cookie manager on steroids.
 
 **Flag Cookies distinguishes between base and subdomains** for the following features:
 
-- Automatically delete flagged cookies for a domain on tab load/reload/tab or window close and while browsing
+- Automatically delete flagged cookies for a domain on tab load/reload/tab or window close (window close has some issue with first/last window) and while browsing
 - Profile feature - to switch between "logged into a website" and "not logged into" to remove or keep cookies on demand
 - Explicitly allow cookies through "permit" permission
 - "Auto flag" one domain, affects only this (sub)domain, to delete all-non permitted cookies, even "unknown" on tab actions
