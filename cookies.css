@@ -188,6 +188,10 @@ li:hover .cookieValue {
   color: #fff;
 }
 
+li:hover .secure-cookie {
+  color: #ff7000;
+}
+
 .cookieKey {
   font-size: 1.15em;
   font-weight: bold;
@@ -197,6 +201,15 @@ li:hover .cookieValue {
 .cookieValue {
   color: #779;
   font-size: 0.85em;
+}
+
+.secure-cookie {
+  color: #9a0000;
+  position: relative;
+  top:  -1px;
+  margin-left: 0.7em;
+  font-size: 0.75em;
+  font-weight: bold;
 }
 
 #cookie-list p,
