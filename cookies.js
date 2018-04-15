@@ -837,14 +837,20 @@ async function onContextRemoved (changeInfo) {
 let browserData = null
 let openTabData = {}
 let tabLoadAttempts = 0
+let tabsToGather = {}
+
 async function addTabURLtoDataList (tab) {
   if (openTabData[tab.windowId] === undefined) openTabData[tab.windowId] = {}
   if (!tab.url.startsWith('chrome:') && !tab.url.startsWith('about:')) {
+    --tabsToGather[tab.windowId]
+
     if (useChrome) {
       openTabData[tab.windowId][tab.id] = {'u': tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)[0], 'd': getURLDomain(tab.url)}
       return
     }
+
     openTabData[tab.windowId][tab.id] = {'s': tab.cookieStoreId, 'u': tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)[0], 'd': getURLDomain(tab.url)}
+    return
   }
 }
 
@@ -903,31 +909,44 @@ async function removeTabIdfromDataList (data, tabId, removeInfo) {
 }
 
 async function clearCookiesOnWindowClose (window) {
+  delete tabsToGather[window]
   removeTabIdfromDataList(null, window)
 }
 
-
-async function gatherTabInformation (event) {
-  if (tabLoadAttempts < 4) {
-    setTimeout(gatherTabInformation, 3000)
-  } else {
-    tabLoadAttempts = 0
-    return
-  }
-
+async function gatherTabInformation (windowId) {
   if (useChrome) {
     ++tabLoadAttempts
-    chrome.tabs.query({windowId: window.id}, function (tabs) { for (let tab of tabs) addTabURLtoDataList(tab) })
-    return
+
+    chrome.tabs.query({windowId: windowId}, function (tabs) {
+      if (tabLoadAttempts === 0) tabsToGather[windowId] = tabs.length
+      for (let tab of tabs) addTabURLtoDataList(tab)
+
+      if (tabLoadAttempts < 4 && tabsToGather[windowId] !== 0) {
+        setTimeout(function () { gatherTabInformation(windowId) }, 3000)
+      }
+    })
   }
 
-  ++tabLoadAttempts
-  let tabs = await browser.tabs.query({windowId: window.id})
+  let tabs = await browser.tabs.query({windowId: windowId})
+  if (tabLoadAttempts === 0) tabsToGather[windowId] = tabs.length
+
   for (let tab of tabs) addTabURLtoDataList(tab)
+
+  if (tabLoadAttempts < 4 && tabsToGather[windowId] !== 0) {
+    setTimeout(function () { gatherTabInformation(windowId) }, 3000)
+  }
 }
 
 function addTabURLsToDataList (window) {
-  setTimeout(gatherTabInformation, 1000)
+  if (window.id !== undefined && window.id === -1) return
+  else if (window === -1) return
+
+  tabLoadAttempts = 0
+  if (window.id !== undefined) {
+    setTimeout(function () { gatherTabInformation(window.id) }, 1000)
+  } else {
+    setTimeout(function () { gatherTabInformation(window) }, 1000)
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
