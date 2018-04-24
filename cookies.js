@@ -912,7 +912,6 @@ async function clearCookiesOnWindowClose (window) {
 
 async function gatherTabInformation (windowId) {
   if (useChrome) {
-
     chrome.tabs.query({windowId: windowId}, function (tabs) {
       if (tabLoadAttempts === 0) tabsToGather[windowId] = tabs.length
       for (let tab of tabs) addTabURLtoDataList(tab)
@@ -923,6 +922,7 @@ async function gatherTabInformation (windowId) {
 
       ++tabLoadAttempts
     })
+    return
   }
 
   let tabs = await browser.tabs.query({windowId: windowId})
@@ -952,6 +952,33 @@ function addTabURLsToDataList (window) {
 }
 
 
+async function clearCookiesOnRequestChrome (details) {
+  chrome.tabs.query({currentWindow: true, active: true}, function (activeTabs) {
+    if (!checkChromeHadNoErrors()) return
+    if (activeTabs.length !== 0) {
+      let currentTab = activeTabs.pop()
+
+      if (currentTab.status === 'complete') return
+      currentTab.url = details.url
+
+      if (openTabData[currentTab.windowId] === undefined) openTabData[currentTab.windowId] = {}
+
+      let activeCookieStore = 'default'
+      openTabData[currentTab.windowId][currentTab.id] = {'u': currentTab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)[0], 'd': getURLDomain(currentTab.url)}
+
+      let domainURL
+      let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)
+      if (urlMatch !== null) domainURL = urlMatch[0]
+      else domainURL = details.url.replace(/\/www\./, '/')
+
+      clearDomainLog(domainURL, activeCookieStore)
+      chromeGetStorageAndClearCookies('document load', null, null, domainURL, false)
+    }
+  })
+}
+
+
+
 async function clearCookiesOnRequest (details) {
   if (details.method === 'GET') {
     let currentTab = await getActiveTabFirefox()
@@ -962,13 +989,8 @@ async function clearCookiesOnRequest (details) {
     if (openTabData[currentTab.windowId] === undefined) openTabData[currentTab.windowId] = {}
 
     let activeCookieStore = 'default'
-    if (!useChrome) {
-      if (currentTab.cookieStoreId !== undefined) {
-        activeCookieStore = currentTab.cookieStoreId
-      }
-    } else {
-      openTabData[currentTab.windowId][currentTab.id] = {'u': currentTab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-]*\//)[0], 'd': getURLDomain(currentTab.url)}
-      return
+    if (currentTab.cookieStoreId !== undefined) {
+      activeCookieStore = currentTab.cookieStoreId
     }
 
     let domainURL
@@ -1032,7 +1054,7 @@ async function clearCookiesOnRequest (details) {
 if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
   chrome.tabs.onUpdated.addListener(clearCookiesOnUpdate)
-  chrome.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
+  //chrome.webNavigation.onBeforeNavigate.addListener(clearCookiesOnNavigate)
   chrome.runtime.onMessage.addListener(handleMessage)
   chrome.commands.onCommand.addListener(getCommand)
   chrome.cookies.onChanged.addListener(onCookieChanged)
@@ -1041,6 +1063,8 @@ if (useChrome) {
   chrome.windows.onFocusChanged.addListener(addTabURLsToDataList)
   chrome.windows.onRemoved.addListener(clearCookiesOnWindowClose)
   chrome.tabs.onCreated.addListener(addTabURLtoDataList)
+  chrome.webRequest.onBeforeRequest.addListener(clearCookiesOnRequestChrome, {urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest']}, ['blocking'])
+
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)
@@ -1054,5 +1078,5 @@ if (useChrome) {
   browser.windows.onFocusChanged.addListener(addTabURLsToDataList)
   browser.windows.onRemoved.addListener(clearCookiesOnWindowClose)
   browser.tabs.onCreated.addListener(addTabURLtoDataList)
-  browser.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, {urls: ["<all_urls>"], types: ['main_frame', 'sub_frame', 'xmlhttprequest']}, ['blocking'])
+  browser.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, {urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest']}, ['blocking'])
 }
