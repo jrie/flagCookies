@@ -1075,6 +1075,7 @@ async function resetUIDomain (data) {
   for (let child of cookieList.children) {
     let contentChild = child.children[0]
     let contentChildProfile = child.children[2]
+    if (contentChildProfile === undefined) continue
 
     if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
       contentChild.className = 'checkmark auto-flagged'
@@ -1195,7 +1196,7 @@ async function dumpProfileCookieNeutral (data, event) {
   let cookieList = document.getElementById('cookie-list')
   for (let child of cookieList.children) {
     let contentChild = child.children[2]
-    if (contentChild.dataset['name'] === cookieName) {
+    if (contentChild !== undefined && contentChild.dataset['name'] === cookieName) {
       contentChild.className = contentChild.className.replace(' locked', '')
       contentChild.title = 'Set this cookie as profile-mode cookie'
       break
