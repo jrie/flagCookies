@@ -191,7 +191,7 @@ function updateUIData (data, cookies, activeCookieStoreName) {
     for (let cookie of cookies) {
       let li = document.createElement('li')
 
-      if (!useChrome && cookie.secure) {
+      if (cookie['fgHandled'] && !cookie['fgAllowed'] && !cookie['fgRemoved']) {
         let p = document.createElement('p')
 
         let pCookieKeyElm = document.createElement('span')
@@ -202,9 +202,7 @@ function updateUIData (data, cookies, activeCookieStoreName) {
         let pCookieKeySecMessageElm = document.createElement('span')
         let pCookieKeySecMessage = document.createTextNode('(secure cookie)')
         pCookieKeySecMessageElm.className = 'secure-cookie'
-
         pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
-        pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
 
         let pCookieValueElm = document.createElement('span')
         let pCookieValue = document.createTextNode(cookie.value)
@@ -215,6 +213,7 @@ function updateUIData (data, cookies, activeCookieStoreName) {
         p.appendChild(pCookieValueElm)
         li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
         li.appendChild(p)
+        li.appendChild(pCookieKeySecMessageElm)
 
         cookieList.appendChild(li)
         continue
@@ -267,11 +266,24 @@ function updateUIData (data, cookies, activeCookieStoreName) {
       pCookieValueElm.appendChild(pCookieValue)
 
       p.appendChild(pCookieKeyElm)
+
+      if (cookie.secure) {
+        let pCookieKeySecMessageElm = document.createElement('span')
+        let pCookieKeySecMessage = document.createTextNode('(secure cookie)')
+        pCookieKeySecMessageElm.className = 'secure-cookie'
+        pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
+        p.appendChild(pCookieKeySecMessageElm)
+        p.title = 'This cookie is secure for the domain and might not be handled due to host permission restrictions.'
+      }
+
       p.appendChild(pCookieValueElm)
 
       li.appendChild(checkMark)
       li.appendChild(p)
       li.appendChild(lockSwitch)
+      if (cookie.secure) {
+
+      }
 
       cookieList.appendChild(li)
     }

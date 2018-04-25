@@ -168,7 +168,7 @@ li {
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   transition-property: background-color,border-color;
-  transition-duration: 300ms;
+  transition-duration: 150ms;
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.35);
 }
 
@@ -192,6 +192,11 @@ li:hover .secure-cookie {
   color: #ff7000;
 }
 
+.cookieKey, .cookieValue, .secure-cookie {
+  transition-property: color;
+  transition-duration: 150ms;
+}
+
 .cookieKey {
   font-size: 1.15em;
   font-weight: bold;
@@ -205,9 +210,7 @@ li:hover .secure-cookie {
 
 .secure-cookie {
   color: #9a0000;
-  position: relative;
-  top:  -1px;
-  margin-left: 0.7em;
+  display: block;
   font-size: 0.75em;
   font-weight: bold;
 }
