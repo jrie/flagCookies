@@ -215,6 +215,12 @@ li:hover .secure-cookie {
   font-weight: bold;
 }
 
+span.subloaded {
+  color: #9a0000;
+  margin-right: 1em;
+  text-decoration: underline;
+}
+
 #cookie-list p,
 #cookie-list-flagged p,
 #cookie-list-permitted p {
@@ -231,13 +237,12 @@ button {
   text-align: center;
   background-color: #446;
   border-radius: 24px 24px;
-  border: 1px solid #666;
   font-weight: bold;
+  border: none;
   padding: 7px 12px 8px 12px;
   cursor: pointer;
   color: #ddd;
 }
-
 
 .chrome button {
     padding: 8px 12px 7px 12px;
@@ -290,10 +295,16 @@ button.checkmark {
 }
 
 button.checkmark,
+button.checkmark-confirm {
+  border: 1px solid #aac;
+  transition-duration: 250ms;
+  transition-property: border;
+}
+
+button.checkmark,
 button.checkmark-confirm,
 button.setKeyCookie {
   cursor: pointer;
-  border: 1px solid #557;
   border-radius: 4px;
   width: 26px;
   height: 26px;
@@ -311,7 +322,7 @@ button.checkmark-confirm {
 button.setKeyCookie {
   position: absolute;
   background-color: #ddd;
-  border: 1px solid #ddd;
+  border: 1px solid #fff;
   border-radius: 12px;
   top: 12px;
   right: 14px;
@@ -341,7 +352,7 @@ button.checkmark.permit {
 }
 
 li:hover button.checkmark {
-  border: 1px solid #000;
+  border: 1px solid #446;
 }
 
 button#auto-flag,
@@ -493,7 +504,7 @@ textarea#log {
   min-height: 10em;
   max-height: 10em;
   resize:none;
-  font-size: 1em;
+  font-size: 0.85em;
 }
 
 .chrome textarea#log {
