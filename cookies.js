@@ -206,7 +206,6 @@ function handleMessage (request, sender, sendResponse) {
     for (let key of Object.keys(domainData)) {
       if (domainData[key]['isRoot'] !== undefined) {
         rootDomain = domainData[key].u
-        console.log(rootDomain)
         cookieDataDomain[rootDomain] = []
         for (let cookieInfo of cookieData[rootDomain][request.storeId]) {
           cookieDataDomain[rootDomain].push(cookieInfo)
@@ -215,8 +214,6 @@ function handleMessage (request, sender, sendResponse) {
         break
       }
     }
-
-    console.log(rootDomain)
 
     for (let key of Object.keys(domainData)) {
       if (domainData[key]['isRoot'] !== undefined) continue
@@ -255,7 +252,6 @@ function handleMessage (request, sender, sendResponse) {
 // Clear the cookies which are enabled for the domain in browser storage
 async function clearCookiesAction (action, data, cookies, domainURL, currentTab, activeCookieStore) {
   if (domainURL === '' || cookies === undefined) return
-  console.log(domainURL)
   let urls = [domainURL]
 
   if (domainURL.indexOf('www.') !== -1) {
@@ -378,7 +374,6 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         let msg = "Allowed profile cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
         addToLogData(currentTab, msg)
         cookie['fgAllowed'] = true
-        if (hasConsole) console.log(msg)
         continue
       } else if (data[contextName] !== undefined && data[contextName][domainURL] !== undefined && data[contextName][domainURL][cookie.name] !== undefined && data[contextName][domainURL][cookie.name] === false) {
         let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
@@ -488,33 +483,10 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     }
   }
 
-  if (cookieData[domainURL] !== undefined && cookieData[domainURL][activeCookieStore] !== undefined && action.toLowerCase().indexOf(' close') !== -1) {
-    delete cookieData[domainURL][activeCookieStore]
-
-    if (Object.keys(cookieData[domainURL]).length === 0) delete cookieData[domainURL]
-
-    if (data[contextName] !== undefined) {
-      let hasDeleted = false
-      if (data[contextName][domainURL] !== undefined && Object.keys(data[contextName][domainURL]).length === 0) {
-        delete data[contextName][domainURL]
-        hasDeleted = true
-      }
-
-      if (Object.keys(data[contextName]).length === 0) {
-        if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
-        else await browser.storage.local.remove(contextName)
-        delete data[contextName]
-      } else if (hasDeleted) {
-        if (useChrome) setChromeStorage(data)
-        else await browser.storage.local.set(data)
-      }
-    }
-  }
-
   if (data['flagCookies'] === undefined) data['flagCookies'] = {}
   if (data['flagCookies']['logData'] === undefined) data['flagCookies']['logData'] = {}
   if (data['flagCookies']['logData'][contextName] === undefined) data['flagCookies']['logData'][contextName] = []
-  data['flagCookies']['logData'][contextName] = logData[contextName]
+  data['flagCookies']['logData'][contextName] = logData[contextName].sort()
 
   if (useChrome) setChromeStorage(data)
   else await browser.storage.local.set(data)
@@ -894,8 +866,59 @@ function addTabURLtoDataList (tab, details) {
 
 async function removeTabIdfromDataList (tabId, removeInfo) {
   if (removeInfo === undefined) return
-
   if (openTabData[removeInfo.windowId] !== undefined && openTabData[removeInfo.windowId][tabId] !== undefined) {
+
+    let domainData = openTabData[removeInfo.windowId][tabId]
+    let rootDomain = null
+    let activeCookieStore = 'default'
+
+    for (let key of Object.keys(domainData)) {
+      if (domainData[key]['isRoot'] !== undefined) {
+        rootDomain = domainData[key].u
+        if (domainData[key]['s'] !== undefined) {
+          activeCookieStore = domainData[key].s
+        }
+        break
+      }
+    }
+
+    if (rootDomain !== null && cookieData[rootDomain] !== undefined && cookieData[rootDomain][activeCookieStore] !== undefined) {
+      delete cookieData[rootDomain][activeCookieStore]
+      if (Object.keys(cookieData[rootDomain]).length === 0) delete cookieData[rootDomain]
+    }
+
+    if (useChrome) {
+      chrome.storage.local.get(null, function (data) {
+        if (data[activeCookieStore] !== undefined) {
+          let hasDeleted = false
+          if (data[activeCookieStore][rootDomain] !== undefined && Object.keys(data[activeCookieStore][rootDomain]).length === 0) {
+            delete data[activeCookieStore][rootDomain]
+            hasDeleted = true
+          }
+
+          if (Object.keys(data[activeCookieStore]).length === 0) {
+            chrome.storage.local.remove(activeCookieStore, function () { checkChromeHadNoErrors() })
+            delete data[activeCookieStore]
+          } else if (hasDeleted) setChromeStorage(data)
+        }
+      })
+    } else {
+      let data = await browser.storage.local.get(null)
+
+      if (data[activeCookieStore] !== undefined) {
+        let hasDeleted = false
+        if (data[activeCookieStore][rootDomain] !== undefined && Object.keys(data[activeCookieStore][rootDomain]).length === 0) {
+          delete data[activeCookieStore][rootDomain]
+          hasDeleted = true
+        }
+
+        if (Object.keys(data[activeCookieStore]).length === 0) {
+          await browser.storage.local.remove(activeCookieStore)
+          delete data[activeCookieStore]
+        } else if (hasDeleted) await browser.storage.local.set(data)
+      }
+    }
+
     delete openTabData[removeInfo.windowId][tabId]
     if (Object.keys(openTabData[removeInfo.windowId]).length === 0) {
       delete openTabData[removeInfo.windowId]
