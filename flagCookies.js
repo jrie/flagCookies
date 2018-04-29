@@ -10,6 +10,7 @@ function checkChromeHadNoErrors () {
   if (chrome.runtime.lastError) {
     if (hasConsole) {
       if (chrome.runtime.lastError.message !== undefined) {
+        console.log(chrome.runtime.lastError)
         console.log('Browser had an error, with mesage: ' + chrome.runtime.lastError.message)
       } else {
         console.log('Browser had an error.')
@@ -154,7 +155,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
   let flaggedCookieList = document.getElementById('cookie-list-flagged')
   let loggedInCookieList = document.getElementById('loggedInCookies')
 
-  if (cookies.cookies === null || Object.keys(cookies.cookies) === 0) {
+  if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
     let infoDisplay = document.getElementById('infoDisplay')
     let contentText = 'No active cookies for domain, you might need to reload the tab.'
     infoDisplay.children[0].textContent = contentText
@@ -313,7 +314,19 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
   document.getElementById('activeCookies').className = 'active'
   if (data['flagCookies'] !== undefined && data['flagCookies']['logData'] !== undefined && data['flagCookies']['logData'][contextName] !== undefined && data['flagCookies']['logData'][contextName][tab.windowId] !== undefined && data['flagCookies']['logData'][contextName][tab.windowId][tab.id] !== undefined) {
     let log = document.getElementById('log')
+    let foundCookies = []
     for (let entry of data['flagCookies']['logData'][contextName][tab.windowId][tab.id]) {
+      if (entry.indexOf('deleted') !== -1) {
+        let cookieName = entry.match(/cookie: '[^']*/)[0]
+        let cookieDomain = entry.match(/for '[^']*/)[0]
+        cookieName = cookieName.substr(cookieName.indexOf("'") + 1, cookieName.length)
+        cookieDomain = cookieName.substr(cookieDomain.indexOf("'") + 1, cookieDomain.length)
+        let cookieString = cookieName + ' ' + cookieDomain
+
+        if (foundCookies.indexOf(cookieString) !== -1) continue
+        foundCookies.push(cookieString)
+      }
+
       log.textContent += entry + '\n'
     }
   }
