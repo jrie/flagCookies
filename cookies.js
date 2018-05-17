@@ -356,7 +356,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   let hasLogged = false
   if (hasProfile) {
     hasLogged = data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][domainURL] !== undefined
-    if (Object.keys(data['flagCookies_logged'][contextName][domainURL]).length === 0) protectDomainCookies = true
+    if (hasLogged && Object.keys(data['flagCookies_logged'][contextName][domainURL]).length === 0) protectDomainCookies = true
   }
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][contextName] && data['flagCookies_autoFlag'][contextName][domainURL]) {
@@ -1060,7 +1060,6 @@ async function clearCookiesOnRequestChrome (details) {
 }
 
 async function clearCookiesOnRequest (details) {
-  console.log(details)
   if (details.method === 'GET' && details.tabId !== -1) {
     let currentTab = await getActiveTabFirefox()
 
