@@ -356,7 +356,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   let hasLogged = false
   if (hasProfile) {
     hasLogged = data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][domainURL] !== undefined
-    if (hasLogged && Object.keys(data['flagCookies_logged'][contextName][domainURL]).length === 0) protectDomainCookies = true
+    if (data['flagCookies_logged'] === undefined || data['flagCookies_logged'][contextName] === undefined || data['flagCookies_logged'][contextName][domainURL] === undefined || Object.keys(data['flagCookies_logged'][contextName][domainURL]).length === 0) protectDomainCookies = true
   }
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][contextName] && data['flagCookies_autoFlag'][contextName][domainURL]) {
