@@ -10,14 +10,14 @@
       <div class="panel-section-header">
         <div id="header-title"></div>
         <div id="tabs">
-          <button id="activeCookies" data-target="cookie-list" title="Show and manage all discovered domain cookies">Cookies</button>
-          <button id="flaggedCookies" data-target="cookie-list-flagged"  title="Show manual flagged cookies which are deleted for this domain">Flagged</button>
-          <button id="permittedCookies" data-target="cookie-list-permitted"  title="Show manual permitted domain cookies which are to be kept">Permitted</button>
+          <button id="activeCookies" data-target="cookie-list" title="Show and manage all discovered domain cookies.">Cookies</button>
+          <button id="flaggedCookies" data-target="cookie-list-flagged"  title="Show manual flagged cookies which are deleted for this domain.">Flagged</button>
+          <button id="permittedCookies" data-target="cookie-list-permitted"  title="Show own permitted domain cookies which are to be kept.">Permitted</button>
         </div>
         <hr/>
-        <button id="global-flag" title="Delete cookies for all domains if not permitted or while protected in 'profile' mode">Global</button>
-        <button id="auto-flag" title="Delete cookies for this (sub)domain if not permitted or while protected in 'profile' mode">Auto flag</button>
-        <button id="account-mode" title="Profile mode - Selected 'key icon' cookies wont be deleted by global, auto-flag or by regular flagging on page load/reload/navigation or tab and window close. This is the 'logged in account' state. You can also manage the cookie list in 'preferences'.\nIf no cookies are keyed, profile mode will allow all domain cookies.">Profile</button>
+        <button id="global-flag" title="Delete cookies for all domains, if not permitted or while protected in 'profile' mode.">Global</button>
+        <button id="auto-flag" title="Delete cookies for this (sub)domain, if not permitted or while protected in 'profile' mode.">Auto flag</button>
+        <button id="account-mode" title="Profile mode - Selected 'key icon' cookies wont be deleted by global, auto-flag or by regular flagging modes on page load/reload/navigation.&#10;If no cookies are keyed, profile mode will allow all domain cookies.&#10;This is the 'logged in account' state. You can also manage the profile cookies list in 'preferences'.">Profile</button>
         <input type="text" placeholder="Search cookie list" id="searchBar" />
       </div>
 
@@ -27,12 +27,12 @@
           <ul class="hidden" id="cookie-list-flagged"></ul>
           <ul class="hidden" id="cookie-list-permitted"></ul>
           <div class="hidden" id="settings-view">
-            <div id="settings-log"><div class="settings-title setting-info" title="The log shows all cookie delete and permit actions for the active domain"><p>Page action log</p></div><textarea id="log" title="Logged actions of flag cookies on page actions like reload/load" disabled="disabled" placeholder="Cookie actions on page actions"></textarea></div>
+            <div id="settings-log"><div class="settings-title setting-info" title="The log shows all cookie delete and permit actions for the active domain."><p>Page action log</p></div><textarea id="log" title="Logged actions of flag cookies on page actions like reload/load." disabled="disabled" placeholder="Cookie actions on page actions"></textarea></div>
 
             <hr/>
 
-            <div id="settings-domains"><div class="settings-title setting-info" title="Domain related settings and control"><p>Domain settings</p></div>
-              <div id="domain-confirm-clear" title="Please check the box to confirm domain data clearing"><button id="confirmDomainClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="domain-action-clear" title="This will delete all domain related data from Flag Cookies">Delete domain settings</button>
+            <div id="settings-domains"><div class="settings-title setting-info" title="Domain related settings and control."><p>Domain settings</p></div>
+              <div id="domain-confirm-clear" title="Please check the box to confirm domain data clearing."><button id="confirmDomainClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="domain-action-clear" title="This will delete all domain related data from Flag Cookies.">Delete domain settings</button>
               <div id="domainDetails">
                 <button class="profileTab" data-target="loggedIn">Logged in profile</button>
                 <div id="profilePane">
@@ -44,17 +44,17 @@
 
             <hr/>
 
-            <div id="settings-general"><div class="settings-title setting-info" title="Flag Cookies general and global settings"><p>Add-on settings</p></div>
+            <div id="settings-general"><div class="settings-title setting-info" title="Flag Cookies general and global settings."><p>Add-on settings</p></div>
               <div class="inline-block">
-                <div id="settings-notification" title="Enable or disable notifactions"><button id="confirmNotifications" class="checkmark-confirm"></button><span>Display notifications</span></div>
-                <div id="settings-confirm-clear" title="Please check the box to confirm storage clearing"><button id="confirmSettingsClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="settings-action-clear" title="This will delete all domain and cookie settings of Flag Cookies">Delete all stored settings</button>
+                <div id="settings-notification" title="Enable or disable browser notifactions."><button id="confirmNotifications" class="checkmark-confirm"></button><span>Display notifications</span></div>
+                <div id="settings-confirm-clear" title="Please check the box to confirm storage clearing."><button id="confirmSettingsClearing" class="checkmark-confirm"></button><span>Confirm clearing</span></div><button id="settings-action-clear" title="This will delete all and every domain and cookie settings of Flag Cookies.">Delete all stored settings</button>
               </div>
             </div>
 
           </div>
         </div>
 
-        <div class="legend"><p class="intro" title="Move the mouse over the items to receive help.">Flag legend</p><span id="leg-unhandled" title="Unhandled cookies are active but not handled through Flag Cookies">Unhandled</span><span id="leg-flagged" title="Flagged cookies will be deleted on page action">Flagged</span><span id="leg-permitted" title="Permitted cookies won't be removed by global or auto-flag">Permitted</span><span id="leg-auto-flagged" title="Global and auto-flagged cookies are deleted on page action">Auto flagged</span><button data-target="settings-view" id="prefs">Preferences</button></div>
+        <div class="legend"><p class="intro" title="Move the mouse over the items to receive help.">Flag legend</p><span id="leg-unhandled" title="Unhandled cookies are active but not handled through Flag Cookies.">Unhandled</span><span id="leg-flagged" title="Flagged cookies will be deleted on page action.">Flagged</span><span id="leg-permitted" title="Permitted cookies won't be removed by global or auto-flag.">Permitted</span><span id="leg-auto-flagged" title="Global and auto-flagged cookies are deleted on page action.">Auto flagged</span><button data-target="settings-view" id="prefs">Preferences</button></div>
       </div>
 
       <script src="flagCookies.js"></script>
