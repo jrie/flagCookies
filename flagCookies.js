@@ -992,14 +992,14 @@ async function toggleNotifications (event) {
     event.target.className += ' active'
     doSwitchOn = true
 
-    if (useChrome) chrome.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies: Notifications enabled', iconUrl: 'icons/cookie_128.png'})
-    else browser.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies: Notifications enabled', iconUrl: 'icons/cookie_128.png'})
+    if (useChrome) chrome.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png'})
+    else browser.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png'})
   } else {
     event.target.className = event.target.className.replace(' active', '')
     doSwitchOn = false
 
-    if (useChrome) chrome.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies: Notifications disabled', iconUrl: 'icons/cookie_128.png'})
-    else browser.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies: Notifications disabled', iconUrl: 'icons/cookie_128.png'})
+    if (useChrome) chrome.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png'})
+    else browser.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png'})
   }
 
   if (useChrome) {
@@ -1060,7 +1060,7 @@ async function clearDomain (event) {
         log.textContent = 'Error clearing domain data.'
       } else {
         getChromeStorageForFunc(resetUIDomain)
-        if (checkChromeHadNoErrors) log.textContent = 'Flag cookies domain data cleared'
+        if (checkChromeHadNoErrors) log.textContent = 'Flag cookies domain data cleared.'
       }
     })
 
@@ -1068,7 +1068,7 @@ async function clearDomain (event) {
   }
 
   if (await browser.storage.local.remove(domainURL) === null) {
-    log.textContent = 'Flag cookies domain data cleared'
+    log.textContent = 'Flag cookies domain data cleared.'
     let data = await browser.storage.local.get()
     resetUIDomain(data)
   } else {
