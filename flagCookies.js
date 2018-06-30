@@ -182,35 +182,8 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
       }
 
       for (let cookie of cookies.cookies[cookieKey]) {
+        if (cookie === undefined) continue
         let li = document.createElement('li')
-
-        if (cookie['fgHandled'] && !cookie['fgAllowed'] && !cookie['fgRemoved']) {
-          let p = document.createElement('p')
-
-          let pCookieKeyElm = document.createElement('span')
-          let pCookieKey = document.createTextNode(cookie.name)
-          pCookieKeyElm.className = 'cookieKey'
-          pCookieKeyElm.appendChild(pCookieKey)
-
-          let pCookieKeySecMessageElm = document.createElement('span')
-          let pCookieKeySecMessage = document.createTextNode('(secure cookie)')
-          pCookieKeySecMessageElm.className = 'secure-cookie'
-          pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
-
-          let pCookieValueElm = document.createElement('span')
-          let pCookieValue = document.createTextNode(cookie.value)
-          pCookieValueElm.className = 'cookieValue'
-          pCookieValueElm.appendChild(pCookieValue)
-
-          p.appendChild(pCookieKeyElm)
-          p.appendChild(pCookieKeySecMessageElm)
-          p.appendChild(pCookieValueElm)
-          li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
-          li.appendChild(p)
-
-          cookieList.appendChild(li)
-          continue
-        }
 
         let checkMark = document.createElement('button')
         checkMark.className = 'checkmark'
@@ -265,19 +238,21 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
           let pCookieKeySecMessage = document.createTextNode('(secure cookie)')
           pCookieKeySecMessageElm.className = 'secure-cookie'
           pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
+
           p.appendChild(pCookieKeySecMessageElm)
-          p.title = 'This cookie is secure for the domain and might not be handled due to host permission restrictions.'
+          p.appendChild(pCookieValueElm)
+          if (cookie['fgHandled'] && !cookie['fgAllowed'] && !cookie['fgRemoved']) {
+            li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
+            li.className = 'unremoved-secure-cookie'
+          }
+        } else {
+          p.appendChild(pCookieValueElm)
         }
 
-        p.appendChild(pCookieValueElm)
 
         li.appendChild(checkMark)
         li.appendChild(p)
         li.appendChild(lockSwitch)
-        if (cookie.secure) {
-
-        }
-
         cookieList.appendChild(li)
       }
     }

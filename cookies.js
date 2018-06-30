@@ -255,6 +255,7 @@ function handleMessage (request, sender, sendResponse) {
       if (domainData[key]['isRoot'] !== undefined) {
         rootDomain = domainData[key].u
         cookieDataDomain[rootDomain] = []
+        if (cookieData[rootDomain][request.storeId] === undefined) continue
         for (let cookieInfo of cookieData[rootDomain][request.storeId]) {
           cookieDataDomain[rootDomain].push(cookieInfo)
         }
@@ -271,7 +272,9 @@ function handleMessage (request, sender, sendResponse) {
       if (domainData[key]['isRoot'] !== undefined) continue
       let domainName = domainData[key].u
       if (cookieDataDomain[domainName] === undefined) cookieDataDomain[domainName] = []
+      if (cookieData[domainName][request.storeId] === undefined) continue
       for (let cookieInfo of cookieData[domainName][request.storeId]) {
+        if (cookieData[domainName][request.storeId] === undefined) continue
         let isFound = false
 
         for (let cookieExistingInfo of cookieDataDomain[domainName]) {
@@ -325,6 +328,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     let index = 0
 
     for (let cookieEntry of cookieData[domainURL][activeCookieStore]) {
+      if (cookieEntry === undefined) continue
       if (cookieEntry.name === cookie.name) {
         cookie['fgRemoved'] = false
         cookie['fgAllowed'] = true
@@ -358,6 +362,8 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     hasLogged = data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][domainURL] !== undefined
     if (data['flagCookies_logged'] === undefined || data['flagCookies_logged'][contextName] === undefined || data['flagCookies_logged'][contextName][domainURL] === undefined || Object.keys(data['flagCookies_logged'][contextName][domainURL]).length === 0) protectDomainCookies = true
   }
+
+  let cookieIndex = 0
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][contextName] && data['flagCookies_autoFlag'][contextName][domainURL]) {
     for (let cookie of cookieData[domainURL][activeCookieStore]) {
@@ -403,10 +409,14 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           }
 
           cookie['fgRemoved'] = true
-        } else {
-          let msg = "Cookie not present '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
-          addToLogData(currentTab, msg)
         }
+
+        if (!cookie['fgRemoved'] && !cookie.secure) {
+          delete cookieData[domainURL][activeCookieStore][cookieIndex]
+          continue
+        }
+
+        ++cookieIndex
 
         continue
       }
@@ -434,6 +444,13 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
         cookie['fgRemoved'] = true
       }
+
+      if (!cookie['fgRemoved'] && !cookie.secure) {
+        delete cookieData[domainURL][activeCookieStore][cookieIndex]
+        continue
+      }
+
+      ++cookieIndex
     }
   } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
     for (let cookie of cookieData[domainURL][activeCookieStore]) {
@@ -479,10 +496,14 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           }
 
           cookie['fgRemoved'] = true
-        } else {
-          let msg = "Cookie not present '" + action + "', cookie: '" + cookie.name + "' for '" + domainURL + "'"
-          addToLogData(currentTab, msg)
         }
+
+        if (!cookie['fgRemoved'] && !cookie.secure) {
+          delete cookieData[domainURL][activeCookieStore][cookieIndex]
+          continue
+        }
+
+        ++cookieIndex
 
         continue
       }
@@ -510,6 +531,13 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
         cookie['fgRemoved'] = true
       }
+
+      if (!cookie['fgRemoved'] && !cookie.secure) {
+        delete cookieData[domainURL][activeCookieStore][cookieIndex]
+        continue
+      }
+
+      ++cookieIndex
     }
   } else {
     if (data[contextName] === undefined || data[contextName][domainURL] === undefined || Object.keys(data[contextName][domainURL]) === 0) {
@@ -555,6 +583,13 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           cookie['fgRemoved'] = true
         }
 
+        if (!cookie['fgRemoved'] && !cookie.secure) {
+          delete cookieData[domainURL][activeCookieStore][cookieIndex]
+          continue
+        }
+
+        ++cookieIndex
+
         continue
       }
 
@@ -569,6 +604,13 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         addToLogData(currentTab, msg)
         cookie['fgRemoved'] = true
       }
+
+      if (!cookie['fgRemoved'] && !cookie.secure) {
+        delete cookieData[domainURL][activeCookieStore][cookieIndex]
+        continue
+      }
+
+      ++cookieIndex
     }
   }
 

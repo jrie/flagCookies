@@ -192,6 +192,10 @@ li:hover .secure-cookie {
   color: #ff7000;
 }
 
+li.unremoved-secure-cookie {
+  border: 1px solid #e00;
+}
+
 .cookieKey, .cookieValue, .secure-cookie {
   transition-property: color;
   transition-duration: 150ms;
