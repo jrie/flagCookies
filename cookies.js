@@ -909,6 +909,37 @@ function onCookieChanged (changeInfo) {
     if (!foundCookie) {
       cookieData[activeDomain][activeCookieStore].push(cookieDetails)
     }
+  } else if (changeInfo.removed && (changeInfo.cause === 'evicted' || changeInfo.cause === 'expired')) {
+    let cookieDetails = changeInfo.cookie
+
+    let activeCookieStore = 'default'
+
+    if (!useChrome) {
+      activeCookieStore = cookieDetails.storeId !== undefined ? cookieDetails.storeId : 'default'
+    }
+
+    let domainName = cookieDetails['domain'].charAt(0) === '.' ? cookieDetails['domain'].substr(1, cookieDetails['domain'].length) : cookieDetails['domain']
+
+    let activeDomain = null
+    for (let domainKey of Object.keys(cookieData)) {
+      if (domainKey.indexOf(domainName) !== -1) {
+        activeDomain = domainKey
+        break
+      }
+    }
+
+    if (activeDomain === null) return
+    if (cookieData[activeDomain][activeCookieStore] === undefined) return
+
+    let index = 0
+    for (let cookie of cookieData[activeDomain][activeCookieStore]) {
+      if (cookieDetails.name === cookie.name) {
+        delete cookieData[activeDomain][activeCookieStore][index]
+        break
+      }
+
+      ++index
+    }
   }
 }
 
