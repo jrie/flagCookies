@@ -167,6 +167,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
         previousCookieDomain = cookieKey
         continue
       }
+
       if (cookieKey !== previousCookieDomain) {
         previousCookieDomain = cookieKey
         let cookieSub = document.createElement('h4')
@@ -181,8 +182,10 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
         cookieList.appendChild(cookieSub)
       }
 
+      let activeCookies = false
       for (let cookie of cookies.cookies[cookieKey]) {
-        if (cookie === undefined) continue
+        activeCookies = true
+
         let li = document.createElement('li')
 
         let checkMark = document.createElement('button')
@@ -241,7 +244,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
 
           p.appendChild(pCookieKeySecMessageElm)
           p.appendChild(pCookieValueElm)
-          if (cookie['fgHandled'] && !cookie['fgAllowed'] && !cookie['fgRemoved']) {
+          if (cookie['fgHandled'] && !cookie['fgRemoved']) {
             li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
             li.className = 'unremoved-secure-cookie'
           }
@@ -254,6 +257,13 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
         li.appendChild(p)
         li.appendChild(lockSwitch)
         cookieList.appendChild(li)
+      }
+
+      if (!activeCookies) {
+        let infoDisplay = document.getElementById('infoDisplay')
+        let contentText = 'No active cookies for domain, you might need to reload the tab.'
+        infoDisplay.children[0].textContent = contentText
+        infoDisplay.removeAttribute('class')
       }
     }
 
@@ -869,7 +879,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
   let searchTarget = document.getElementById(targetList)
   if (doSwitchOn) {
     for (let child of searchTarget.children) {
-      if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
+      if (child.nodeName !== 'LI') continue
       let contentChild = child.children[0]
       if (contentChild.className !== 'checkmark') continue
 
@@ -878,7 +888,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
     }
   } else {
     for (let child of searchTarget.children) {
-      if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
+      if (child.nodeName !== 'LI') continue
       let contentChild = child.children[0]
 
       if (contentChild.className !== 'checkmark auto-flagged') continue
@@ -912,7 +922,7 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 
   if (doSwitchOn) {
     for (let child of searchTarget.children) {
-      if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
+      if (child.nodeName !== 'LI') continue
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
       if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieKey] === undefined || (data[contextName][domainURL][cookieKey] !== true && data[contextName][domainURL][cookieKey] !== false)) {
@@ -922,7 +932,7 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
     }
   } else {
     for (let child of searchTarget.children) {
-      if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
+      if (child.nodeName !== 'LI') continue
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
 
@@ -1087,7 +1097,10 @@ async function resetUIDomain (data) {
 
   for (let child of cookieList.children) {
     let contentChild = child.children[0]
-    let contentChildProfile = child.children[2]
+    let contentChildProfile
+    if (child.className === 'unremoved-secure-cookie') contentChildProfile = child.children[3]
+    else contentChildProfile = child.children[2]
+
     if (contentChildProfile === undefined) continue
 
     if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
