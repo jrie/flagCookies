@@ -1141,19 +1141,23 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
 
 async function clearCookiesOnRequestChrome (details) {
   if (logData[contextName] === undefined) logData[contextName] = {}
-  if (details.method === 'GET' && details.parentFrame !== -1 && details.tabId !== -1) {
+  if (details.method === 'GET' && details.parentFrame === -1 && details.tabId !== -1) {
     chrome.tabs.query({currentWindow: true, active: true}, function (activeTabs) {
       if (!checkChromeHadNoErrors()) return
 
       if (activeTabs.length !== 0) {
         let currentTab = activeTabs.pop()
 
+        if (currentTab.tabId !== details.id) return
+
         if (details.frameId === 0 && details.type === 'main_frame' && details.parentFrameId === -1) {
-          if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp) {
+          if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp || currentTab.url !== details.url) {
             clearDomainLog(null, currentTab)
             nextLogCleanup = details.timeStamp + 1800000
           }
         }
+
+        currentTab.url = details.url
 
         addTabURLtoDataList(currentTab, details)
         let domainURL
@@ -1171,16 +1175,19 @@ async function clearCookiesOnRequest (details) {
   if (details.method === 'GET' && details.parentFrameId === -1 && details.tabId !== -1) {
     let currentTab = await getActiveTabFirefox()
 
-    currentTab.url = details.url
+    if (currentTab.tabId !== details.id) return
 
     await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
     if (details.frameId === 0 && details.type === 'main_frame' && details.parentFrameId === -1) {
-      if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp) {
+      if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp || currentTab.url !== details.url) {
+        currentTab.url = details.url
         clearDomainLog(null, currentTab)
         nextLogCleanup = details.timeStamp + 1800000
       }
     }
 
+
+    currentTab.url = details.url
     addTabURLtoDataList(currentTab, details)
 
     let domainURL
