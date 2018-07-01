@@ -1,7 +1,7 @@
 let logData = {} // The log data we seen as a report to the settings view
 let cookieData = {} // Storage for cookie shadow, for the interface only!
 let contextName = 'default'
-
+let nextLogCleanup = -1
 // Chrome
 let useChrome = typeof (browser) === 'undefined'
 let hasConsole = typeof (console) !== 'undefined'
@@ -1149,7 +1149,10 @@ async function clearCookiesOnRequestChrome (details) {
         let currentTab = activeTabs.pop()
 
         if (details.frameId === 0 && details.type === 'main_frame' && details.parentFrameId === -1) {
-          clearDomainLog(null, currentTab)
+          if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp) {
+            clearDomainLog(null, currentTab)
+            nextLogCleanup = details.timeStamp + 1800000
+          }
         }
 
         addTabURLtoDataList(currentTab, details)
@@ -1165,15 +1168,17 @@ async function clearCookiesOnRequestChrome (details) {
 }
 
 async function clearCookiesOnRequest (details) {
-  if (details.method === 'GET' && details.tabId !== -1) {
+  if (details.method === 'GET' && details.parentFrameId === -1 && details.tabId !== -1) {
     let currentTab = await getActiveTabFirefox()
 
     currentTab.url = details.url
 
     await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-
     if (details.frameId === 0 && details.type === 'main_frame' && details.parentFrameId === -1) {
-      clearDomainLog(null, currentTab)
+      if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp) {
+        clearDomainLog(null, currentTab)
+        nextLogCleanup = details.timeStamp + 1800000
+      }
     }
 
     addTabURLtoDataList(currentTab, details)
