@@ -244,7 +244,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
 
           p.appendChild(pCookieKeySecMessageElm)
           p.appendChild(pCookieValueElm)
-          if (cookie['fgHandled'] && !cookie['fgRemoved']) {
+          if (cookie['fgHandled'] && !cookie['fgRemoved'] && !cookie['fgAllowed']) {
             li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
             li.className = 'unremoved-secure-cookie'
           }
