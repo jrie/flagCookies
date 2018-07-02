@@ -1150,7 +1150,7 @@ async function clearCookiesOnRequestChrome (details) {
 
         if (currentTab.tabId !== details.id) return
 
-        if (details.frameId === 0 && details.type === 'main_frame' && details.parentFrameId === -1) {
+        if (details.frameId === 0 && details.type === 'main_frame') {
           if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp || currentTab.url !== details.url) {
             clearDomainLog(null, currentTab)
             nextLogCleanup = details.timeStamp + 1800000
@@ -1178,7 +1178,7 @@ async function clearCookiesOnRequest (details) {
     if (currentTab.tabId !== details.id) return
 
     await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-    if (details.frameId === 0 && details.type === 'main_frame' && details.parentFrameId === -1) {
+    if (details.frameId === 0 && details.type === 'main_frame') {
       if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp || currentTab.url !== details.url) {
         currentTab.url = details.url
         clearDomainLog(null, currentTab)
