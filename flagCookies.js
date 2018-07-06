@@ -132,7 +132,7 @@ async function initDomainURLandProceed (tabs) {
   updateUIData(data, cookies, contextName, tab)
 }
 
-function updateUIData (data, cookies, activeCookieStoreName, tab) {
+async function updateUIData (data, cookies, activeCookieStoreName, tab) {
   // set the header of the panel
   let activeTabUrl = document.querySelector('#header-title')
   let introSpan = document.createElement('span')
@@ -147,7 +147,13 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
 
   let introSpanStore = document.createElement('span')
   introSpanStore.className = 'intro'
-  let introStore = document.createTextNode('Active container group: ' + activeCookieStoreName)
+
+  let isTemporaryContainer = ''
+  if (!useChrome) {
+    if (await browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', {'method': 'isTempContainer', 'cookieStoreId': contextName}) === true) isTemporaryContainer = ', is a temporary container'
+  }
+
+  let introStore = document.createTextNode('Active container group: ' + activeCookieStoreName + isTemporaryContainer))
   introSpanStore.appendChild(introStore)
   activeTabUrl.appendChild(introSpanStore)
 
@@ -251,7 +257,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab) {
         } else {
           p.appendChild(pCookieValueElm)
         }
-
 
         li.appendChild(checkMark)
         li.appendChild(p)
