@@ -46,11 +46,7 @@ Please open an issue in the issues page, I gladly try to respond to feedback and
 
 ## Thanks and notes
 
-To phre4k for the initially idea!
-
-To Cybergreek who pushed the major style change(s).
-
-To stoically for all the feedback and tips.
+To all who helped so far through critic, general feedback and ideas. Keeps me going!
 
 ### German speaking thread @ ngb.to about FlagCookies
 [Flag Cookies on german bulletin board ngb.to](https://ngb.to/threads/32496-Firefox-Addon-FlagCookies)
