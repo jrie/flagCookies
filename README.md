@@ -19,50 +19,6 @@ A cookie manager on steroids.
 - Keyboard Shortcut "Alt + Shift + A" to enable/disable profile mode for a domain
 - Option to show notifications, disabled by default, for profile mode switch, cookies removed on page actions and notifications enable/disabled
 
-## Screenshots of version 1.6 (some changes/features of 2.x not shown)
-
-#### Main interface
-
-[![FlagCookies v1.6 - Main interface](https://www.picflash.org/img/2017/12/30/jxumb3iqtzhu7hy.png "FlagCookies v1.6 with cookies 'keyed' for profile mode (red key icon)")](https://www.picflash.org/viewer.php?img=jxumb3iqtzhu7hy.png)
-
-#### Preferences with page action log and cookie management for logged in profile on/off
-
-[![FlagCookies v1.6 - Preferences](https://www.picflash.org/img/2017/12/30/0o0aml1ik4lwfhd.png "Flag Cookies 1.6 preferences with profile cookie management")](https://www.picflash.org/viewer.php?img=0o0aml1ik4lwfhd.png)
-
-[![FlagCookies v1.6 - Log with active 'profile'](https://www.picflash.org/img/2017/12/30/e3dlznmo3o8j5pk.png "Log view with active 'profile' after page reload")](https://www.picflash.org/viewer.php?img=e3dlznmo3o8j5pk.png)
-
-[![FlagCookies v1.6 - Log with non-active 'profile' switch](https://www.picflash.org/img/2017/12/30/fswg4jfckb9d5zq.png "Log view with inactive 'profile' after page reload")](https://www.picflash.org/viewer.php?img=fswg4jfckb9d5zq.png)
-
-
-#### Gallery
-A gallery showing the several versions and history of the project from beginning, can be found here: https://www.picflash.org/gallery.php?id=V29RSVUG0M
-
-## Description
-
-Flag Cookies allows to globally delete all or some domain cookies (with particular permissions), separated by subdomains and even unknown and on every domain/subdomain on page load/reload/tab and window close.
-
-Cookies can be allowed (permitted) or in particular forced to be deleted by "flagging" them.
-
-Auto-flagging can be used for a domain (subdomain based) to auto clear all non permitted cookies, even undiscovered ones.
-
-Global flagging does remove all non particular permitted cookies for all domains, even new ones.
-
-Cookies are shown with name and value, to get a grasp on what is in the box.
-
-Get a grip on what cookies are allowed while you browse a website or the web in general.
-
-### The profile feature
-The profile feature can be used to switch between "logged into a account" and "not logged into an account" states by simply pressing the "profile" button in the main view. This works for a particular domain, subdomains have to be threaded separately.
-
-In order to use this functionality, you have to log in the particular website. After login, you then can select - by using the "key symbol" on the right of the main cookie list - to select cookies, which are required to use the website.
-
-After doing so, you can simply press "profile" in the main window and use "global" or "auto flag" features or go on flagging those cookies, without any further changes. Everything what you decided should be kept, wont be deleted anymore, except you turn off the "profile" switch for the domain, meaning, all regular rules, like flag, global, auto flag should apply.
-
-Get a grip on what cookies are allowed while you browse a website or the web in general.
-
-It works as an addition to the regular cookie manager and others. It is not a replacement for the regular cookie manager or something alike that.
-
-
 ## Requirements
 
 **Firefox in version 58.0a1 is minimum** or a recent version of **Chrome** or **Opera** browser(s).
@@ -75,9 +31,14 @@ Please use the addons.mozilla.org : [Flag Cookies on Add-ons Mozilla.org](https:
 
 ### Opera
 Please use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/) or download the **.nex** from the releases page.
+**Note:** this version might be slightly behind.
 
 ### Chrome
-The extension is not listed in the Chrome addon store, because this would cost money to do so, I am not at the moment willing to pay, just people can use the extension, therefore please download the **.crx** from the releases page, this should work also.
+The extension is not listed in the Chrome addon store, because of costs. You might use the extension **.crx** from the releases page.
+
+
+## Help, documentation and usage
+Please read along here: https://github.com/jrie/flagCookies/wiki/FlagCookies-help-and-documentation
 
 
 ## Providing feedback/feature wishes
@@ -91,5 +52,5 @@ To Cybergreek who pushed the major style change(s).
 
 To stoically for all the feedback and tips.
 
-### German speaking thread @ ngb.to
+### German speaking thread @ ngb.to about FlagCookies
 [Flag Cookies on german bulletin board ngb.to](https://ngb.to/threads/32496-Firefox-Addon-FlagCookies)
