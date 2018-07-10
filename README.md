@@ -11,7 +11,7 @@ A cookie manager on steroids.
 - **Auto flag** mode only affecting this particular (sub)domain, removing every cookie which is not permitted or used as ***profile cookie***
 - Support for *Firefox Multi-Account-Containers*
 - **Preferences** allows to manage *logged in profile* cookiee, delete all domain settings and add-on settings and provides a **Action log** to display what FlagCookies is doing
-- Displays count of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon
+- **Displays count** of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon
 - *Keyboard Shortcut* **Alt + Shift + A** to enable/disable **profile mode** for a (sub)domain
 - Optional **notifications**, disabled by default for: **profile mode** shortcut activation/deactivation, ***cookies removed display*** and ***notifications enabled/disabled message***
 
