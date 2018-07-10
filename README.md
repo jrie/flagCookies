@@ -1,5 +1,6 @@
-# flagCookies
-A cookie manager on steroids.
+# FlagCookies
+
+A cookie manager allowing to manage explicitly domain cookies, also third-party cookies for domain and subdomain. Providing several modes to manage cookies and keeping a cookie profile, while being logged in in a website.
 
 ## Features
 
