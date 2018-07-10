@@ -267,6 +267,7 @@ function handleMessage (request, sender, sendResponse) {
       if (domainData[key]['isRoot'] !== undefined) {
         rootDomain = domainData[key].u
         cookieDataDomain[rootDomain] = []
+        if (cookieData[rootDomain][request.storeId] === undefined || cookieData[rootDomain][request.storeId].length === 0) continue
         for (let cookieInfo of cookieData[rootDomain][request.storeId]) {
           cookieDataDomain[rootDomain].push(cookieInfo)
         }
@@ -283,6 +284,7 @@ function handleMessage (request, sender, sendResponse) {
       if (domainData[key]['isRoot'] !== undefined) continue
       let domainName = domainData[key].u
       if (cookieDataDomain[domainName] === undefined) cookieDataDomain[domainName] = []
+      if (cookieData[domainName][request.storeId] === undefined || cookieData[domainName][request.storeId].length === 0) continue
       for (let cookieInfo of cookieData[domainName][request.storeId]) {
         let isFound = false
 
@@ -1092,27 +1094,25 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
   }
 }
 
-async function clearCookiesOnRequestChrome (details) {
+function clearCookiesOnRequestChrome (details) {
   if (logData[contextName] === undefined) logData[contextName] = {}
-  if (details.method === 'GET' && details.parentFrame === -1 && details.tabId !== -1) {
+  if (details.method === 'GET' && details.parentFrameId === -1 && details.tabId !== -1) {
     chrome.tabs.query({currentWindow: true, active: true}, function (activeTabs) {
-      if (!checkChromeHadNoErrors()) return
-
       if (activeTabs.length !== 0) {
         let currentTab = activeTabs.pop()
 
-        if (currentTab.tabId !== details.id) return
-
         if (details.frameId === 0 && details.type === 'main_frame') {
           if (nextLogCleanup === -1 || nextLogCleanup < details.timeStamp || currentTab.url !== details.url) {
-            clearDomainLog(null, currentTab)
+            let shadowTab = currentTab
+            if (currentTab.url !== details.url) currentTab.url = details.url
+            clearDomainLog(null, shadowTab)
 
             let domainURL
-            let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+            let urlMatch = shadowTab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
             if (urlMatch !== null) domainURL = urlMatch[0]
-            else domainURL = details.url.replace(/\/www\./, '/')
+            else domainURL = shadowTab.url.replace(/\/www\./, '/')
 
-            if (cookieData[domainURL][currentTab.cookieStoreId] !== undefined) delete cookieData[domainURL][currentTab.cookieStoreId]
+            if (cookieData[domainURL] !== undefined && cookieData[domainURL][contextName] !== undefined) delete cookieData[domainURL][contextName]
 
             nextLogCleanup = details.timeStamp + 1800000
           }
