@@ -74,7 +74,7 @@ function setChromeStorage (data) {
   })
 }
 
-function chromeGetStorageAndCookiesForFunc (data, cookies, func, tab, cookieStore) {
+function chromeGetStorageAndCookiesForFunc (data, cookies, func, tab) {
   if (!checkChromeHadNoErrors()) return
 
   if (data === null) {
@@ -333,7 +333,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     document.getElementById('confirmNotifications').className += ' active'
   }
 
-  getTempContainerStatus(contextName)
+  if (!useChrome) getTempContainerStatus(contextName)
 }
 
 function getTempContainerStatus (contextName) {
