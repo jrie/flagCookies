@@ -1,7 +1,5 @@
 @font-face{font-family:'Open Sans';src:url(fonts/Regular/OpenSans-Regular.woff2?v=1.101) format("woff2"),url(fonts/Regular/OpenSans-Regular.woff?v=1.101) format("woff");font-weight:400;font-style:normal}
-@font-face{font-family:'Open Sans';src:url(fonts/Italic/OpenSans-Italic.woff2?v=1.101) format("woff2"),url(fonts/Italic/OpenSans-Italic.woff?v=1.101) format("woff");font-weight:400;font-style:italic}
 @font-face{font-family:'Open Sans';src:url(fonts/Bold/OpenSans-Bold.woff2?v=1.101) format("woff2"),url(fonts/Bold/OpenSans-Bold.woff?v=1.101) format("woff");font-weight:700;font-style:normal}
-@font-face{font-family:'Open Sans';src:url(fonts/BoldItalic/OpenSans-BoldItalic.woff2?v=1.101) format("woff2"),url(fonts/BoldItalic/OpenSans-BoldItalic.woff?v=1.101) format("woff");font-weight:700;font-style:italic}
 
 html, body {
   width: 800px;
@@ -281,7 +279,7 @@ button::-moz-focus-inner {
 
 #tabs {
   position: relative;
-  display: inline-block;
+  min-height: 45px;
   top: 16px;
 }
 
@@ -390,6 +388,13 @@ li:hover button.checkmark {
   top: 0.35em;
   right: 1%;
   width: auto;
+  display: block;
+}
+
+.chrome #modes {
+  position: absolute;
+  top: 0.35em;
+  right: 0%;
 }
 
 button#auto-flag,
@@ -437,7 +442,6 @@ button#account-mode {
 }
 
 .chrome button#account-mode {
-  margin-right: 4%;
   padding: 9px 18px 8px 18px;
 }
 
@@ -483,7 +487,6 @@ button#global-flag.active {
 
 .chrome #searchBar {
   width: 41%;
-  margin-bottom: 12px;
   margin-left: 1px;
   padding: 7px 12px 6px 4%;
 }
