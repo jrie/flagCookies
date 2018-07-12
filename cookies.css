@@ -280,6 +280,10 @@ button::-moz-focus-inner {
 #tabs {
   position: relative;
   min-height: 45px;
+  top: 28px;
+}
+
+.chrome #tabs {
   top: 16px;
 }
 
@@ -392,8 +396,6 @@ li:hover button.checkmark {
 }
 
 .chrome #modes {
-  position: absolute;
-  top: 0.35em;
   right: 0%;
 }
 
