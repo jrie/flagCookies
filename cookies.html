@@ -51,16 +51,20 @@
             </div>
           </div>
           <div class="hidden" id="help-view">
-            <div class="topics">
-              <ul>
-                <li>General information</li>
-              </ul>
-            </div>
+
             <h3>FlagCookies help and documentation</h3>
-            <hr>
+            <hr/>
             <h4><strong>NOTE:</strong> This help is work in progress.</h4>
-            <hr>
-            <h4>General information</h4>
+            <hr/>
+            <div class="helpNavigation">
+
+              <h4><a name="helpIndexAnchor">Help quick navigation and contents</a></h4>
+              <p>
+                If you reach any headline inside the documentation, you can click on it, to jump back here.
+              </p>
+            </div>
+            <hr/>
+            <h4><a name="generalInformation" href="#helpIndexAnchor">General information</a></h4>
             <p>
               FlagCookies does distinguish between http(s)://domain.com [domain] and http(s)://subdomain.domain.com [subdomain]. This means, every setting you apply to [domain] is <strong><em>not</em></strong> automatically applied to [subdomain] or in the opposite direction.<br/><br/>
               In particular this affects <span class="help-highlight">'PROFILE'</span> mode, <span class="help-highlight">'profile mode cookies'</span> and the <span class="help-highlight">'AUTO FLAG'</span> mode. <span class="help-highlight">'GLOBAL'</span> mode instead is applied to all and every domain when active/turned on.<br/><br/>
@@ -75,7 +79,7 @@
               <strong>NOTE:</strong> Not all browsers support this at the moment of writing. In case you are not using any 'container' related extension or add-on, this will not affect the way Flag Cookies is working and you can use it as is.
             </p>
 
-            <h4>How it works</h4>
+            <h4><a name="howitworks" href="#helpIndexAnchor">How it works</a></h4>
             <p>
               When you surf the web, FlagCookies tries to detect every cookie [domain] or [subdomain] is storing in your browser. In addition to this, any third-party cookies, for example from a possible tracking webpage or another domain the webpage loads information from, is detected and displayed in the <span class="help-highlight">'COOKIES'</span> view.<br/><br/>
 
@@ -84,7 +88,7 @@
             </p>
 
             <hr/>
-            <h3>What you see there in the 'main views' (COOKIES, FLAGGED, PERMITTED)</h3>
+            <h3><a name="mainviews" href="#helpIndexAnchor">What you see in the <span class="help-highlight">'main views'</span>: COOKIES, FLAGGED, PERMITTED</a></h3>
             <p>
               <strong>What will you see in general?</strong><br/>
               If the website you are viewing uses no cookies or no cookies are detected, you see a message:<br/>
@@ -99,7 +103,7 @@
             </p>
 
             <hr/>
-            <h3>Basic usage</h3>
+            <h3><a name="basicusage" href="#helpIndexAnchor">Basic usage</a></h3>
             <h4>The <span class="help-highlight">'COOKIES'</span> button and view</h4>
             <p>
               If cookies are detected (this might need a webpage reload in some cases) FlagCookies will list all detected domain cookies the main cookie view.<br/>
@@ -151,6 +155,7 @@
             </p>
 
             <hr/>
+            <h3><a name="otherviews" href="#helpIndexAnchor">Other views</a></h3>
             <h4>The <span class="help-highlight">'FLAGGED'</span> and <span class="help-highlight">'PERMITTED'</span> buttons and views</h4>
             <p>
               Those views are almost indentical to each other.<br/>
@@ -162,7 +167,7 @@
             </p>
 
             <hr/>
-            <h3>Operating modes</h3>
+            <h3><a name="operatingmodes" href="#helpIndexAnchor">Operating modes</a></h3>
             <h4><span class="help-highlight">'GLOBAL'</span> mode</h4>
             <p>
               <span class="help-highlight">'GLOBAL'</span> mode works on all domains and is, most likely, the most often used <span class="help-highlight">'protection'</span> mode against tracking by cookies in general as it flags every cookie by default, for every domain encountered.<br/>
@@ -172,7 +177,7 @@
             </p>
 
             <hr/>
-            <h4><span class="help-highlight">'AUTO FLAG'</span> mode</h4>
+            <h4><a name="autoflag" href="#helpIndexAnchor"><span class="help-highlight">'AUTO FLAG'</span></a> mode</h4>
             <p>
               <span class="help-highlight">'AUTO FLAG'</span> mode is very similiar to <span class="help-highlight">'GLOBAL'</span> mode. The main difference is, its only working on the particular domain.<br/><br/>
               Basically it will remove all discovered cookies for http(s)://domain.com <strong><em>or</em></strong> http(s)://subdomain.domain.com - <strong>only</strong>, not other domains like <span class="help-highlight">'GLOBAL'</span> mode does.<br/><br/>
@@ -180,7 +185,7 @@
             </p>
 
             <hr/>
-            <h4><span class="help-highlight">'PROFILE'</span> mode</h4>
+            <h4><a name="profilemode" href="#helpIndexAnchor"><span class="help-highlight">'PROFILE'</span></a> mode</h4>
             <p>
               <span class="help-highlight">'PROFILE'</span> mode itself has two key functionalities:<br/>
               Firstly, if you enable <span class="help-highlight">'profile mode cookies'</span>, <span class="help-highlight">'PROFILE' mode</span> will protect those cookies from removal by <span class="help-highlight">'Flagged'</span> state, <span class="help-highlight">'GLOBAL'</span> and <span class="help-highlight">'AUTO FLAG'</span> modes.<br/><br/>
@@ -193,8 +198,8 @@
               In case you want to know more about, how to set <span class="help-highlight">'profile mode cookies'</span> please refer to <span class="help-highlight">'Basic usage'</span> mentioned earlier in this help to find out more.
             </p>
 
-            <hr>
-            <h3>FlagCookies <span class="help-highlight">'PREFERENCES'</span></h3>
+            <hr/>
+            <h3><a name="preferences" href="#helpIndexAnchor">FlagCookies <span class="help-highlight">'PREFERENCES'</span></a></h3>
             <p>
               The <span class="help-highlight">'PREFERENCES' view</span> is reachable at the very right bottom of FlagCookies.<br/><br/>
 
@@ -208,8 +213,8 @@
               A description this areas follows along, but you can also receive more information if you hover over title of the area on the left.
             </p>
 
-            <hr>
-            <h4><span class="help-highlight">'Actions log'</span></h4>
+            <hr/>
+            <h4><a name="actionslog" href="#helpIndexAnchor"><span class="help-highlight">'Actions log'</span></a></h4>
             <p>
               The <span class="help-highlight">'Actions log'</span> provides you with a list of events on what FlagCookies was doing, for example if cookies were removed and on which action.<br/>
               This could be 'Global flag deleted cookie 'name of cookie' on 'load' for domain 'http(s)://domain.net'<br/><br/>
@@ -219,8 +224,8 @@
               In case you <span class="help-highlight">'DELETE DOMAIN SETTINGS'</span> or <span class="help-highlight">'DELETE ALL STORED SETTINGS'</span>, you will also see a message inside the <span class="help-highlight">'Actions log'</span>.
             </p>
 
-            <hr>
-            <h4><span class="help-highlight">'Domain settings'</span></h4>
+            <hr/>
+            <h4><a name="domainsettings" href="#helpIndexAnchor"><span class="help-highlight">'Domain settings'</span></a></h4>
             <p>
               The <span class="help-highlight">'Domain settings'</span> enables you to clear the current active domain cookie settings you are currently viewing and manage the <span class="help-highlight">'LOGGED IN PROFILE' cookies</span>.<br/><br/>
 
@@ -230,8 +235,8 @@
               The cookies are listed with the name and a <span class="help-highlight">'dumpster icon'</span>. If you want to remove the <span class="help-highlight">'profile cookie'</span>, simply click on the 'dumpster icon' and it will be removed and its stated reverts to either <span class="help-highlight">'Unhandled'</span> or <span class="help-highlight">'Auto flagged'</span> in case <span class="help-highlight">'GLOBAL' mode</span> or <span class="help-highlight">'AUTO FLAG' mode</span> is enabled.
             </p>
 
-            <hr>
-            <h4><span class="help-highlight">'Add-on settings'</span></h4>
+            <hr/>
+            <h4><a name="addonsettings" href="#helpIndexAnchor"><span class="help-highlight">'Add-on settings'</span></a></h4>
             <p>
               The <span class="help-highlight">'Add-on settings'</span> allows to enable or disable browser <span class="help-highlight">'notifications'</span> of Flag Cookies and to remove all FlagCookies settings and domain settings from the browsers storage.<br/><br/>
 

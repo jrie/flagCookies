@@ -334,6 +334,34 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   }
 
   if (!useChrome) getTempContainerStatus(contextName)
+
+  buildHelpIndex()
+}
+
+function buildHelpIndex () {
+  let index = document.querySelector('.helpNavigation')
+
+  let helpIndex = document.querySelector('.helpIndex')
+  if (helpIndex !== null) index.removeChild(helpIndex)
+
+  let contentHeads = document.querySelectorAll('#help-view a')
+
+  let list = document.createElement('ul')
+  list.className = 'helpIndex'
+
+  for (let link of contentHeads) {
+    link.className = 'anchor'
+
+    let child = document.createElement('li')
+    let href = document.createElement('a')
+    href.href = '#' + link.name
+    let textContent = document.createTextNode(link.textContent)
+    href.appendChild(textContent)
+    child.appendChild(href)
+    list.appendChild(child)
+  }
+
+  index.appendChild(list)
 }
 
 function getTempContainerStatus (contextName) {

@@ -589,9 +589,66 @@ textarea#log {
 }
 
 #help-view {
-  position: relative;
   padding: 5px 10px;
   margin-bottom: 18px;
+  position: relative;
+}
+
+.helpNavigation li {
+  border-radius: 2px;
+  background-color: #ddd;
+  margin-bottom: 4px;
+  display: block;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  transition-property: background-color,border-color;
+  transition-duration: 150ms;
+  padding-top: 4px;
+  padding-bottom: 3px;
+  padding-left: 8px;
+}
+
+.helpNavigation li:hover {
+  color: #000;
+}
+
+.helpNavigation a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+}
+
+#help-view span {
+  cursor: pointer;
+}
+
+#help-view span.help-highlight {
+  cursor: pointer;
+}
+
+#help-view a {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+#help-view a.anchor {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.anchor::before {
+  display: block;
+  content: " ";
+  margin-top: -160px;
+  height: 160px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.chrome .anchor::before {
+  display: inline-block;
 }
 
 #help-view hr {
