@@ -757,14 +757,14 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     await browser.storage.local.set(data)
 
     if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
-      browser.notifications.create('cookie_cleared', {type: 'basic', message: count + ' cookies removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png'})
+      browser.notifications.create('cookie_cleared', {type: 'basic', message: count + ' cookie(s) removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png'})
     }
   }
 }
 
 function displayCookieDeleteChrome (data, count, tabDomain, contextName) {
   if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
-    chrome.notifications.create('cookie_cleared', {type: 'basic', message: count + ' cookies removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png'})
+    chrome.notifications.create('cookie_cleared', {type: 'basic', message: count + ' cookie(s) removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png'})
   }
 }
 

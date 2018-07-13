@@ -13,7 +13,7 @@
           <button id="global-flag" title="Automatically delete cookies for all domains, if not permitted or while protected in 'profile' mode.">Global</button>
           <button id="auto-flag" title="Automatically delete any cookies for this domain, if not permitted or while protected in 'profile' mode.">Auto flag</button>
           <button id="account-mode" title="Profile mode - Selected 'key icon' cookies wont be deleted by global, auto-flag or by regular flagging modes on page load/reload/navigation.&#10;If no cookies are keyed, profile mode will allow all domain cookies.&#10;This is the 'logged in account' state. You can also manage the profile cookies list in 'preferences'.">Profile</button>
-          <button id="help" data-target="help-view" title="Show help for FlagCookies">Help</button>
+          <button id="help" data-target="help-view" title="Show help and documentation for FlagCookies">Help</button>
         </div>
         <hr/>
         <div id="tabs">
@@ -51,9 +51,14 @@
             </div>
           </div>
           <div class="hidden" id="help-view">
-            <h3>FlagCookies help</h3>
+            <div class="topics">
+              <ul>
+                <li>General information</li>
+              </ul>
+            </div>
+            <h3>FlagCookies help and documentation</h3>
             <hr>
-            <h4><strong>NOTE:</strong> This help is work in progress and at the moment provides general usage information on how to use FlagCookies.</h4>
+            <h4><strong>NOTE:</strong> This help is work in progress.</h4>
             <hr>
             <h4>General information</h4>
             <p>
@@ -63,8 +68,11 @@
               <strong>At every time, you see at the top of the main window:</strong><br/>
               1) The [domain] and or [subdomain] name FlagCookies detected and is active for.<br/>
               2) The active <span class="help-highlight">'container group'</span> or <span class="help-highlight">'context name'</span> FlagCookies operates on and in which context it's settings apply to and are stored in.<br/><br/>
-              <strong>Note:</strong><br/>
-              The <span class="help-highlight">'container group'</span> or <span class="help-highlight">'context name'</span> will be explained later.<br/><br/>
+
+              The <span class="help-highlight">'container group'</span>, if supported by your browser, tells FlagCookies in which context settings should be stored and how domains and domain cookies should be treated.<br/>
+              For example, if there is a <span class="help-highlight">'container group'</span> called 'shopping' and one called 'banking'. FlagCookies supports different settings for [domain] or [subdomain] in 'shopping' versus the exact same website(s) in 'banking'.<br/><br/>
+
+              <strong>NOTE:</strong> Not all browsers support this at the moment of writing. In case you are not using any 'container' related extension or add-on, this will not affect the way Flag Cookies is working and you can use it as is.
             </p>
 
             <h4>How it works</h4>
@@ -81,11 +89,13 @@
               <strong>What will you see in general?</strong><br/>
               If the website you are viewing uses no cookies or no cookies are detected, you see a message:<br/>
               <span class="help-highlight">'No active cookies for domain, you might need to reload the tab'</span> - which means the website does not use any cookies or you need to reload the tab one time in order for FlagCookies to detect the website cookies, if any are present.<br/><br/>
+
               Second option, you will see a list of the cookies.<br/>
               Those are displayed by <span class="help-highlight">'name'</span> and secondly by <span class="help-highlight">'value'</span> so you know what information might be stored on your computer by the website using cookies.<br/>
               Every <span class="help-highlight">'main view'</span> will display this two basic cookie information, so you always see: the name and the value of the cookie.<br/><br/>
+
               Please note, <span class="help-highlight">'COOKIES'</span> as main view has a lot more controls, <span class="help-highlight">'FLAGGED'</span> and <span class="help-highlight">'PERMITTED'</span> in the center, always at hand - are empty by default as this are explicitly flagged or permitted cookies by yourself.<br/>
-              Don't be confused what all this means, it will be clear once the <span class="help-highlight">'COOKIES'</span> view is explained in more detail.
+              Don't be confused what all this means, it will be clear once the <span class="help-highlight">'COOKIES'</span> view is explained in more detail.<br/><br/>
             </p>
 
             <hr/>
@@ -137,7 +147,7 @@
 
               If you think you made a mistake by <span class="help-highlight">'flagging'</span> a cookie, but it's not shown in the <span class="help-highlight">'COOKIES'</span> view to change it settings, you always can go to <span class="help-highlight">'PREFERENCES'</span> and <span class="help-highlight">'DELETE DOMAIN SETTINGS'</span>, which will remove all cookie settings for this domain you are currently viewing.<br/><br/>
 
-              In any  case, if you think you cannot undo a custom setting, you can go to <span class="help-highlight">'PREFERENCES'</span> and <span class="help-highlight">'DELETE ALL STORED SETTINGS'</span> of FlagCookies. Please note, this removes all cookie settings and stored data!
+              In any  case, if you think you cannot undo a custom setting, you can go to <span class="help-highlight">'PREFERENCES'</span> and <span class="help-highlight">'DELETE ALL STORED SETTINGS'</span> of FlagCookies. Please note, this removes all cookie settings and stored data.
             </p>
 
             <hr/>
@@ -189,11 +199,11 @@
               The <span class="help-highlight">'PREFERENCES' view</span> is reachable at the very right bottom of FlagCookies.<br/><br/>
 
               It contains three main areas:<br/>
-              1) The <span class="help-highlight">'Actions log' - where events and actions of FlagCookies are shown</span><br/>
+              1) The <span class="help-highlight">'Actions log'</span> - where events and actions of FlagCookies are shown<br/>
 
-              2) The <span class="help-highlight">'Domain settings' - where you can clear the current domain settings or manage <span class="help-highlight">'profile cookies'</span> for the current domain</span><br/>
+              2) The <span class="help-highlight">'Domain settings'</span> - where you can clear the current domain settings or manage <span class="help-highlight">'profile cookies'</span> for the current domain</span><br/>
 
-              3) The <span class="help-highlight">'Add-on settings'</span> - where you can enable or disable browser notifcations or clear all add-on settings<br/><br/>
+              3) The <span class="help-highlight">'Add-on settings'</span> - where you can enable or disable browser notifications or clear all add-on settings<br/><br/>
 
               A description this areas follows along, but you can also receive more information if you hover over title of the area on the left.
             </p>
@@ -225,7 +235,7 @@
             <p>
               The <span class="help-highlight">'Add-on settings'</span> allows to enable or disable browser <span class="help-highlight">'notifications'</span> of Flag Cookies and to remove all FlagCookies settings and domain settings from the browsers storage.<br/><br/>
 
-              <span class="help-highlight">'Display notifications'</span> if enabled, will show 'browser notifcations' when FlagCookies removes cookies while browsing. If it is 'checked', notifications will be shown while you browse.<br/><br/>
+              <span class="help-highlight">'Display notifications'</span> if enabled, will show <span class="help-highlight">'browser notifcations'</span> when FlagCookies removes cookies while browsing. If it's state is 'checked', notifications will be shown when cookies are being removed with amount, domain name and context name.<br/><br/>
 
               In order to clear the FlagCookies settings, you need to click on the button <span class="help-highlight">'Confirm clearing'</span> and then hit <span class="help-highlight">'DELETE ALL STORED SETTINGS'</span>.<br/><br/>
             </p>
