@@ -619,12 +619,12 @@ textarea#log {
   cursor: pointer;
 }
 
-#help-view span {
+#help-view a > span.help-highlight {
   cursor: pointer;
 }
 
 #help-view span.help-highlight {
-  cursor: pointer;
+  cursor: default;
 }
 
 #help-view a {
