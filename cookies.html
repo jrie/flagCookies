@@ -57,7 +57,6 @@
             <h4><strong>NOTE:</strong> This help is work in progress.</h4>
             <hr/>
             <div class="helpNavigation">
-
               <h4><a name="helpIndexAnchor">Help quick navigation and contents</a></h4>
               <p>
                 If you reach any headline inside the documentation, you can click on it, to jump back here.
@@ -217,9 +216,11 @@
             <h4><a name="actionslog" href="#helpIndexAnchor"><span class="help-highlight">'Actions log'</span></a></h4>
             <p>
               The <span class="help-highlight">'Actions log'</span> provides you with a list of events on what FlagCookies was doing, for example if cookies were removed and on which action.<br/>
-              This could be 'Global flag deleted cookie 'name of cookie' on 'load' for domain 'http(s)://domain.net'<br/><br/>
+              This could be '[TIME] Global flag deleted cookie 'name of cookie' on 'load' for domain 'http(s)://domain.net'<br/><br/>
 
               There are also other events for cookies, like: <span class="help-highlight">'Permitted'</span> or deleted by <span class="help-highlight">'auto flag'</span> mode.<br/><br/>
+
+              <strong>NOTE:</strong> LogData is cleared upon visiting another url on the same domain <strong>OR</strong> if 15 seconds are passed (when reloading the exact same page) - this might be sometimes confusing in reason that older events are shown but is required in order to display events which occured before the page was loaded accordingly.
 
               In case you <span class="help-highlight">'DELETE DOMAIN SETTINGS'</span> or <span class="help-highlight">'DELETE ALL STORED SETTINGS'</span>, you will also see a message inside the <span class="help-highlight">'Actions log'</span>.
             </p>
