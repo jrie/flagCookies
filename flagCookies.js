@@ -156,12 +156,12 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   introSpanStore.appendChild(introStore)
   activeTabUrl.appendChild(introSpanStore)
 
-  let cookieList = document.getElementById('cookie-list')
-  let flaggedCookieList = document.getElementById('cookie-list-flagged')
-  let loggedInCookieList = document.getElementById('loggedInCookies')
+  let cookieList = document.querySelector('#cookie-list')
+  let flaggedCookieList = document.querySelector('#cookie-list-flagged')
+  let loggedInCookieList = document.querySelector('#loggedInCookies')
 
   if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
-    let infoDisplay = document.getElementById('infoDisplay')
+    let infoDisplay = document.querySelector('#infoDisplay')
     let contentText = 'No active cookies for domain, you might need to reload the tab.'
     infoDisplay.children[0].textContent = contentText
     infoDisplay.removeAttribute('class')
@@ -264,7 +264,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
       }
 
       if (!activeCookies) {
-        let infoDisplay = document.getElementById('infoDisplay')
+        let infoDisplay = document.querySelector('#infoDisplay')
         let contentText = 'No active cookies for domain, you might need to reload the tab.'
         infoDisplay.children[0].textContent = contentText
         infoDisplay.removeAttribute('class')
@@ -293,16 +293,16 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   if (loggedInCookieList.children.length !== 0) {
     loggedInCookieList.removeAttribute('class')
   } else {
-    document.getElementById('profileNoData').removeAttribute('class')
+    document.querySelector('#profileNoData').removeAttribute('class')
   }
 
   if (data['flagCookies_flagGlobal'] && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
     flagGlobalAutoNonEvent()
   }
 
-  document.getElementById('activeCookies').className = 'active'
+  document.querySelector('#activeCookies').className = 'active'
   if (data['flagCookies'] !== undefined && data['flagCookies']['logData'] !== undefined && data['flagCookies']['logData'][contextName] !== undefined && data['flagCookies']['logData'][contextName][tab.windowId] !== undefined && data['flagCookies']['logData'][contextName][tab.windowId][tab.id] !== undefined) {
-    let log = document.getElementById('log')
+    let log = document.querySelector('#log')
     let foundCookies = []
     for (let entry of data['flagCookies']['logData'][contextName][tab.windowId][tab.id]) {
       if (entry.indexOf('deleted') !== -1) {
@@ -321,16 +321,16 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   }
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][contextName] && data['flagCookies_autoFlag'][contextName][domainURL]) {
-    document.getElementById('auto-flag').className += 'active'
+    document.querySelector('#auto-flag').className += 'active'
     switchAutoFlag(true, 'cookie-list')
   }
 
   if (data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][contextName] !== undefined && data['flagCookies_accountMode'][contextName][domainURL] !== undefined) {
-    document.getElementById('account-mode').className += 'active'
+    document.querySelector('#account-mode').className += 'active'
   }
 
   if (data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
-    document.getElementById('confirmNotifications').className += ' active'
+    document.querySelector('#confirmNotifications').className += ' active'
   }
 
   if (!useChrome) getTempContainerStatus(contextName)
@@ -476,7 +476,7 @@ async function flaggedCookieSwitchNeutral (data, event) {
   let cookieName = event.target.dataset['name']
 
   // Uncheck from flagged in active cookies, if present
-  let domainCookieList = document.getElementById('cookie-list')
+  let domainCookieList = document.querySelector('#cookie-list')
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined
   let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true
 
@@ -517,7 +517,7 @@ async function flaggedCookieSwitchNeutral (data, event) {
 
   parent.removeChild(event.target.parentNode)
   if (parent.children.length === 0) {
-    let infoDisplay = document.getElementById('infoDisplay')
+    let infoDisplay = document.querySelector('#infoDisplay')
     let contentText = 'No flagged cookies for domain.'
     infoDisplay.children[0].textContent = contentText
     parent.className = 'hidden'
@@ -542,7 +542,7 @@ async function permittedCookieSwitchNeutral (data, event) {
   let cookieName = event.target.dataset['name']
 
   // Uncheck from permitted in active cookies, if present
-  let domainCookieList = document.getElementById('cookie-list')
+  let domainCookieList = document.querySelector('#cookie-list')
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined
   let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true
 
@@ -583,7 +583,7 @@ async function permittedCookieSwitchNeutral (data, event) {
 
   parent.removeChild(event.target.parentNode)
   if (parent.children.length === 0) {
-    let infoDisplay = document.getElementById('infoDisplay')
+    let infoDisplay = document.querySelector('#infoDisplay')
     let contentText = 'No permitted cookies for domain.'
     infoDisplay.children[0].textContent = contentText
     parent.className = 'hidden'
@@ -627,7 +627,7 @@ async function cookieFlagSwitchNeutral (data, event) {
     addCookieToList('cookie-list-permitted', cookieName, cookieValue)
 
     // Remove from flagged list if present
-    let flaggedCookieList = document.getElementById('cookie-list-flagged')
+    let flaggedCookieList = document.querySelector('#cookie-list-flagged')
     for (let child of flaggedCookieList.children) {
       if (child.children[0].dataset['name'] === cookieName) {
         child.parentNode.removeChild(child)
@@ -682,7 +682,7 @@ async function cookieFlagSwitchNeutral (data, event) {
 
   if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieName] === undefined || hasAutoFlag) {
     // Remove from permitted list if present
-    let permittedCookieList = document.getElementById('cookie-list-permitted')
+    let permittedCookieList = document.querySelector('#cookie-list-permitted')
     for (let child of permittedCookieList.children) {
       if (child.children[0].dataset['name'] === cookieName) {
         child.parentNode.removeChild(child)
@@ -723,13 +723,13 @@ async function cookieLockSwitchNeutral (data, event) {
       if (useChrome) setChromeStorage(data)
       else await browser.storage.local.set(data)
 
-      let loggedInCookieList = document.getElementById('loggedInCookies')
+      let loggedInCookieList = document.querySelector('#loggedInCookies')
       removeCookieOfProfileList(loggedInCookieList, cookieName, 'flagCookies_logged')
       event.target.className = event.target.className.replace(' locked', '')
       event.target.title = 'Set this cookie as profile-mode cookie.'
 
       if (data['flagCookies_logged'][contextName] === undefined || data['flagCookies_logged'][contextName][domainURL] === undefined) {
-        document.getElementById('profileNoData').removeAttribute('class')
+        document.querySelector('#profileNoData').removeAttribute('class')
       }
     }
   } else {
@@ -738,11 +738,11 @@ async function cookieLockSwitchNeutral (data, event) {
     if (useChrome) setChromeStorage(data)
     else await browser.storage.local.set(data)
 
-    let loggedInCookieList = document.getElementById('loggedInCookies')
+    let loggedInCookieList = document.querySelector('#loggedInCookies')
     addCookieToProfileList(loggedInCookieList, cookieName, 'flagCookies_logged')
     loggedInCookieList.removeAttribute('class')
 
-    document.getElementById('profileNoData').className = 'hidden'
+    document.querySelector('#profileNoData').className = 'hidden'
     event.target.className += ' locked'
     event.target.title = 'This cookie is set locked as profile-mode cookie. You can manage those in "Preferences"'
   }
@@ -751,7 +751,7 @@ async function cookieLockSwitchNeutral (data, event) {
 // --------------------------------------------------------------------------------------------------------------------------------
 // Switches for main buttons
 function unhide (targetList) {
-  let searchVal = document.getElementById('searchBar').value.trim().toLowerCase()
+  let searchVal = document.querySelector('#searchBar').value.trim().toLowerCase()
   if (searchVal !== '') {
     doSearch(searchVal)
   } else {
@@ -766,24 +766,24 @@ function switchView (event) {
   let list = document.getElementById(event.target.dataset.target)
   unhide(list)
 
-  let content = document.getElementById('content')
+  let content = document.querySelector('#content')
   for (let child of content.children) {
     child.className = 'hidden'
   }
 
-  let tabs = document.getElementById('tabs')
+  let tabs = document.querySelector('#tabs')
   for (let child of tabs.children) {
     if (child !== event.target) child.removeAttribute('class')
   }
 
-  let prefs = document.getElementById('prefs')
+  let prefs = document.querySelector('#prefs')
   let prefsActive = false
   if (prefs !== event.target) prefs.removeAttribute('class')
   else if (prefs.className.indexOf('active') !== -1) prefsActive = true
   event.target.className = 'active'
 
   if (list.children.length === 0) {
-    let infoDisplay = document.getElementById('infoDisplay')
+    let infoDisplay = document.querySelector('#infoDisplay')
 
     let contentText = 'No active cookies for domain, you might to reload the tab.'
     if (event.target.dataset.target === 'cookie-list-flagged') {
@@ -798,7 +798,7 @@ function switchView (event) {
     list.removeAttribute('class')
   }
 
-  if (prefsActive) document.getElementById('activeCookies').click()
+  if (prefsActive) document.querySelector('#activeCookies').click()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -844,7 +844,7 @@ function flagGlobalAutoNonEventWrapper (data) {
   if (data['flagCookies_flagGlobal'] === undefined) data['flagCookies_flagGlobal'] = {}
   if (data['flagCookies_flagGlobal'][contextName] === undefined) data['flagCookies_flagGlobal'][contextName] = false
 
-  let globalFlagButton = document.getElementById('global-flag')
+  let globalFlagButton = document.querySelector('#global-flag')
 
   if (globalFlagButton.className !== 'active') {
     globalFlagButton.className = 'active'
@@ -878,7 +878,7 @@ async function flagGlobalAutoNonEvent () {
   if (data['flagCookies_flagGlobal'] === undefined) data['flagCookies_flagGlobal'] = {}
   if (data['flagCookies_flagGlobal'][contextName] === undefined) data['flagCookies_flagGlobal'][contextName] = false
 
-  let globalFlagButton = document.getElementById('global-flag')
+  let globalFlagButton = document.querySelector('#global-flag')
 
   if (globalFlagButton.className !== 'active') {
     globalFlagButton.className = 'active'
@@ -1050,9 +1050,9 @@ function switchNotificationsChrome (data, doSwitchOn) {
 
 // Chrome + Firefox
 async function clearSettings (event) {
-  let log = document.getElementById('log')
-  if (document.getElementById('confirmSettingsClearing').className.indexOf('active') === -1) {
-    document.getElementById('log').textContent = 'Please confirm storage clearing.'
+  let log = document.querySelector('#log')
+  if (document.querySelector('#confirmSettingsClearing').className.indexOf('active') === -1) {
+    document.querySelector('#log').textContent = 'Please confirm storage clearing.'
     return
   }
 
@@ -1079,9 +1079,9 @@ async function clearSettings (event) {
 
 // Chrome + Firefox - clearing domain data
 async function clearDomain (event) {
-  let log = document.getElementById('log')
-  if (document.getElementById('confirmDomainClearing').className.indexOf('active') === -1) {
-    document.getElementById('log').textContent = 'Please confirm domain clearing.'
+  let log = document.querySelector('#log')
+  if (document.querySelector('#confirmDomainClearing').className.indexOf('active') === -1) {
+    document.querySelector('#log').textContent = 'Please confirm domain clearing.'
     return
   }
 
@@ -1108,12 +1108,12 @@ async function clearDomain (event) {
 }
 
 function resetUI () {
-  document.getElementById('auto-flag').removeAttribute('class')
-  document.getElementById('global-flag').removeAttribute('class')
-  document.getElementById('account-mode').removeAttribute('class')
+  document.querySelector('#auto-flag').removeAttribute('class')
+  document.querySelector('#global-flag').removeAttribute('class')
+  document.querySelector('#account-mode').removeAttribute('class')
 
   // Reset cookie list
-  let cookieList = document.getElementById('cookie-list')
+  let cookieList = document.querySelector('#cookie-list')
   for (let child of cookieList.children) {
     let contentChild = child.children[0]
     contentChild.className = 'checkmark'
@@ -1131,15 +1131,15 @@ function resetUI () {
     parent.className = 'hidden'
   }
 
-  let confirmClearing = document.getElementById('confirmSettingsClearing')
+  let confirmClearing = document.querySelector('#confirmSettingsClearing')
   confirmClearing.className = confirmClearing.className.replace(' active', '')
 }
 
 async function resetUIDomain (data) {
-  document.getElementById('auto-flag').removeAttribute('class')
+  document.querySelector('#auto-flag').removeAttribute('class')
 
   // Reset cookie list
-  let cookieList = document.getElementById('cookie-list')
+  let cookieList = document.querySelector('#cookie-list')
 
   for (let child of cookieList.children) {
     let contentChild = child.children[0]
@@ -1172,7 +1172,7 @@ async function resetUIDomain (data) {
     parent.className = 'hidden'
   }
 
-  document.getElementById('profileNoData').removeAttribute('class')
+  document.querySelector('#profileNoData').removeAttribute('class')
   if (data['flagCookies_autoFlag'] !== undefined) {
     if (data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined) {
       delete data['flagCookies_autoFlag'][contextName][domainURL]
@@ -1235,13 +1235,13 @@ async function resetUIDomain (data) {
       else await browser.storage.local.remove('flagCookies_accountMode')
     }
 
-    document.getElementById('account-mode').removeAttribute('class')
+    document.querySelector('#account-mode').removeAttribute('class')
   }
 
   if (useChrome) setChromeStorage(data)
   else await browser.storage.local.set(data)
 
-  let confirmClearing = document.getElementById('confirmDomainClearing')
+  let confirmClearing = document.querySelector('#confirmDomainClearing')
   confirmClearing.className = confirmClearing.className.replace(' active', '')
 }
 
@@ -1277,7 +1277,7 @@ async function dumpProfileCookieNeutral (data, event) {
   if (useChrome) setChromeStorage(data)
   else await browser.storage.local.set(data)
 
-  let cookieList = document.getElementById('cookie-list')
+  let cookieList = document.querySelector('#cookie-list')
   for (let child of cookieList.children) {
     if (child.nodeName !== 'LI') continue
     let contentChild = child.children[2]
@@ -1289,7 +1289,7 @@ async function dumpProfileCookieNeutral (data, event) {
   }
 
   if (event.target.parentNode.parentNode.children.length === 1) {
-    document.getElementById('profileNoData').removeAttribute('class')
+    document.querySelector('#profileNoData').removeAttribute('class')
     event.target.parentNode.parentNode.className = 'hidden'
   }
 
@@ -1348,20 +1348,20 @@ async function accountModeSwitchNeutral (data, event) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
-document.getElementById('activeCookies').addEventListener('click', switchView)
-document.getElementById('flaggedCookies').addEventListener('click', switchView)
-document.getElementById('permittedCookies').addEventListener('click', switchView)
-document.getElementById('help').addEventListener('click', switchView)
-document.getElementById('prefs').addEventListener('click', switchView)
-document.getElementById('auto-flag').addEventListener('click', flagAutoSwitch)
-document.getElementById('global-flag').addEventListener('click', flagGlobalAuto)
-document.getElementById('account-mode').addEventListener('click', accountModeSwitch)
-document.getElementById('searchBar').addEventListener('keyup', searchContent)
-document.getElementById('confirmSettingsClearing').addEventListener('click', toggleClearing)
-document.getElementById('confirmDomainClearing').addEventListener('click', toggleClearing)
-document.getElementById('confirmNotifications').addEventListener('click', toggleNotifications)
-document.getElementById('settings-action-clear').addEventListener('click', clearSettings)
-document.getElementById('domain-action-clear').addEventListener('click', clearDomain)
+document.querySelector('#activeCookies').addEventListener('click', switchView)
+document.querySelector('#flaggedCookies').addEventListener('click', switchView)
+document.querySelector('#permittedCookies').addEventListener('click', switchView)
+document.querySelector('#help').addEventListener('click', switchView)
+document.querySelector('#prefs').addEventListener('click', switchView)
+document.querySelector('#auto-flag').addEventListener('click', flagAutoSwitch)
+document.querySelector('#global-flag').addEventListener('click', flagGlobalAuto)
+document.querySelector('#account-mode').addEventListener('click', accountModeSwitch)
+document.querySelector('#searchBar').addEventListener('keyup', searchContent)
+document.querySelector('#confirmSettingsClearing').addEventListener('click', toggleClearing)
+document.querySelector('#confirmDomainClearing').addEventListener('click', toggleClearing)
+document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
+document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
+document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
 
 if (useChrome) chrome.tabs.query({currentWindow: true, active: true}, initDomainURLandProceed)
 else getActiveTab().then(initDomainURLandProceed)
