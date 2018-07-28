@@ -175,6 +175,10 @@ li:nth-child(2n+1) {
   background-color: #eee;
 }
 
+li.inactive-cookie {
+  opacity: 0.55;
+}
+
 li:hover {
   background-color: #557;
   color: #eef;
@@ -187,7 +191,8 @@ li:hover .cookieValue {
   color: #fff;
 }
 
-li:hover .secure-cookie {
+li:hover .secure-cookie,
+li:hover .cookie-domain {
   color: #ff7000;
 }
 
@@ -211,11 +216,18 @@ li.unremoved-secure-cookie {
   font-size: 0.85em;
 }
 
-.secure-cookie {
+.secure-cookie,
+.cookie-domain {
   color: #9a0000;
-  display: block;
+  display: inline-block;
+  margin-left: 6px;
   font-size: 0.75em;
   font-weight: bold;
+}
+
+.chrome .secure-cookie,
+.chrome .cookie-domain {
+  margin-left: 6px;
 }
 
 span.subloaded {
@@ -246,7 +258,6 @@ button {
   cursor: pointer;
   color: #ddd;
 }
-
 
 .chrome button {
     padding: 8px 12px 7px 12px;
