@@ -126,13 +126,11 @@ async function initDomainURLandProceed (tabs) {
   // Get storage and cookies Firefox
   let data = await browser.storage.local.get()
   let activeCookieStore = 'default'
-  if (tab.cookieStoreId !== undefined) {
-    activeCookieStore = tab.cookieStoreId
-    cookieStoreId = activeCookieStore
-    await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-  }
+  activeCookieStore = tab.cookieStoreId
+  cookieStoreId = activeCookieStore
+  await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
-  let cookies = await browser.runtime.sendMessage({'getCookies': domainURL, 'storeId': activeCookieStore, 'windowId': tab.windowId, 'tabId': tab.id})
+  let cookies = await browser.runtime.sendMessage({'getCookies': domainURL, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id})
   updateUIData(data, cookies, contextName, tab, activeCookieStore)
 }
 
@@ -141,6 +139,9 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   let activeTabUrl = document.querySelector('#header-title')
   let introSpan = document.createElement('span')
   introSpan.className = 'intro'
+
+  if (!useChrome) browser.contextualIdentities.get(tab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
+  else contextName = 'default'
 
   let intro = document.createTextNode('Cookies for domain:')
   introSpan.appendChild(intro)
@@ -1026,7 +1027,9 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
       if (child.nodeName !== 'LI') continue
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
-      if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieKey] === undefined || (data[contextName][domainURL][cookieKey] !== true && data[contextName][domainURL][cookieKey] !== false)) {
+      let cookieDomain = contentChild.dataset['domain']
+
+      if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieKey] === undefined || (data[contextName][domainURL][cookieDomain][cookieKey] !== true && data[contextName][domainURL][cookieDomain][cookieKey] !== false)) {
         contentChild.className = 'checkmark auto-flagged'
         contentChild.title = 'This cookie is globally flagged and will be removed.'
       }
@@ -1036,8 +1039,9 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
       if (child.nodeName !== 'LI') continue
       let contentChild = child.children[0]
       let cookieKey = contentChild.dataset['name']
+      let cookieDomain = contentChild.dataset['domain']
 
-      if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieKey] === undefined || (data[contextName][domainURL][cookieKey] !== true && data[contextName][domainURL][cookieKey] !== false)) {
+      if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieKey] === undefined || (data[contextName][domainURL][cookieDomain][cookieKey] !== true && data[contextName][domainURL][cookieDomain][cookieKey] !== false)) {
         contentChild.className = 'checkmark'
         contentChild.title = 'This cookie is allowed and unhandled. Click to change.'
       }
