@@ -136,6 +136,8 @@ function firefoxOnGetContextError (e) {
     console.log('Firefox getContext profile error: ')
     console.log(e)
   }
+
+  contextName = 'default'
 }
 
 async function clearCookiesWrapper (action, doChromeLoad) {
