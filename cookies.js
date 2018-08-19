@@ -316,8 +316,6 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   else contextName = 'default'
 
-  console.log(contextName)
-
   if (cookieData[domainURL] === undefined) cookieData[domainURL] = {}
   if (cookieData[domainURL][contextName] === undefined) cookieData[domainURL][contextName] = []
 
@@ -1100,15 +1098,22 @@ function clearCookiesOnRequestChrome (details) {
             if (currentTab.url !== details.url) currentTab.url = details.url
 
             clearDomainLog(null, currentTab)
+            let domainURL
+            let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+            if (urlMatch !== null) domainURL = urlMatch[0]
+            else domainURL = details.url.replace(/\/www\./, '/')
+
+            if (cookieData[domainURL] !== undefined && cookieData[domainURL][contextName] !== undefined) cookieData[domainURL][contextName] = []
           }
 
-          cookieData = {}
           if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined) {
             openTabData[currentTab.windowId][currentTab.id] = {}
           }
         }
 
         currentTab.url = details.url
+
+
 
         addTabURLtoDataList(currentTab, details)
         let domainURL
