@@ -40,6 +40,8 @@ Please read along here: https://github.com/jrie/flagCookies/wiki/FlagCookies-hel
 ## Providing feedback/feature wishes/ideas
 Please file an issue on the ***issues*** page. I gladly try to respond to feedback and to improve Flag cookies. If you think a feature is missing or at worst, not working as expected, please also open an issue.
 
+There is also a discussion on Mozillas Discourse where you can provide feedback: https://discourse.mozilla.org/t/support-flag-cookies-flagcookies-a-new-not-yet-another-cookie-cleaner-manager/31220
+
 ## Thanks and notes
 
 To all who helped so far through critic, general feedback and ideas. Keeps me going!
