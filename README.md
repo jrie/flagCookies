@@ -2,6 +2,9 @@
 
 A cookie manager allowing to manage explicitly domain cookies, also third-party cookies for domain and subdomain. Providing several modes to manage cookies and keeping a cookie profile, while being logged in in a website.
 
+## Screenshot
+![Flag Cookies main user interface](https://www.picflash.org/img/2018/08/25/ybej6vhug3o5vp5.png "Flag Cookies main interface")
+
 ## Features
 
 **FlagCookies distinguishes between http(s)://domain.net and http(s)://subdomain.domain.net** for the following features:
