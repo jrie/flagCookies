@@ -1111,10 +1111,7 @@ function clearCookiesOnRequestChrome (details) {
           }
         }
 
-        currentTab.url = details.url
-
-
-
+        currentTab.url = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
         addTabURLtoDataList(currentTab, details)
         let domainURL
         let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
@@ -1160,7 +1157,7 @@ async function clearCookiesOnRequest (details) {
       if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
     }
 
-    currentTab.url = details.url
+    currentTab.url = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
     addTabURLtoDataList(currentTab, details)
 
     let domainURL
@@ -1268,7 +1265,7 @@ if (useChrome) {
   chrome.cookies.onChanged.addListener(onCookieChanged)
 
   chrome.windows.onRemoved.addListener(removeTabIdfromDataList)
-  chrome.webRequest.onBeforeRequest.addListener(clearCookiesOnRequestChrome, {urls: ['<all_urls>'], types: ['main_frame', 'sub_frame']}, ['blocking'])
+  chrome.webRequest.onBeforeRequest.addListener(clearCookiesOnRequestChrome, {urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest']}, ['blocking'])
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)
@@ -1277,5 +1274,5 @@ if (useChrome) {
   browser.cookies.onChanged.addListener(onCookieChanged)
   browser.contextualIdentities.onRemoved.addListener(onContextRemoved)
   browser.windows.onRemoved.addListener(removeTabIdfromDataList)
-  browser.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, {urls: ['<all_urls>'], types: ['main_frame', 'sub_frame']}, ['blocking'])
+  browser.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, {urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest']}, ['blocking'])
 }
