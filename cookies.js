@@ -1087,7 +1087,7 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
 
 function clearCookiesOnRequestChrome (details) {
   if (logData[contextName] === undefined) logData[contextName] = {}
-  if (details.method === 'GET' && details.tabId !== -1) {
+  if ((details.method === 'GET' || details.method === 'POST') && details.tabId !== -1) {
     chrome.tabs.query({currentWindow: true, active: true}, function (activeTabs) {
       if (activeTabs.length !== 0) {
         let currentTab = activeTabs.pop()
@@ -1127,9 +1127,10 @@ function clearCookiesOnRequestChrome (details) {
 }
 
 async function clearCookiesOnRequest (details) {
-  if (details.method === 'GET' && details.tabId !== -1) {
+  if ((details.method === 'GET' || details.method === 'POST') && details.tabId !== -1) {
     let currentTab = await getActiveTabFirefox()
     if (currentTab.tabId !== details.id) return
+    if (!currentTab.highlighted) return
 
     let data = await browser.storage.local.get()
 
