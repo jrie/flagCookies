@@ -166,6 +166,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   let flaggedCookieList = document.querySelector('#cookie-list-flagged')
   let permittedCookieList = document.querySelector('#cookie-list-permitted')
   let loggedInCookieList = document.querySelector('#loggedInCookies')
+  console.log(cookies.cookies)
 
   if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
@@ -174,6 +175,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     infoDisplay.removeAttribute('class')
   } else {
     let previousCookieDomain = cookies.rootDomain
+    let activeCookies = false
     for (let cookieKey of Object.keys(cookies.cookies)) {
       if (cookies.cookies[cookieKey].length === 0) {
         previousCookieDomain = cookieKey
@@ -194,7 +196,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         cookieList.appendChild(cookieSub)
       }
 
-      let activeCookies = false
       for (let cookie of cookies.cookies[cookieKey]) {
         activeCookies = true
         ++countList['#activeCookies']
@@ -274,13 +275,13 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         li.appendChild(lockSwitch)
         cookieList.appendChild(li)
       }
+    }
 
-      if (!activeCookies) {
-        let infoDisplay = document.querySelector('#infoDisplay')
-        let contentText = 'No active cookies for domain, you might need to reload the tab.'
-        infoDisplay.children[0].textContent = contentText
-        infoDisplay.removeAttribute('class')
-      }
+    if (!activeCookies) {
+      let infoDisplay = document.querySelector('#infoDisplay')
+      let contentText = 'No active cookies for domain, you might need to reload the tab.'
+      infoDisplay.children[0].textContent = contentText
+      infoDisplay.removeAttribute('class')
     }
 
     cookieList.removeAttribute('class')

@@ -1178,6 +1178,7 @@ async function clearCookiesOnRequest (details) {
         break
       case 'main_frame':
         tabList = await browser.tabs.query({'url': details.url})
+        console.log(details)
         break
     }
 
@@ -1185,6 +1186,17 @@ async function clearCookiesOnRequest (details) {
       if (tab.id === details.tabId) {
         currentTab = tab
         break
+      }
+    }
+
+    if (currentTab === undefined) {
+      tabList = await browser.tabs.query({})
+
+      for (let tab of tabList) {
+        if (tab.id === details.tabId) {
+          currentTab = tab
+          break
+        }
       }
     }
 
