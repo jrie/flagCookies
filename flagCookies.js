@@ -6,6 +6,11 @@ let cookieStoreId = null
 let domainURL = ''
 let tabId = -1
 let windowId = -1
+let countList = {
+  '#activeCookies': 0,
+  '#permittedCookies': 0,
+  '#flaggedCookies': 0
+}
 // --------------------------------------------------------------------------------------------------------------------------------
 // Chrome helpers
 function checkChromeHadNoErrors () {
@@ -192,6 +197,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
       let activeCookies = false
       for (let cookie of cookies.cookies[cookieKey]) {
         activeCookies = true
+        ++countList['#activeCookies']
 
         let li = document.createElement('li')
 
@@ -217,10 +223,12 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
               checkMark.className = 'checkmark flagged'
               checkMark.title = 'This cookie is flagged and will be removed during page load.'
               addCookieToList('cookie-list-flagged', cookie.name, cookie.value, cookie.domain, false)
+              ++countList['#flaggedCookies']
             } else if (data[contextName][domainURL][cookie.domain][cookie.name] === false) {
               checkMark.className = 'checkmark permit'
               checkMark.title = 'This cookie is permitted and will be kept, even when global or auto flag mode is active.'
               addCookieToList('cookie-list-permitted', cookie.name, cookie.value, cookie.domain, false)
+              ++countList['#permittedCookies']
             }
           }
         }
@@ -339,8 +347,16 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     document.querySelector('#confirmNotifications').className += ' active'
   }
 
-  if (!useChrome) getTempContainerStatus(contextName)
+  for (let key of Object.keys(countList)) {
+    let bubble = document.createElement('span')
+    bubble.className = 'cookieCount'
+    bubble.dataset['key'] = key
+    let countText = document.createTextNode(countList[key])
+    bubble.appendChild(countText)
+    document.querySelector(key).appendChild(bubble)
+  }
 
+  if (!useChrome) getTempContainerStatus(contextName)
   buildHelpIndex()
 }
 
@@ -534,8 +550,8 @@ async function flaggedCookieSwitchNeutral (data, evt) {
   else await browser.storage.local.set(data)
 
   let parent = evt.target.parentNode.parentNode
-
   parent.removeChild(evt.target.parentNode)
+
   if (parent.children.length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
     let contentText = 'No flagged cookies for domain.'
@@ -543,6 +559,9 @@ async function flaggedCookieSwitchNeutral (data, evt) {
     parent.className = 'hidden'
     infoDisplay.removeAttribute('class')
   }
+
+  --countList['#flaggedCookies']
+  updateCookieCount()
 }
 
 // Permitted view flag switch
@@ -613,6 +632,9 @@ async function permittedCookieSwitchNeutral (data, evt) {
     parent.className = 'hidden'
     infoDisplay.removeAttribute('class')
   }
+
+  --countList['#permittedCookies']
+  updateCookieCount()
 }
 
 // Switch the cookie flag
@@ -646,17 +668,20 @@ async function cookieFlagSwitchNeutral (data, evt) {
     evt.target.className = 'checkmark flagged'
     evt.target.title = 'This cookie is flagged and will be removed on page action.'
     addCookieToList('cookie-list-flagged', cookieName, cookieValue, cookieDomain, false)
+    ++countList['#flaggedCookies']
   } else if (data[contextName][domainURL][cookieDomain][cookieName] === true) {
     data[contextName][domainURL][cookieDomain][cookieName] = false
     evt.target.className = 'checkmark permit'
     evt.target.title = 'This cookie is permitted and will be kept, even when global or auto flag mode is active.'
     addCookieToList('cookie-list-permitted', cookieName, cookieValue, cookieDomain, false)
+    ++countList['#permittedCookies']
 
     // Remove from flagged list if present
     let flaggedCookieList = document.querySelector('#cookie-list-flagged')
     for (let child of flaggedCookieList.children) {
       if (child.children[0].dataset['name'] === cookieName && child.children[0].dataset['domain'] === cookieDomain) {
         child.parentNode.removeChild(child)
+        --countList['#flaggedCookies']
         break
       }
     }
@@ -725,13 +750,23 @@ async function cookieFlagSwitchNeutral (data, evt) {
     for (let child of permittedCookieList.children) {
       if (child.children[0].dataset['name'] === cookieName && child.children[0].dataset['domain'] === cookieDomain) {
         child.parentNode.removeChild(child)
+        --countList['#permittedCookies']
         break
       }
     }
   }
 
+  updateCookieCount()
+
   if (useChrome) setChromeStorage(data)
   else await browser.storage.local.set(data)
+}
+
+function updateCookieCount() {
+  for (let key of Object.keys(countList)) {
+    let countItem = document.querySelector(key + ' .cookieCount')
+    countItem.textContent = countList[key]
+  }
 }
 
 // Switch lockSwitch

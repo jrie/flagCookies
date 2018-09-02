@@ -126,15 +126,14 @@ span, p, h1, h2, h3, h4, h5 {
 .settings-title {
   display: block;
   color: #888;
-  font-size: 0.75em;
-  margin-bottom: 4px;
+  font-size: 0.65em;
+  margin-top: 0px;
 }
 
 .info {
   padding-left: 21px;
   font-weight: bold;
   font-size: 1.25em;
-  margin-bottom: 18px;
 }
 
 #header-title {
@@ -304,6 +303,8 @@ button::-moz-focus-inner {
   border-radius: 12px 12px 0px 0px;
   transition: background-color,color;
   transition-duration: 120ms;
+  position: relative;
+  margin-right: 8px;
 }
 
 button#activeCookies {
@@ -325,6 +326,18 @@ button#permittedCookies {
   background-size: 21px;
   background-repeat: no-repeat;
   background-position: 8px center;
+}
+
+.cookieCount {
+  border: 1px solid #ccc;
+  border-radius: 48px;
+  background-color: #45a;
+  color: #fff;
+  font-size: 0.95em;
+  padding: 0px 7px 2px 7px;
+  position: absolute;
+  top: 26px;
+  right: -8px;
 }
 
 .hidden {
