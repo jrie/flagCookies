@@ -1143,6 +1143,7 @@ function clearCookiesOnRequestChrome (details) {
 
         if (currentTab.url !== details.url) {
           if (cookieData[domainURL] !== undefined && cookieData[domainURL][contextName] !== undefined) cookieData[domainURL][contextName] = []
+          clearDomainLog(null, currentTab)
         }
 
         if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined) {
@@ -1178,7 +1179,6 @@ async function clearCookiesOnRequest (details) {
         break
       case 'main_frame':
         tabList = await browser.tabs.query({'url': details.url})
-        console.log(details)
         break
     }
 
@@ -1217,6 +1217,7 @@ async function clearCookiesOnRequest (details) {
 
       if (currentTab.url !== details.url) {
         if (cookieData[domainURL] !== undefined && cookieData[domainURL][contextName] !== undefined) cookieData[domainURL][contextName] = []
+        clearDomainLog(null, currentTab)
       }
 
       if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined) {
