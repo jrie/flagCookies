@@ -1200,7 +1200,7 @@ async function clearCookiesOnRequest (details) {
 
       if (logTime[contextName] !== undefined && logTime[contextName][currentTab.windowId] !== undefined && logTime[contextName][currentTab.windowId][currentTab.id] !== undefined) {
         let dateObj = new Date()
-        if (logTime[contextName][currentTab.windowId][currentTab.id] <= dateObj.getTime() - 5000) clearDomainLog(null, currentTab)
+        if (logTime[contextName][currentTab.windowId][currentTab.id] <= dateObj.getTime()) clearDomainLog(null, currentTab)
       }
 
       if (currentTab.url !== details.url) {
