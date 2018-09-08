@@ -304,7 +304,7 @@ function handleMessage (request, sender, sendResponse) {
       }
     }
 
-    if (logData[contextName] !== undefined && logData[contextName][tab.windowId] !== undefined && logData[contextName][tab.windowId][tab.id] !== undefined) {
+    if (logData[contextName] !== undefined && logData[contextName][request.windowId] !== undefined && logData[contextName][request.windowId][request.tabId] !== undefined) {
       sendResponse({'cookies': cookieDataDomain, 'rootDomain': rootDomain, 'logData': logData[contextName][request.windowId][request.tabId]})
     } else {
       sendResponse({'cookies': cookieDataDomain, 'rootDomain': rootDomain, 'logData': null})
