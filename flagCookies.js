@@ -166,7 +166,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   let flaggedCookieList = document.querySelector('#cookie-list-flagged')
   let permittedCookieList = document.querySelector('#cookie-list-permitted')
   let loggedInCookieList = document.querySelector('#loggedInCookies')
-  console.log(cookies.cookies)
 
   if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
@@ -316,23 +315,10 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   }
 
   document.querySelector('#activeCookies').className = 'active'
-  if (data['flagCookies'] !== undefined && data['flagCookies']['logData'] !== undefined && data['flagCookies']['logData'][contextName] !== undefined && data['flagCookies']['logData'][contextName][tab.windowId] !== undefined && data['flagCookies']['logData'][contextName][tab.windowId][tab.id] !== undefined) {
+  if (cookies['logData'] !== null) {
     let log = document.querySelector('#log')
-    let foundCookies = []
-    for (let entry of data['flagCookies']['logData'][contextName][tab.windowId][tab.id]) {
-      if (entry.indexOf('deleted') !== -1) {
-        let cookieName = entry.match(/cookie: '[^']*/)[0]
-        let cookieDomain = entry.match(/for '[^']*/)[0]
-        cookieName = cookieName.substr(cookieName.indexOf("'") + 1, cookieName.length)
-        cookieDomain = cookieName.substr(cookieDomain.indexOf("'") + 1, cookieDomain.length)
-        let cookieString = cookieName + ' ' + cookieDomain
 
-        if (foundCookies.indexOf(cookieString) !== -1) continue
-        foundCookies.push(cookieString)
-      }
-
-      log.textContent += entry + '\n'
-    }
+    for (let entry of cookies['logData']) log.textContent += entry + '\n'
   }
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][contextName] && data['flagCookies_autoFlag'][contextName][domainURL]) {
@@ -1294,18 +1280,6 @@ async function resetUIDomain (data) {
           if (useChrome) chrome.storage.local.remove('flagCookies_logged', function () { checkChromeHadNoErrors() })
           else await browser.storage.local.remove('flagCookies_logged')
         }
-      }
-    }
-  }
-
-  if (data['flagCookies']['logData'] !== undefined && data['flagCookies']['logData'][contextName] !== undefined && data['flagCookies']['logData'][contextName][windowId] !== undefined && data['flagCookies']['logData'][contextName][windowId][tabId] !== undefined) {
-    delete data['flagCookies']['logData'][contextName][windowId][tabId]
-
-    if (Object.keys(data['flagCookies']['logData'][contextName][windowId]).length === 0) {
-      delete data['flagCookies']['logData'][contextName][windowId]
-
-      if (Object.keys(data['flagCookies']['logData'][contextName]).length === 0) {
-        delete data['flagCookies']['logData'][contextName]
       }
     }
   }

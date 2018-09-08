@@ -133,8 +133,8 @@ function firefoxOnGetContextSuccess (context) {
 
 function firefoxOnGetContextError (e) {
   if (hasConsole) {
-    console.log('Firefox getContext profile error: ')
-    console.log(e)
+    // console.log('Firefox getContext profile error: ')
+    // console.log(e)
   }
 
   contextName = 'default'
@@ -149,6 +149,7 @@ async function clearCookiesWrapper (action, doChromeLoad) {
   let domainURL = await getDomainURLFirefox()
   if (domainURL === '') return
   let currentTab = await getActiveTabFirefox()
+
   let data = await browser.storage.local.get()
 
   if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
@@ -303,11 +304,11 @@ function handleMessage (request, sender, sendResponse) {
       }
     }
 
-    sendResponse({'cookies': cookieDataDomain, 'rootDomain': rootDomain})
+    sendResponse({'cookies': cookieDataDomain, 'rootDomain': rootDomain, 'logData': logData[contextName][request.windowId][request.tabId]})
     return
   }
 
-  sendResponse({'cookies': null, 'rootDomain': 'Unknown domain'})
+  sendResponse({'cookies': null, 'rootDomain': 'Unknown domain', 'logData': null})
 }
 
 // Clear the cookies which are enabled for the domain in browser storage
@@ -593,54 +594,9 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       }
     }
   }
-
-  if (data['flagCookies'] === undefined) data['flagCookies'] = {}
-  if (data['flagCookies']['logData'] === undefined) data['flagCookies']['logData'] = {}
-  if (data['flagCookies']['logData'][contextName] === undefined) data['flagCookies']['logData'][contextName] = {}
-  if (data['flagCookies']['logData'][contextName][currentTab.windowId] === undefined) data['flagCookies']['logData'][contextName][currentTab.windowId] = {}
-  if (data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id] === undefined) data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id] = []
-  if (logData[contextName] === undefined || logData[contextName][currentTab.windowId] === undefined || logData[contextName][currentTab.windowId][currentTab.id] === undefined) {
-    data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id] = []
-  } else {
-    data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id] = logData[contextName][currentTab.windowId][currentTab.id].sort()
-  }
-
-  if (useChrome) setChromeStorage(data)
-  else await browser.storage.local.set(data)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-// Chrome: Update storage log data
-function chromeUpdateLogData (data, writeData, currentTab) {
-  function updatedData () {
-    if (chrome.runtime.lastError !== undefined) {
-      if (hasConsole) console.log('Browser could not store data')
-
-      void chrome.runtime.lastError
-      return
-    }
-
-    if (hasConsole) console.log('Browser updated the browser storage')
-  }
-
-  if (writeData) {
-    if (data['flagCookies'] === undefined) data['flagCookies'] = {}
-    if (data['flagCookies']['logData'] === undefined) data['flagCookies']['logData'] = {}
-    if (data['flagCookies']['logData'][contextName] === undefined) data['flagCookies']['logData'][contextName] = {}
-    if (data['flagCookies']['logData'][contextName][currentTab.windowId] === undefined) data['flagCookies']['logData'][contextName][currentTab.windowId] = {}
-    if (data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id] === undefined) data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id] = []
-    if (logData[contextName] === undefined || logData[contextName][currentTab.windowId] === undefined || logData[contextName][currentTab.windowId][currentTab.id] === undefined) {
-      data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id] = []
-    } else {
-      data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id] = logData[contextName][currentTab.windowId][currentTab.id].sort()
-    }
-
-    chrome.storage.local.set(data, updatedData)
-  } else {
-    chrome.storage.local.get(null, function (data) { checkChromeHadNoErrors(); chromeUpdateLogData(data, true, currentTab) })
-  }
-}
-
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   if (changeInfo.status && changeInfo.status === 'loading') {
     if (useChrome) chrome.browserAction.disable(tab.id)
@@ -672,7 +628,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
             if (titleJoin.indexOf(cookieName) === -1) {
               titleJoin.push(cookieName)
 
-              if (index !== 0 && index % 4 === 0) titleJoin.push('\n')
+              if (index !== 0 && index % 10 === 0) titleJoin.push('\n')
               ++index
             }
           }
@@ -699,19 +655,9 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
     let count = 0
     if (logData[contextName] !== undefined && logData[contextName][tab.windowId] !== undefined && logData[contextName][tab.windowId][tab.id] !== undefined) {
-      let foundCookies = []
-
       for (let entry of logData[contextName][tab.windowId][tab.id]) {
         if (entry.toLowerCase().indexOf('deleted') !== -1) {
-          let cookieName = entry.match(/cookie: '[^']*/)[0]
-          let cookieDomain = entry.match(/for '[^']*/)[0]
-          cookieName = cookieName.substr(cookieName.indexOf("'") + 1, cookieName.length)
-          cookieDomain = cookieName.substr(cookieDomain.indexOf("'") + 1, cookieDomain.length)
-          let cookieString = cookieName + ' ' + cookieDomain
-
-          if (foundCookies.indexOf(cookieString) !== -1) continue
-          foundCookies.push(cookieString)
-          count++
+          ++count
         }
       }
 
@@ -725,25 +671,11 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     }
 
     if (useChrome) {
-      chromeUpdateLogData(null, false, tab)
       getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
       return
     }
 
     let data = await browser.storage.local.get(null)
-    if (data['flagCookies'] === undefined) data['flagCookies'] = {}
-    if (data['flagCookies']['logData'] === undefined) data['flagCookies']['logData'] = {}
-    if (data['flagCookies']['logData'][contextName] === undefined) data['flagCookies']['logData'][contextName] = {}
-    if (data['flagCookies']['logData'][contextName][tab.windowId] === undefined) data['flagCookies']['logData'][contextName][tab.windowId] = {}
-    if (data['flagCookies']['logData'][contextName][tab.windowId][tab.id] === undefined) data['flagCookies']['logData'][contextName][tab.windowId][tab.id] = []
-    if (logData[contextName] === undefined || logData[contextName][tab.windowId] === undefined || logData[contextName][tab.windowId][tab.id] === undefined) {
-      data['flagCookies']['logData'][contextName][tab.windowId][tab.id] = []
-    } else {
-      data['flagCookies']['logData'][contextName][tab.windowId][tab.id] = logData[contextName][tab.windowId][tab.id].sort()
-    }
-
-    await browser.storage.local.set(data)
-
     if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
       browser.notifications.create('cookie_cleared', {type: 'basic', message: count + ' cookie(s) removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png'})
     }
@@ -825,29 +757,15 @@ async function setBrowserActionIconFirefox (contextName, tabDomain, tabId) {
 async function clearDomainLog (chromeData, currentTab) {
   if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
     if (useChrome) {
-      if (chromeData === null) {
-        getChromeStorageForFunc1(clearDomainLog, currentTab)
-        return
-      } else {
-        delete logData[contextName][currentTab.windowId][currentTab.id]
-        if (Object.keys(logData[contextName][currentTab.windowId]).length === 0) delete logData[contextName][currentTab.windowId]
-
-        delete chromeData['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id]
-        if (Object.keys(chromeData['flagCookies']['logData'][contextName][currentTab.windowId]).length === 0) delete chromeData['flagCookies']['logData'][contextName][currentTab.windowId]
-        setChromeStorage(chromeData)
-        return
-      }
+      logData[contextName][currentTab.windowId][currentTab.id] = []
+      delete logData[contextName][currentTab.windowId][currentTab.id]
+      if (Object.keys(logData[contextName][currentTab.windowId]).length === 0) delete logData[contextName][currentTab.windowId]
+      return
     }
 
+    logData[contextName][currentTab.windowId][currentTab.id] = []
     delete logData[contextName][currentTab.windowId][currentTab.id]
     if (Object.keys(logData[contextName][currentTab.windowId]).length === 0) delete logData[contextName][currentTab.windowId]
-
-    let data = await browser.storage.local.get(null)
-    delete data['flagCookies']['logData'][contextName][currentTab.windowId][currentTab.id]
-
-    if (Object.keys(data['flagCookies']['logData'][contextName][currentTab.windowId]).length === 0) delete data['flagCookies']['logData'][contextName][currentTab.windowId]
-
-    await browser.storage.local.set(data)
   }
 }
 
@@ -931,13 +849,6 @@ async function getCommand (command) {
 function onCookieChanged (changeInfo) {
   if (!changeInfo.removed && (changeInfo.cause === 'explicit' || changeInfo.cause === 'expired_overwrite' || changeInfo.cause === 'overwrite')) {
     let cookieDetails = changeInfo.cookie
-
-    let activeCookieStore = 'default'
-
-    if (!useChrome) {
-      activeCookieStore = cookieDetails.storeId !== undefined ? cookieDetails.storeId : 'default'
-    }
-
     let domainName = cookieDetails['domain'].charAt(0) === '.' ? cookieDetails['domain'].substr(1, cookieDetails['domain'].length) : cookieDetails['domain']
 
     let activeDomain = null
@@ -979,11 +890,6 @@ async function onContextRemoved (changeInfo) {
   }
 
   if (data['flagCookies'] !== undefined) {
-    if (data['flagCookies']['logData'] !== undefined && data['flagCookies']['logData'][activeCookieStore] !== undefined) {
-      delete data['flagCookies']['logData'][activeCookieStore]
-      if (Object.keys(data['flagCookies']['logData']).length === 0) delete data['flagCookies']['logData']
-    }
-
     if (Object.keys(data['flagCookies']).length === 0) {
       delete data['flagCookies']
       browser.storage.local.remove('flagCookies')
@@ -1211,8 +1117,14 @@ async function clearCookiesOnRequest (details) {
       else domainURL = details.url.replace(/\/www\./, '/')
 
       if (logTime[contextName] !== undefined && logTime[contextName][currentTab.windowId] !== undefined && logTime[contextName][currentTab.windowId][currentTab.id] !== undefined) {
+        console.log(logTime)
         let dateObj = new Date()
-        if (logTime[contextName][currentTab.windowId][currentTab.id] <= dateObj.getTime()) clearDomainLog(null, currentTab)
+        if (logTime[contextName][currentTab.windowId][currentTab.id] <= dateObj.getTime()) {
+          console.log('inside')
+          clearDomainLog(null, currentTab)
+        }
+
+        console.log('outside')
       }
 
       if (currentTab.url !== details.url) {
