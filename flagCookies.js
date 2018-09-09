@@ -5,7 +5,6 @@ let contextName = 'default'
 let cookieStoreId = null
 let domainURL = ''
 let tabId = -1
-let windowId = -1
 let countList = {
   '#activeCookies': 0,
   '#permittedCookies': 0,
@@ -100,8 +99,8 @@ function firefoxOnGetContextSuccess (context) {
 
 function firefoxOnGetContextError (e) {
   if (hasConsole) {
-    console.log('Firefox getContext profile error: ')
-    console.log(e)
+    // console.log('Firefox getContext profile error: ')
+    // console.log(e)
   }
 }
 
@@ -150,10 +149,12 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
   let intro = document.createTextNode('Cookies for domain:')
   introSpan.appendChild(intro)
+  let introUrl = document.createElement('span')
+  introUrl.className = 'domainurl'
   let url = document.createTextNode(cookies.rootDomain)
-  url.className = 'domainurl'
+  introUrl.appendChild(url)
   activeTabUrl.appendChild(introSpan)
-  activeTabUrl.appendChild(url)
+  activeTabUrl.appendChild(introUrl)
 
   let introSpanStore = document.createElement('span')
   introSpanStore.className = 'intro'
@@ -176,20 +177,35 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     let previousCookieDomain = cookies.rootDomain
     let activeCookies = false
     for (let cookieKey of Object.keys(cookies.cookies)) {
+      let cookieDomain = null
+
       if (cookies.cookies[cookieKey].length === 0) {
         previousCookieDomain = cookieKey
         continue
       }
 
+      for (let cookie of cookies.cookies[cookieKey]) {
+        if (cookies.rootDomain.replace(/(http|https):\/\//, '').indexOf(cookie.domain) !== -1) {
+          cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
+          previousCookieDomain = null
+          break
+        }
+      }
+
       if (cookieKey !== previousCookieDomain) {
         previousCookieDomain = cookieKey
         let cookieSub = document.createElement('h4')
+        cookieSub.className = 'subloadbar'
         let cookieSubSpan = document.createElement('span')
         cookieSubSpan.className = 'subloaded'
         let cookieSubSpanText = document.createTextNode('[CROSS ORIGIN]')
         cookieSubSpan.appendChild(cookieSubSpanText)
-
-        let subName = document.createTextNode(cookieKey)
+        let subName
+        if (cookieDomain !== null) {
+          subName = document.createTextNode(cookieDomain)
+        } else {
+          subName = document.createTextNode(cookieKey)
+        }
         cookieSub.appendChild(cookieSubSpan)
         cookieSub.appendChild(subName)
         cookieList.appendChild(cookieSub)
@@ -260,12 +276,44 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
 
           pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
+
+          if (cookie['fgProtected'] !== undefined) {
+            let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
+            let pCookieDomainMessageElm = document.createElement('span')
+            let pCookieDomainMessage = ''
+
+            if (cookie['fgLogged'] !== undefined) {
+              pCookieDomainMessage = document.createTextNode('(Protected profile cookie of: ' + cookieDomain + ')')
+            }
+
+            pCookieDomainMessageElm.className = 'secure-cookie'
+            pCookieDomainMessageElm.appendChild(pCookieDomainMessage)
+            pCookieKeyElm.appendChild(pCookieDomainMessageElm)
+          }
+
           p.appendChild(pCookieValueElm)
           if (cookie['fgHandled'] && !cookie['fgRemoved'] && !cookie['fgAllowed']) {
             li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
             li.className += ' unremoved-secure-cookie'
           }
         } else {
+          if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined)) {
+            let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
+            let pCookieDomainMessageElm = document.createElement('span')
+            let pCookieDomainMessage = ''
+            if (cookie['fgProtected'] !== undefined) {
+              pCookieDomainMessage = document.createTextNode('(Protected profile cookie of: ' + cookieDomain + ')')
+            } else if (cookie['fgProfile'] !== undefined) {
+              pCookieDomainMessage = document.createTextNode('(Global protected profile cookie of: ' + cookieDomain + ')')
+            }
+
+            if (pCookieDomainMessage !== '') {
+              pCookieDomainMessageElm.className = 'secure-cookie'
+              pCookieDomainMessageElm.appendChild(pCookieDomainMessage)
+              pCookieKeyElm.appendChild(pCookieDomainMessageElm)
+            }
+          }
+
           p.appendChild(pCookieValueElm)
         }
 
@@ -469,11 +517,7 @@ function addCookieToList (targetList, name, value, domain, inactiveCookie) {
 }
 
 async function getActiveTab () {
-  return await browser.tabs.query({currentWindow: true, active: true})
-}
-
-function getActiveTabChrome () {
-  return chrome.tabs.query({currentWindow: true, active: true})
+  return browser.tabs.query({currentWindow: true, active: true})
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -749,7 +793,7 @@ async function cookieFlagSwitchNeutral (data, evt) {
   else await browser.storage.local.set(data)
 }
 
-function updateCookieCount() {
+function updateCookieCount () {
   for (let key of Object.keys(countList)) {
     let countItem = document.querySelector(key + ' .cookieCount')
     countItem.textContent = countList[key]
