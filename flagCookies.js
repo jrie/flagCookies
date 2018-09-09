@@ -184,11 +184,13 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         continue
       }
 
-      for (let cookie of cookies.cookies[cookieKey]) {
-        if (cookies.rootDomain.replace(/(http|https):\/\//, '').indexOf(cookie.domain) !== -1) {
+      if (cookieKey === cookies.rootDomain) {
+        for (let cookie of cookies.cookies[cookieKey]) {
           cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
-          previousCookieDomain = null
-          break
+          if (cookieKey.replace(/(http|https):\/\//, '') !== cookieDomain) {
+            previousCookieDomain = null
+            break
+          }
         }
       }
 
