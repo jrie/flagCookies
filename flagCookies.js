@@ -168,6 +168,9 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   let permittedCookieList = document.querySelector('#cookie-list-permitted')
   let loggedInCookieList = document.querySelector('#loggedInCookies')
 
+  let hasAutoFlag = (data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined)
+  let hasGlobalFlag = (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] === true)
+
   if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
     let contentText = 'No active cookies for domain, you might need to reload the tab.'
@@ -183,6 +186,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         previousCookieDomain = cookieKey
         continue
       }
+
 
       if (cookieKey === cookies.rootDomain) {
         for (let cookie of cookies.cookies[cookieKey]) {
@@ -235,6 +239,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         lockSwitch.dataset['domain'] = cookie.domain
         lockSwitch.addEventListener('click', cookieLockSwitch)
 
+        let isHandledCookie = false
         if (data[contextName] !== undefined && data[contextName][domainURL] !== undefined) {
           if (data[contextName][domainURL][cookie.domain] !== undefined && data[contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
             if (data[contextName][domainURL][cookie.domain][cookie.name] === true) {
@@ -242,11 +247,13 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
               checkMark.title = 'This cookie is flagged and will be removed during page load.'
               addCookieToList('cookie-list-flagged', cookie.name, cookie.value, cookie.domain, false)
               ++countList['#flaggedCookies']
+              isHandledCookie = true
             } else if (data[contextName][domainURL][cookie.domain][cookie.name] === false) {
               checkMark.className = 'checkmark permit'
               checkMark.title = 'This cookie is permitted and will be kept, even when global or auto flag mode is active.'
               addCookieToList('cookie-list-permitted', cookie.name, cookie.value, cookie.domain, false)
               ++countList['#permittedCookies']
+              isHandledCookie = true
             }
           }
         }
@@ -279,21 +286,26 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
           pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
 
-          if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined)) {
+          if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined))) {
             let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
             let pCookieDomainMessageElm = document.createElement('span')
             let pCookieDomainMessage = ''
             if (cookie['fgLogged'] !== undefined) {
-              pCookieDomainMessage = document.createTextNode('(Unprotected profile cookie of: ' + cookieDomain + ')')
+              pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookieDomain + ')'
             } else if (cookie['fgProtected'] !== undefined) {
-              pCookieDomainMessage = document.createTextNode('(Protected profile cookie of: ' + cookieDomain + ')')
+              pCookieDomainMessage = '(Protected profile cookie of: ' + cookieDomain + ')'
             } else if (cookie['fgProfile'] !== undefined) {
-              pCookieDomainMessage = document.createTextNode('(Global protected profile cookie of: ' + cookieDomain + ')')
+              pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
+            }
+
+            if (!isHandledCookie && cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
+              if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
+              else pCookieDomainMessage += ' [Removed by rule]'
             }
 
             if (pCookieDomainMessage !== '') {
               pCookieDomainMessageElm.className = 'secure-cookie'
-              pCookieDomainMessageElm.appendChild(pCookieDomainMessage)
+              pCookieDomainMessageElm.appendChild(document.createTextNode(pCookieDomainMessage))
               pCookieKeyElm.appendChild(pCookieDomainMessageElm)
             }
           }
@@ -304,21 +316,26 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
             li.className += ' unremoved-secure-cookie'
           }
         } else {
-          if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined)) {
+          if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined))) {
             let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
             let pCookieDomainMessageElm = document.createElement('span')
             let pCookieDomainMessage = ''
             if (cookie['fgLogged'] !== undefined) {
-              pCookieDomainMessage = document.createTextNode('(Unprotected profile cookie of: ' + cookieDomain + ')')
+              pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookieDomain + ')'
             } else if (cookie['fgProtected'] !== undefined) {
-              pCookieDomainMessage = document.createTextNode('(Protected profile cookie of: ' + cookieDomain + ')')
+              pCookieDomainMessage = '(Protected profile cookie of: ' + cookieDomain + ')'
             } else if (cookie['fgProfile'] !== undefined) {
-              pCookieDomainMessage = document.createTextNode('(Global protected profile cookie of: ' + cookieDomain + ')')
+              pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
+            }
+
+            if (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined && (cookie['fgHandled'] !== undefined)) {
+              if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
+              else pCookieDomainMessage += ' [Removed by rule]'
             }
 
             if (pCookieDomainMessage !== '') {
               pCookieDomainMessageElm.className = 'secure-cookie'
-              pCookieDomainMessageElm.appendChild(pCookieDomainMessage)
+              pCookieDomainMessageElm.appendChild(document.createTextNode(pCookieDomainMessage))
               pCookieKeyElm.appendChild(pCookieDomainMessageElm)
             }
           }
