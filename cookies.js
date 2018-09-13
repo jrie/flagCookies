@@ -1004,8 +1004,10 @@ function addToLogData (currentTab, msg, timeString, timestamp) {
 
   msg = msg.replace(/\/www\./, '/')
   msg = '[' + timeString + ']  ' + msg
-  logData[contextName][currentTab.windowId][currentTab.id].push(msg)
-  logTime[contextName][currentTab.windowId][currentTab.id].push(timestamp)
+  if (logData[contextName][currentTab.windowId][currentTab.id].indexOf(msg) === -1) {
+    logData[contextName][currentTab.windowId][currentTab.id].push(msg)
+    logTime[contextName][currentTab.windowId][currentTab.id].push(timestamp)
+  }
 }
 
 // Account mode switch key command
