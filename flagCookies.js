@@ -138,6 +138,15 @@ async function initDomainURLandProceed (tabs) {
   updateUIData(data, cookies, contextName, tab, activeCookieStore)
 }
 
+function sortObjectByKey (ObjectElements, keyName,doReverse) {
+  function sortByKey (elementOne, elementTwo) {
+    return elementOne[keyName] <= elementTwo[keyName]
+  }
+
+  if (doReverse !== undefined && doReverse === true) return Object.values(ObjectElements).sort(sortByKey).reverse()
+  return Object.values(ObjectElements).sort(sortByKey)
+}
+
 function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieStore) {
   // set the header of the panel
   let activeTabUrl = document.querySelector('#header-title')
@@ -187,10 +196,9 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         continue
       }
 
-
       if (cookieKey === cookies.rootDomain) {
         for (let cookie of cookies.cookies[cookieKey]) {
-          cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
+          cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('www.', '') : cookie.domain.replace('www.', '')
           if (cookieKey.replace(/(http|https):\/\//, '') !== cookieDomain) {
             previousCookieDomain = null
             break
@@ -217,7 +225,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         cookieList.appendChild(cookieSub)
       }
 
-      for (let cookie of cookies.cookies[cookieKey]) {
+      for (let cookie of sortObjectByKey(cookies.cookies[cookieKey], 'name', true)) {
         activeCookies = true
         ++countList['#activeCookies']
 
