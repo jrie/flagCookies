@@ -98,6 +98,10 @@ span, p, h1, h2, h3, h4, h5 {
   border-right: 1px solid #aaa;
 }
 
+.chrome .legend span {
+  margin-top: 1em;
+}
+
 .legend #leg-unhandled {
   background-image: url('icons/unhandled.png');
   background-position: 0px center;
@@ -243,11 +247,15 @@ li.unremoved-secure-cookie {
   margin-bottom: 8px;
   font-size: 1em;
   box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.12);
-
 }
+
 .subloaded {
   color: #9a0000;
   margin-right: 1em;
+}
+
+.chrome .subloaded {
+  margin-right: 7px;
 }
 
 #cookie-list p,
@@ -322,6 +330,13 @@ button::-moz-focus-inner {
   margin-right: 8px;
 }
 
+.chrome #tabs button {
+  padding-top: 10px;
+  padding-bottom: 8px;
+  top: -3px;
+  margin-right: 5px;
+}
+
 button#activeCookies {
   background-image: url('icons/cookie_38.png');
   background-size: 21px;
@@ -353,6 +368,10 @@ button#permittedCookies {
   position: absolute;
   top: 26px;
   right: -8px;
+}
+
+.chrome .cookieCount {
+  padding: 3px 7px;
 }
 
 .hidden {
@@ -460,6 +479,14 @@ button#help {
   transition-duration: 120ms;
 }
 
+.chrome button#auto-flag,
+.chrome button#global-flag,
+.chrome button#account-mode,
+.chrome button#help {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 button#help {
   background-image: url('icons/help_28.png');
   background-size: 21px;
@@ -550,6 +577,8 @@ button#global-flag.active {
 
 .chrome #prefs {
   top: 6px;
+  padding-top: 10px;
+  padding-bottom: 8px;
 }
 
 #settings-view {
@@ -577,10 +606,12 @@ button#global-flag.active {
   display: inline-block;
   margin-left: 5px;
   background-image: url('icons/help_16.png');
+  padding: 4px;
   padding-right: 20px;
   background-position: right center;
   background-repeat: no-repeat;
   background-clip: border-box;
+
 }
 
 textarea#log {
