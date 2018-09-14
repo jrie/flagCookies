@@ -109,14 +109,10 @@ function firefoxOnGetContextError (e) {
 async function initDomainURLandProceed (tabs) {
   let tab = tabs.pop()
   tabId = tab.id
-  windowId = tab.windowId
-
-  let domainMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.-][^\/]*/)
-  if (domainMatch !== null) {
-    domainURL = domainMatch[0]
-  } else {
-    domainURL = 'No domain'
-  }
+  let domain = null
+  let domainMatch = tab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
+  if (domainMatch !== null) domainURL = domainMatch[0]
+  else domainURL = 'No domain'
 
   if (useChrome) {
     document.body.className = 'chrome'
@@ -134,13 +130,13 @@ async function initDomainURLandProceed (tabs) {
   cookieStoreId = activeCookieStore
   await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
-  let cookies = await browser.runtime.sendMessage({'getCookies': domainURL, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id})
+  let cookies = await browser.runtime.sendMessage({'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id})
   updateUIData(data, cookies, contextName, tab, activeCookieStore)
 }
 
-function sortObjectByKey (ObjectElements, keyName,doReverse) {
+function sortObjectByKey (ObjectElements, keyName, doReverse) {
   function sortByKey (elementOne, elementTwo) {
-    return elementOne[keyName] <= elementTwo[keyName]
+    return elementOne[keyName].toLowerCase() < elementTwo[keyName].toLowerCase()
   }
 
   if (doReverse !== undefined && doReverse === true) return Object.values(ObjectElements).sort(sortByKey).reverse()
@@ -177,8 +173,8 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   let permittedCookieList = document.querySelector('#cookie-list-permitted')
   let loggedInCookieList = document.querySelector('#loggedInCookies')
 
-  let hasAutoFlag = (data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined)
-  let hasGlobalFlag = (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] === true)
+  // let hasAutoFlag = (data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined)
+  // let hasGlobalFlag = (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] === true)
 
   if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
@@ -196,16 +192,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         continue
       }
 
-      if (cookieKey === cookies.rootDomain) {
-        for (let cookie of cookies.cookies[cookieKey]) {
-          cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('www.', '') : cookie.domain.replace('www.', '')
-          if (cookieKey.replace(/(http|https):\/\//, '') !== cookieDomain) {
-            previousCookieDomain = null
-            break
-          }
-        }
-      }
-
       if (cookieKey !== previousCookieDomain) {
         previousCookieDomain = cookieKey
         let cookieSub = document.createElement('h4')
@@ -215,17 +201,15 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         let cookieSubSpanText = document.createTextNode('[CROSS ORIGIN]')
         cookieSubSpan.appendChild(cookieSubSpanText)
         let subName
-        if (cookieDomain !== null) {
-          subName = document.createTextNode(cookieDomain)
-        } else {
-          subName = document.createTextNode(cookieKey)
-        }
+        if (cookieDomain !== null) subName = document.createTextNode(cookieDomain)
+        else subName = document.createTextNode(cookieKey)
         cookieSub.appendChild(cookieSubSpan)
         cookieSub.appendChild(subName)
         cookieList.appendChild(cookieSub)
       }
 
-      for (let cookie of sortObjectByKey(cookies.cookies[cookieKey], 'name', true)) {
+      let sortedCookies = sortObjectByKey(cookies.cookies[cookieKey], 'name', true)
+      for (let cookie of sortedCookies) {
         activeCookies = true
         ++countList['#activeCookies']
 
