@@ -254,7 +254,7 @@ function handleMessage (request, sender, sendResponse) {
         }
 
         let rootDomain2 = domainData[key].d
-        if (cookieData[rootDomain2][contextName] !== undefined || cookieData[rootDomain2][contextName].length !== 0) {
+        if (cookieData[rootDomain2] !== undefined && cookieData[rootDomain2][contextName] !== undefined && cookieData[rootDomain2][contextName].length !== 0) {
           for (let cookieInfo of cookieData[rootDomain][contextName]) {
             let isFound = false
 
