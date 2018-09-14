@@ -74,9 +74,9 @@ async function getDomainURLFirefox () {
   let tab = await getActiveTabFirefox()
   if (tab !== null) {
     if (tab.url !== undefined) {
-      let urlMatch = tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+      let urlMatch = tab.url.match(/(http|https):\/\/.[^/]*/)
       if (urlMatch !== null) return urlMatch[0]
-      else return tab.url.replace(/\/www\./, '/')
+      else return tab.url.replace('www.', '')
     }
   }
 
@@ -98,7 +98,7 @@ function getChromeActiveTabForClearing (action) {
     if (activeTabs.length !== 0) {
       let tab = activeTabs.pop()
       if (tab.url !== undefined) {
-        let urlMatch = tab.url.match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+        let urlMatch = tab.url.match(/(http|https):\/\/.[^/]*/)
         if (urlMatch !== null) {
           let domainURL = urlMatch[0]
           chromeGetStorageAndClearCookies(action, null, null, domainURL, tab)
@@ -109,8 +109,8 @@ function getChromeActiveTabForClearing (action) {
 }
 
 function getURLDomain (domainURL) {
-  let urlMatch = domainURL.replace('/www\.', '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
-  if (urlMatch !== null) return urlMatch[0].replace(/(http|https):\/\//, '').replace('www.', '').replace('/', '')
+  let urlMatch = domainURL.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
+  if (urlMatch !== null) return urlMatch[0].replace(/(http|https):\/\//, '').replace('www.', '')
   else return ''
 }
 
@@ -150,6 +150,7 @@ async function clearCookiesWrapper (action, doChromeLoad) {
   let cookiesSec = []
   let cookies2 = []
   let cookiesSec2 = []
+
   if (!useChrome && currentTab.cookieStoreId !== undefined) {
     cookies = await browser.cookies.getAll({domain: domain, storeId: currentTab.cookieStoreId})
     cookiesURL = await browser.cookies.getAll({url: domainURL, storeId: currentTab.cookieStoreId})
@@ -161,8 +162,8 @@ async function clearCookiesWrapper (action, doChromeLoad) {
   } else {
     cookies = await browser.cookies.getAll({domain: domain})
     cookies = await browser.cookies.getAll({domain: domain})
-    cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www\./, '/')})
-    cookiesURL2 = await browser.cookies.getAll({url: domainURL.indexOf('http:') !== -1 ? domainURL.replace('http:', 'https:').replace(/\/www\./, '/') : domainURL.replace('https:', 'http:').replace(/\/www\./, '/')})
+    cookiesURL = await browser.cookies.getAll({url: domainURL.replace('www.', '')})
+    cookiesURL2 = await browser.cookies.getAll({url: domainURL.indexOf('http:') !== -1 ? domainURL.replace('http:', 'https:').replace('www.', '') : domainURL.replace('https:', 'http:').replace('www.', '')})
     cookiesSec = await browser.cookies.getAll({domain: domain, secure: true})
     cookies2 = await browser.cookies.getAll({domain: domainURL.replace(/(http|https):\/\//, '.')})
     cookiesSec2 = await browser.cookies.getAll({domain: domainURL.replace(/(http|https):\/\//, '.'), secure: true})
@@ -262,7 +263,7 @@ function handleMessage (request, sender, sendResponse) {
 
     for (let key of Object.keys(domainData)) {
       if (domainData[key]['isRoot'] !== undefined) continue
-      let domainName = domainData[key].u
+      let domainName = domainData[key].d
       if (cookieDataDomain[domainName] === undefined) cookieDataDomain[domainName] = []
       if (cookieData[domainName] === undefined || cookieData[domainName][contextName] === undefined || cookieData[domainName][contextName].length === 0) continue
       for (let cookieInfo of cookieData[domainName][contextName]) {
@@ -468,7 +469,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           if ((data[contextName] === undefined || data[contextName][storageDomain] === undefined || data[contextName][storageDomain][cookie.domain] === undefined || data[contextName][storageDomain][cookie.domain][cookie.name] === undefined) && (isManagedCookieHttps || isManagedCookieHttp)) cookie['fgRemovedDomain'] = 'https://' + cookieDomain
         }
 
-        if (chrome.cookies.remove(details2) !== null) {
+        if (cookie['fgRemoved'] === undefined && chrome.cookies.remove(details2) !== null) {
           if (data[contextName][storageDomain][cookie.domain][cookie.name] === true) {
             let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + 'http://' + cookieDomain + "'"
             addToLogData(currentTab, msg, timeString, timestamp)
@@ -617,7 +618,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           if ((data[contextName] === undefined || data[contextName][storageDomain] === undefined || data[contextName][storageDomain][cookie.domain] === undefined || data[contextName][storageDomain][cookie.domain][cookie.name] === undefined) && (isManagedCookieHttps || isManagedCookieHttp)) cookie['fgRemovedDomain'] = 'https://' + cookieDomain
         }
 
-        if (chrome.cookies.remove(details2) !== null) {
+        if (cookie['fgRemoved'] === undefined && chrome.cookies.remove(details2) !== null) {
           if (data[contextName] !== undefined && data[contextName][storageDomain] !== undefined && data[contextName][storageDomain][cookie.domain] !== undefined && data[contextName][storageDomain][cookie.domain][cookie.name] !== undefined && data[contextName][storageDomain][cookie.domain][cookie.name] === true) {
             let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + 'http://' + cookieDomain + "'"
             addToLogData(currentTab, msg, timeString, timestamp)
@@ -777,7 +778,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           if ((data[contextName] === undefined || data[contextName][storageDomain] === undefined || data[contextName][storageDomain][cookie.domain] === undefined || data[contextName][storageDomain][cookie.domain][cookie.name] === undefined) && (isManagedCookieHttps || isManagedCookieHttp)) cookie['fgRemovedDomain'] = 'https://' + cookieDomain
         }
 
-        if (chrome.cookies.remove(details2) !== null) {
+        if (cookie['fgRemoved'] === undefined && chrome.cookies.remove(details2) !== null) {
           let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + 'http://' + cookieDomain + "'"
           addToLogData(currentTab, msg, timeString, timestamp)
           cookie['fgRemoved'] = true
@@ -827,7 +828,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     if (!useChrome) browser.contextualIdentities.get(tab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
     else contextName = 'default'
 
-    let urlMatch = tab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+    let urlMatch = tab.url.replace(/\/www./, '').match(/(http|https):\/\/.[^/]*/)
 
     let tabDomain
     if (urlMatch) tabDomain = urlMatch[0]
@@ -1002,7 +1003,7 @@ function addToLogData (currentTab, msg, timeString, timestamp) {
   if (logTime[contextName][currentTab.windowId] === undefined) logTime[contextName][currentTab.windowId] = {}
   if (logTime[contextName][currentTab.windowId][currentTab.id] === undefined) logTime[contextName][currentTab.windowId][currentTab.id] = []
 
-  msg = msg.replace(/\/www\./, '/')
+  msg = msg.replace('www.', '')
   msg = '[' + timeString + ']  ' + msg
   if (logData[contextName][currentTab.windowId][currentTab.id].indexOf(msg) === -1) {
     logData[contextName][currentTab.windowId][currentTab.id].push(msg)
@@ -1050,7 +1051,7 @@ async function getCommand (command) {
         if (activeTabs.length !== 0) {
           let activeTab = activeTabs.pop()
           if (activeTab.url !== undefined) {
-            let urlMatch = activeTab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+            let urlMatch = activeTab.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
             if (urlMatch !== null) getChromeStorageForFunc3(toggleAccountMode, contextName, urlMatch[0], activeTab.id)
           }
         }
@@ -1059,7 +1060,7 @@ async function getCommand (command) {
       let activeTab = await getActiveTabFirefox()
 
       if (activeTab.url !== undefined) {
-        let urlMatch = activeTab.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+        let urlMatch = activeTab.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
         if (urlMatch !== null) {
           let data = await browser.storage.local.get(null)
           toggleAccountMode(data, contextName, urlMatch[0], activeTab.id)
@@ -1072,7 +1073,8 @@ async function getCommand (command) {
 function onCookieChanged (changeInfo) {
   if (!changeInfo.removed && (changeInfo.cause === 'explicit' || changeInfo.cause === 'expired_overwrite' || changeInfo.cause === 'overwrite')) {
     let cookieDetails = changeInfo.cookie
-    let domainName = cookieDetails['domain'].charAt(0) === '.' ? cookieDetails['domain'].substr(1, cookieDetails['domain'].length) : cookieDetails['domain']
+    let domainName = cookieDetails['domain'].charAt(0) === '.' ? cookieDetails['domain'].substr(1, cookieDetails.length) : cookieDetails['domain']
+    domainName = domainName.replace('www.', '')
 
     let activeDomain = null
     for (let domainKey of Object.keys(cookieData)) {
@@ -1082,9 +1084,9 @@ function onCookieChanged (changeInfo) {
       }
     }
 
-    if (activeDomain === null) return
+    if (activeDomain === null) activeDomain = domainName
     if (cookieData[activeDomain] === undefined) cookieData[activeDomain] = {}
-    if (cookieData[activeDomain] === undefined) cookieData[activeDomain][contextName] = []
+    if (cookieData[activeDomain][contextName] === undefined) cookieData[activeDomain][contextName] = []
 
     let foundCookie = false
     for (let cookie of cookieData[activeDomain][contextName]) {
@@ -1151,19 +1153,23 @@ function addTabURLtoDataList (tab, details) {
     if (openTabData[tab.windowId] === undefined) openTabData[tab.windowId] = {}
     if (openTabData[tab.windowId][tab.id] === undefined) openTabData[tab.windowId][tab.id] = {}
 
+    let domainURL = getURLDomain(details.url)
+    let domainSplit = domainURL.split('.')
+    let targetURL = domainSplit.splice(domainSplit.length - 2, 2).join('.')
+
     if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
-      if (openTabData[tab.windowId][tab.id][details.frameId] !== undefined && openTabData[tab.windowId][tab.id][details.frameId].d !== getURLDomain(details.url)) {
+      if (openTabData[tab.windowId][tab.id][details.frameId] !== undefined && openTabData[tab.windowId][tab.id][details.frameId].d !== targetURL) {
         openTabData[tab.windowId][tab.id] = {}
       }
 
-      if (useChrome) openTabData[tab.windowId][tab.id][details.frameId] = {'u': details.url.replace('/www.', '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)[0], 'd': getURLDomain(details.url), 'isRoot': true}
-      else openTabData[tab.windowId][tab.id][details.frameId] = {'s': tab.cookieStoreId, 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)[0], 'd': getURLDomain(details.url), 'isRoot': true}
+      if (useChrome) openTabData[tab.windowId][tab.id][details.frameId] = {'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'd': targetURL, 'isRoot': true}
+      else openTabData[tab.windowId][tab.id][details.frameId] = {'s': tab.cookieStoreId, 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'd': targetURL, 'isRoot': true}
       return
     }
 
     if (openTabData[tab.windowId][tab.id][details.frameId] === undefined) {
-      if (useChrome) openTabData[tab.windowId][tab.id][details.frameId] = {'u': details.url.replace('/www.', '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)[0], 'd': getURLDomain(details.url)}
-      else openTabData[tab.windowId][tab.id][details.frameId] = {'s': tab.cookieStoreId, 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)[0], 'd': getURLDomain(details.url)}
+      if (useChrome) openTabData[tab.windowId][tab.id][details.frameId] = {'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'd': targetURL}
+      else openTabData[tab.windowId][tab.id][details.frameId] = {'s': tab.cookieStoreId, 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'd': targetURL}
     }
   }
 }
@@ -1268,9 +1274,9 @@ function clearCookiesOnRequestChrome (details) {
 
       if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
         let domainURL
-        let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+        let urlMatch = details.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
         if (urlMatch !== null) domainURL = urlMatch[0]
-        else domainURL = details.url.replace(/\/www\./, '/')
+        else domainURL = details.url.replace(/www./, '')
 
         clearDomainLog(null, currentTab, details)
 
@@ -1287,9 +1293,9 @@ function clearCookiesOnRequestChrome (details) {
 
       if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
         let domainURL
-        let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+        let urlMatch = details.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
         if (urlMatch !== null) domainURL = urlMatch[0]
-        else domainURL = details.url.replace(/\/www\./, '/')
+        else domainURL = details.url.replace('www.', '')
 
         chromeGetStorageAndClearCookies('document load', null, null, domainURL, currentTab)
       }
@@ -1338,9 +1344,9 @@ async function clearCookiesOnRequest (details) {
       await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
       let domainURL
-      let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
+      let urlMatch = details.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
       if (urlMatch !== null) domainURL = urlMatch[0]
-      else domainURL = details.url.replace(/\/www\./, '/')
+      else domainURL = details.url.replace('www.', '')
 
       clearDomainLog(null, currentTab, details)
 
@@ -1352,14 +1358,17 @@ async function clearCookiesOnRequest (details) {
       if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
     }
 
+    let domainURL
+    let urlMatch = details.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
+    if (urlMatch !== null) domainURL = urlMatch[0]
+    else domainURL = details.url.replace('www.', '')
+
+    let domainSplit = domainURL.split('.')
+    let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
+
     addTabURLtoDataList(currentTab, details)
 
-    let domainURL
-    let urlMatch = details.url.replace(/\/www\./, '/').match(/(http|https):\/\/[a-zA-Z0-9öäüÖÄÜ.\-][^\/]*/)
-    if (urlMatch !== null) domainURL = urlMatch[0]
-    else domainURL = details.url.replace(/\/www\./, '/')
 
-    let domain = getURLDomain(domainURL)
     let cookies
     let cookiesURL = []
     let cookiesURL2 = []
@@ -1376,10 +1385,10 @@ async function clearCookiesOnRequest (details) {
     } else {
       cookies = await browser.cookies.getAll({domain: domain})
       cookies = await browser.cookies.getAll({domain: domain})
-      cookiesURL = await browser.cookies.getAll({url: domainURL.replace(/\/www\./, '/')})
+      cookiesURL = await browser.cookies.getAll({url: domainURL.replace('www.', '')})
       cookiesSec = await browser.cookies.getAll({domain: domain, secure: true})
       cookies2 = await browser.cookies.getAll({domain: domainURL.replace(/(http|https):\/\//, '.')})
-      cookiesURL2 = await browser.cookies.getAll({url: domainURL.indexOf('http:') !== -1 ? domainURL.replace('http:', 'https:').replace(/\/www\./, '/') : domainURL.replace('https:', 'http:').replace(/\/www\./, '/')})
+      cookiesURL2 = await browser.cookies.getAll({url: domainURL.indexOf('http:') !== -1 ? domainURL.replace('http:', 'https:').replace('www.', '') : domainURL.replace('https:', 'http:').replace('www.', '')})
       cookiesSec2 = await browser.cookies.getAll({domain: domainURL.replace(/(http|https):\/\//, '.'), secure: true})
     }
 
