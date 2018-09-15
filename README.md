@@ -9,15 +9,15 @@ A cookie manager allowing to manage explicitly domain cookies, also third-party 
 
 **FlagCookies distinguishes between http(s)://domain.net and http(s)://subdomain.domain.net** for the following features:
 
-- Detects and displays all loaded cookies and be able to delete those while browsing automatically through ***global*** or ***auto flag*** mode
-- **Flag cookies** either to be explicitly **deleted** even without *global* or *auto flag* mode or set them to be **permitted** and protected from removal by *global* or *auto flag* modes
-- **Profile** mode for a domain or cookies - to switch between *logged into a website/service* and *not logged in* modes in order to remove or keep cookies on demand
-- **Auto flag** mode only affecting this particular (sub)domain, removing every cookie which is not permitted or used as ***profile cookie***
-- Support for *Firefox Multi-Account-Containers*
-- **Preferences** allows to manage *logged in profile* cookiee, delete all domain settings and add-on settings and provides a **Action log** to display what FlagCookies is doing
-- **Displays count** of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon
-- *Keyboard Shortcut* **Alt + Shift + A** to enable/disable **profile mode** for a (sub)domain
-- Optional **notifications**, disabled by default for: **profile mode** shortcut activation/deactivation, ***cookies removed display*** and ***notifications enabled/disabled message***
+* Detects and displays stored browser cookies and be able to manage (flag) and delete those while browsing, either automatically through ***global*** or ***auto flag*** mode or by own decision
+* **Flag cookies** either to be explicitly **deleted** even without *global* or *auto flag* mode or set them to be **permitted** and protected from removal by *global* or *auto flag* modes
+* **Profile** mode for a domain or cookies - to switch between *logged into a website/service* and *not logged in* modes in order to remove or keep cookies on demand
+* **Auto flag** mode only affecting this particular (sub)domain, removing every first party domain cookie which is not permitted or used as ***profile cookie*** - this leaves third-party cookies intact!
+* Support for *Firefox Multi-Account-Containers*
+* **Preferences** allows to manage *logged in profile* cookiee, delete all domain settings and add-on settings and provides a **Action log** to display what FlagCookies is doing
+* **Displays count** of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon
+* *Keyboard Shortcut* **Alt + Shift + A** to enable/disable **profile mode** for a (sub)domain
+* Optional **notifications**, disabled by default for: **profile mode** shortcut activation/deactivation, ***cookies removed display*** and ***notifications enabled/disabled message***
 
 ## Requirements
 
