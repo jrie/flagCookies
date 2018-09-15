@@ -625,8 +625,8 @@ textarea#log {
   padding: 6px 12px;
   font-weight: bold;
   width: 78%;
-  min-height: 10em;
-  max-height: 10em;
+  min-height: 18em;
+  max-height: 18em;
   resize:none;
   font-size: 0.85em;
 }
