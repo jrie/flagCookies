@@ -320,7 +320,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
               pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
             }
 
-            if (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined && (cookie['fgHandled'] !== undefined)) {
+            if (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
               if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
               else pCookieDomainMessage += ' [Removed by rule]'
             }
