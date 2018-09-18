@@ -184,161 +184,179 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   } else {
     let previousCookieDomain = cookies.rootDomain
     let activeCookies = false
-    for (let cookieKey of Object.keys(cookies.cookies)) {
-      let cookieDomain = null
 
-      if (cookies.cookies[cookieKey].length === 0) {
-        previousCookieDomain = cookieKey
-        continue
-      }
+    let cookieBase = cookies.rootDomain.replace(/(http|https):\/\//, '').split('.')
+    let cookieJoinRoot = cookieBase.splice(cookieBase.length - 2, 2).join('.')
 
-      if (cookieKey !== previousCookieDomain) {
-        previousCookieDomain = cookieKey
-        let cookieSub = document.createElement('h4')
-        cookieSub.className = 'subloadbar'
-        let cookieSubSpan = document.createElement('span')
-        cookieSubSpan.className = 'subloaded'
-        let cookieSubSpanText = document.createTextNode('[CROSS ORIGIN]')
-        cookieSubSpan.appendChild(cookieSubSpanText)
-        let subName
-        if (cookieDomain !== null) subName = document.createTextNode(cookieDomain)
-        else subName = document.createTextNode(cookieKey)
-        cookieSub.appendChild(cookieSubSpan)
-        cookieSub.appendChild(subName)
-        cookieList.appendChild(cookieSub)
-      }
+    let cookieDataLists = [Object.keys(cookies.cookies), Object.keys(cookies.cookies).sort()]
+    let index = 0
+    for (let cookieListEntry of cookieDataLists) {
+      ++index
 
-      let sortedCookies = sortObjectByKey(cookies.cookies[cookieKey], 'name', true)
-      for (let cookie of sortedCookies) {
-        activeCookies = true
-        ++countList['#activeCookies']
-
-        let li = document.createElement('li')
-
-        let checkMark = document.createElement('button')
-        checkMark.className = 'checkmark'
-        checkMark.title = 'This cookie is allowed and unhandled. Click to change.'
-
-        checkMark.addEventListener('click', cookieFlagSwitch)
-        checkMark.dataset['name'] = cookie.name
-        checkMark.dataset['value'] = cookie.value
-        checkMark.dataset['domain'] = cookie.domain
-
-        let lockSwitch = document.createElement('button')
-        lockSwitch.className = 'setKeyCookie'
-        lockSwitch.title = 'Set this cookie as profile-mode cookie.'
-        lockSwitch.dataset['name'] = cookie.name
-        lockSwitch.dataset['domain'] = cookie.domain
-        lockSwitch.addEventListener('click', cookieLockSwitch)
-
-        let isHandledCookie = false
-        if (data[contextName] !== undefined && data[contextName][domainURL] !== undefined) {
-          if (data[contextName][domainURL][cookie.domain] !== undefined && data[contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
-            if (data[contextName][domainURL][cookie.domain][cookie.name] === true) {
-              checkMark.className = 'checkmark flagged'
-              checkMark.title = 'This cookie is flagged and will be removed during page load.'
-              addCookieToList('cookie-list-flagged', cookie.name, cookie.value, cookie.domain, false)
-              ++countList['#flaggedCookies']
-              isHandledCookie = true
-            } else if (data[contextName][domainURL][cookie.domain][cookie.name] === false) {
-              checkMark.className = 'checkmark permit'
-              checkMark.title = 'This cookie is permitted and will be kept, even when global or auto flag mode is active.'
-              addCookieToList('cookie-list-permitted', cookie.name, cookie.value, cookie.domain, false)
-              ++countList['#permittedCookies']
-              isHandledCookie = true
-            }
-          }
+      for (let cookieKey of cookieListEntry) {
+        let cookieDomain = null
+        let cookieJoin = null
+        if (index === 1) {
+          let cookieBase = cookieKey.split('.')
+          cookieJoin = cookieBase.splice(cookieBase.length - 2, 2).join('.')
         }
 
-        if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][domainURL] !== undefined && data['flagCookies_logged'][contextName][domainURL][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
-          lockSwitch.className += ' locked'
-          lockSwitch.title = 'This cookie is set locked as profile-mode cookie for this domain.'
-          loggedInCookieList.removeAttribute('class')
+        if ((cookieJoin === null && cookieKey !== previousCookieDomain && cookies.cookies[cookieKey]['isAdded'] === undefined) || (cookieJoin !== null && cookieKey.indexOf(cookieJoinRoot) !== -1)) {
+          previousCookieDomain = cookieKey
+          let cookieSub = document.createElement('h4')
+          cookieSub.className = 'subloadbar'
+          let cookieSubSpan = document.createElement('span')
+          cookieSubSpan.className = 'subloaded'
+
+          if (cookieJoin === null) {
+            let cookieSubSpanText = document.createTextNode('[CROSS ORIGIN]')
+            cookieSubSpan.appendChild(cookieSubSpanText)
+          }
+
+          let subName
+          if (cookieDomain !== null) subName = document.createTextNode(cookieDomain)
+          else subName = document.createTextNode(cookieKey)
+          cookieSub.appendChild(cookieSubSpan)
+          cookieSub.appendChild(subName)
+          cookieList.appendChild(cookieSub)
+
+          if (index === 1) {
+            cookies.cookies[cookieKey]['isAdded'] = true
+          }
+        } else if (index === 1) continue
+
+        let sortedCookies = sortObjectByKey(cookies.cookies[cookieKey]['data'], 'name', true)
+        for (let cookie of sortedCookies) {
+          activeCookies = true
+          ++countList['#activeCookies']
+
+          let li = document.createElement('li')
+
+          let checkMark = document.createElement('button')
+          checkMark.className = 'checkmark'
+          checkMark.title = 'This cookie is allowed and unhandled. Click to change.'
+
+          checkMark.addEventListener('click', cookieFlagSwitch)
+          checkMark.dataset['name'] = cookie.name
+          checkMark.dataset['value'] = cookie.value
+          checkMark.dataset['domain'] = cookie.domain
+
+          let lockSwitch = document.createElement('button')
+          lockSwitch.className = 'setKeyCookie'
+          lockSwitch.title = 'Set this cookie as profile-mode cookie.'
+          lockSwitch.dataset['name'] = cookie.name
+          lockSwitch.dataset['domain'] = cookie.domain
+          lockSwitch.addEventListener('click', cookieLockSwitch)
+
+          let isHandledCookie = false
+          if (data[contextName] !== undefined && data[contextName][domainURL] !== undefined) {
+            if (data[contextName][domainURL][cookie.domain] !== undefined && data[contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
+              if (data[contextName][domainURL][cookie.domain][cookie.name] === true) {
+                checkMark.className = 'checkmark flagged'
+                checkMark.title = 'This cookie is flagged and will be removed during page load.'
+                addCookieToList('cookie-list-flagged', cookie.name, cookie.value, cookie.domain, false)
+                ++countList['#flaggedCookies']
+                isHandledCookie = true
+              } else if (data[contextName][domainURL][cookie.domain][cookie.name] === false) {
+                checkMark.className = 'checkmark permit'
+                checkMark.title = 'This cookie is permitted and will be kept, even when global or auto flag mode is active.'
+                addCookieToList('cookie-list-permitted', cookie.name, cookie.value, cookie.domain, false)
+                ++countList['#permittedCookies']
+                isHandledCookie = true
+              }
+            }
+          }
+
+          if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][domainURL] !== undefined && data['flagCookies_logged'][contextName][domainURL][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
+            lockSwitch.className += ' locked'
+            lockSwitch.title = 'This cookie is set locked as profile-mode cookie for this domain.'
+            loggedInCookieList.removeAttribute('class')
+          }
+
+          let p = document.createElement('p')
+
+          let pCookieKeyElm = document.createElement('span')
+          let pCookieKey = document.createTextNode(cookie.name)
+          pCookieKeyElm.className = 'cookieKey'
+          pCookieKeyElm.appendChild(pCookieKey)
+
+          let pCookieValueElm = document.createElement('span')
+          let pCookieValue = document.createTextNode(cookie.value)
+          pCookieValueElm.className = 'cookieValue'
+          pCookieValueElm.appendChild(pCookieValue)
+
+          p.appendChild(pCookieKeyElm)
+
+          if (cookie.secure) {
+            let pCookieKeySecMessageElm = document.createElement('span')
+            let pCookieKeySecMessage = document.createTextNode('(secure cookie)')
+            pCookieKeySecMessageElm.className = 'secure-cookie'
+            pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
+
+            pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
+
+            if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined))) {
+              let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
+              let pCookieDomainMessageElm = document.createElement('span')
+              let pCookieDomainMessage = ''
+              if (cookie['fgLogged'] !== undefined) {
+                pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookieDomain + ')'
+              } else if (cookie['fgProtected'] !== undefined) {
+                pCookieDomainMessage = '(Protected profile cookie of: ' + cookieDomain + ')'
+              } else if (cookie['fgProfile'] !== undefined) {
+                pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
+              }
+
+              if (!isHandledCookie && cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
+                if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
+                else pCookieDomainMessage += ' [Removed by rule]'
+              }
+
+              if (pCookieDomainMessage !== '') {
+                pCookieDomainMessageElm.className = 'secure-cookie'
+                pCookieDomainMessageElm.appendChild(document.createTextNode(pCookieDomainMessage))
+                pCookieKeyElm.appendChild(pCookieDomainMessageElm)
+              }
+            }
+
+            p.appendChild(pCookieValueElm)
+            if (cookie['fgHandled'] && !cookie['fgRemoved'] && !cookie['fgAllowed']) {
+              li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
+              li.className += ' unremoved-secure-cookie'
+            }
+          } else {
+            if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined))) {
+              let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
+              let pCookieDomainMessageElm = document.createElement('span')
+              let pCookieDomainMessage = ''
+              if (cookie['fgLogged'] !== undefined) {
+                pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookieDomain + ')'
+              } else if (cookie['fgProtected'] !== undefined) {
+                pCookieDomainMessage = '(Protected profile cookie of: ' + cookieDomain + ')'
+              } else if (cookie['fgProfile'] !== undefined) {
+                pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
+              }
+
+              if (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
+                if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
+                else pCookieDomainMessage += ' [Removed by rule]'
+              }
+
+              if (pCookieDomainMessage !== '') {
+                pCookieDomainMessageElm.className = 'secure-cookie'
+                pCookieDomainMessageElm.appendChild(document.createTextNode(pCookieDomainMessage))
+                pCookieKeyElm.appendChild(pCookieDomainMessageElm)
+              }
+            }
+
+            p.appendChild(pCookieValueElm)
+          }
+
+          li.appendChild(checkMark)
+          li.appendChild(p)
+          li.appendChild(lockSwitch)
+          cookieList.appendChild(li)
         }
-
-        let p = document.createElement('p')
-
-        let pCookieKeyElm = document.createElement('span')
-        let pCookieKey = document.createTextNode(cookie.name)
-        pCookieKeyElm.className = 'cookieKey'
-        pCookieKeyElm.appendChild(pCookieKey)
-
-        let pCookieValueElm = document.createElement('span')
-        let pCookieValue = document.createTextNode(cookie.value)
-        pCookieValueElm.className = 'cookieValue'
-        pCookieValueElm.appendChild(pCookieValue)
-
-        p.appendChild(pCookieKeyElm)
-
-        if (cookie.secure) {
-          let pCookieKeySecMessageElm = document.createElement('span')
-          let pCookieKeySecMessage = document.createTextNode('(secure cookie)')
-          pCookieKeySecMessageElm.className = 'secure-cookie'
-          pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
-
-          pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
-
-          if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined))) {
-            let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
-            let pCookieDomainMessageElm = document.createElement('span')
-            let pCookieDomainMessage = ''
-            if (cookie['fgLogged'] !== undefined) {
-              pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookieDomain + ')'
-            } else if (cookie['fgProtected'] !== undefined) {
-              pCookieDomainMessage = '(Protected profile cookie of: ' + cookieDomain + ')'
-            } else if (cookie['fgProfile'] !== undefined) {
-              pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
-            }
-
-            if (!isHandledCookie && cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
-              if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
-              else pCookieDomainMessage += ' [Removed by rule]'
-            }
-
-            if (pCookieDomainMessage !== '') {
-              pCookieDomainMessageElm.className = 'secure-cookie'
-              pCookieDomainMessageElm.appendChild(document.createTextNode(pCookieDomainMessage))
-              pCookieKeyElm.appendChild(pCookieDomainMessageElm)
-            }
-          }
-
-          p.appendChild(pCookieValueElm)
-          if (cookie['fgHandled'] && !cookie['fgRemoved'] && !cookie['fgAllowed']) {
-            li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
-            li.className += ' unremoved-secure-cookie'
-          }
-        } else {
-          if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined))) {
-            let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
-            let pCookieDomainMessageElm = document.createElement('span')
-            let pCookieDomainMessage = ''
-            if (cookie['fgLogged'] !== undefined) {
-              pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookieDomain + ')'
-            } else if (cookie['fgProtected'] !== undefined) {
-              pCookieDomainMessage = '(Protected profile cookie of: ' + cookieDomain + ')'
-            } else if (cookie['fgProfile'] !== undefined) {
-              pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
-            }
-
-            if (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
-              if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
-              else pCookieDomainMessage += ' [Removed by rule]'
-            }
-
-            if (pCookieDomainMessage !== '') {
-              pCookieDomainMessageElm.className = 'secure-cookie'
-              pCookieDomainMessageElm.appendChild(document.createTextNode(pCookieDomainMessage))
-              pCookieKeyElm.appendChild(pCookieDomainMessageElm)
-            }
-          }
-
-          p.appendChild(pCookieValueElm)
-        }
-
-        li.appendChild(checkMark)
-        li.appendChild(p)
-        li.appendChild(lockSwitch)
-        cookieList.appendChild(li)
       }
     }
 
