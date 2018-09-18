@@ -1,3 +1,5 @@
+'use strict'
+
 let logData = {} // The log data we seen as a report to the settings view
 let logTime = {}
 let cookieData = {} // Storage for cookie shadow, for the interface only!
@@ -137,7 +139,6 @@ async function clearCookiesWrapper (action, doChromeLoad) {
   let currentTab = await getActiveTabFirefox()
 
   let data = await browser.storage.local.get()
-  if (data[contextName] === undefined) return
 
   if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   else contextName = 'default'
@@ -276,38 +277,17 @@ function handleMessage (request, sender, sendResponse) {
     rootDomain = (openTabData[request.windowId][request.tabId][0] !== undefined && openTabData[request.windowId][request.tabId][0]['u'] !== undefined) ? openTabData[request.windowId][request.tabId][0]['u'] : 'rootDomain'
 
     if (rootDomain === 'No active domain') return
+    let rootBase = openTabData[request.windowId][request.tabId][0]['d']
 
-    for (let item of Object.keys(openTabData[request.windowId][request.tabId])) {
-      let entry = openTabData[request.windowId][request.tabId][item]
-      let targetDomain1 = entry.u
-      let targetDomain2 = entry.d
-      let targetDomain3 = '.' + entry.d
-      let targetDomain4 = 'www.' + entry.d
+    for (let item of Object.keys(cookieData[contextName])) {
+      let cookieItem = item.replace('www.', '')
+      if (cookieDataDomain[cookieItem] === undefined) cookieDataDomain[cookieItem] = {}
+      if (cookieDataDomain[cookieItem]['data'] === undefined) cookieDataDomain[cookieItem]['data'] = []
 
-      let domainSplit = entry.d.split('.')
-      let domainBase = domainSplit.splice(domainSplit.length - 2, 2).join('.')
-      let domainBaseDot = '.' + domainBase
-
-      cookieDataDomain[targetDomain1] = []
-
-      let domainKeyList = [targetDomain1, targetDomain2, targetDomain3, targetDomain4, domainBase, domainBaseDot]
-
-      for (let item of domainKeyList) {
-        if (cookieData[contextName] !== undefined && cookieData[contextName][item] !== undefined) {
-          for (let cookieInfo of cookieData[contextName][item]) {
-            let isFound = false
-
-            for (let cookieExistingInfo of cookieDataDomain[targetDomain1]) {
-              if (cookieInfo.name === cookieExistingInfo.name) {
-                isFound = true
-                break
-              }
-            }
-
-            if (!isFound) cookieDataDomain[targetDomain1].push(cookieInfo)
-          }
-        }
+      for (let cookie of cookieData[contextName][item]) {
+        cookieDataDomain[cookieItem]['data'].push(cookie)
       }
+      if (cookieDataDomain[cookieItem]['data'].length === 0) delete cookieDataDomain[cookieItem]
     }
 
     if (logData[contextName] !== undefined && logData[contextName][request.windowId] !== undefined && logData[contextName][request.windowId][request.tabId] !== undefined) {
@@ -333,10 +313,11 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   else contextName = 'default'
 
-  if (cookieData[contextName] === undefined) cookieData[contextName] = {}
-
+  let hasDataContext = data[contextName] !== undefined
   let hasAccountsInContext = data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][contextName] !== undefined
   let accountDomain = null
+
+  if (cookieData[contextName] === undefined) cookieData[contextName] = {}
 
   for (let cookie of cookies) {
     if (cookieData[contextName][cookie.domain] === undefined) cookieData[contextName][cookie.domain] = []
@@ -344,17 +325,9 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     let foundCookie = false
     for (let cookieEntry of cookieData[contextName][cookie.domain]) {
       if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
-        if (cookieEntry['fgChanged'] === undefined) {
-          if (cookieEntry['fgProfile'] !== undefined) cookie['fgProfile'] = cookieEntry['fgProfile']
-          if (cookieEntry['fgProtected'] !== undefined) cookie['fgProtected'] = cookieEntry['fgProtected']
-          if (cookieEntry['fgLogged'] !== undefined) cookie['fgLogged'] = cookieEntry['fgLogged']
-          if (cookieEntry['fgRemoved'] !== undefined) cookie['fgRemoved'] = cookieEntry['fgRemoved']
-          if (cookieEntry['fgRemovedDomain'] !== undefined) cookie['fgRemovedDomain'] = cookieEntry['fgRemovedDomain']
-        } else {
-          cookie['fgHandled'] = false
-          cookie['fgRemoved'] = false
-          cookie['fgAllowed'] = true
-        }
+        cookie['fgHandled'] = false
+        cookie['fgRemoved'] = false
+        cookie['fgAllowed'] = true
 
         foundCookie = true
         cookieEntry = cookie
@@ -413,28 +386,26 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   if (data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && urlInFlag) {
     for (let domainKey of Object.keys(cookieData[contextName])) {
       for (let cookie of cookieData[contextName][domainKey]) {
-        if (cookie['fgHandled'] === true) continue
-
         let cookieDomain = domainKey
         let startHttp = cookieDomain.startsWith('http')
         let isManagedCookieHttp = false
         let isManagedCookieHttps = false
 
         if (!startHttp) {
-          isManagedCookieHttp = (data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
-          isManagedCookieHttps = (data[contextName]['https://' + cookieDomain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttp = (hasDataContext && data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttps = (hasDataContext && data[contextName]['https://' + cookieDomain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
 
           if (!isManagedCookieHttp && isManagedCookieHttps) cookieDomain = 'https://' + cookieDomain
           else if (isManagedCookieHttp) cookieDomain = 'http://' + cookieDomain
         } else {
-          isManagedCookieHttp = (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
-          isManagedCookieHttps = (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttp = (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttps = (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
         }
 
         if (cookieDomain === rootDomain) cookie['fgRoot'] = true
         if (accountDomain === cookieDomain) cookie['fgProfile'] = true
 
-        let isManagedCookie = (data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined)
+        let isManagedCookie = (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined)
 
         if (!isManagedCookie && cookie['fgRoot'] === undefined) {
           let isEmptyProfile = (protectDomainCookies || !hasLogged)
@@ -475,7 +446,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
         if (cookie['fgProfile'] !== undefined) delete cookie['fgProfile']
 
-        if (data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === false) {
+        if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === false) {
           let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + rootDomain + "'"
           addToLogData(currentTab, msg, timeString, timestamp)
           cookie['fgAllowed'] = true
@@ -500,7 +471,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           let details = { url: 'https://' + cookieDomain + cookie.path, name: cookie.name }
           let details2 = { url: 'http://' + cookieDomain + cookie.path, name: cookie.name }
           if (chrome.cookies.remove(details) !== null) {
-            if (data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + cookieDomain + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             } else {
@@ -510,11 +481,11 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomainTrim
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomainTrim
           }
 
           if (cookie['fgRemoved'] === undefined && chrome.cookies.remove(details2) !== null) {
-            if (data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + 'http://' + cookieDomain + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             } else {
@@ -524,7 +495,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomainTrim
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomainTrim
           }
 
           continue
@@ -548,17 +519,17 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         for (let detail of detailsListTrim) {
           let modifier = detail.url.startsWith('https') ? 'https://' : 'http://'
           if (await browser.cookies.remove(detail) !== null && await browser.cookies.get(detail) === null) {
-            if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomain + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             } else {
-              let msg = "Auto-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomain + "'"
+              let msg = "Auto-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomainTrim + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             }
 
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomainTrim
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomainTrim
             break
           }
         }
@@ -566,17 +537,17 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         for (let detail of detailsListCookieDomain) {
           let modifier = detail.url.startsWith('https') ? 'https://' : 'http://'
           if (await browser.cookies.remove(detail) !== null && await browser.cookies.get(detail) === null) {
-            if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
-              let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomain + "'"
+            if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+              let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomainTrim + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             } else {
-              let msg = "Auto-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomain + "'"
+              let msg = "Auto-flag deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomainTrim + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             }
 
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookie.domain
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookie.domain
             break
           }
         }
@@ -585,28 +556,26 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
     for (let domainKey of Object.keys(cookieData[contextName])) {
       for (let cookie of cookieData[contextName][domainKey]) {
-        if (cookie['fgHandled'] === true) continue
-
         let cookieDomain = domainKey
         let startHttp = cookieDomain.startsWith('http')
         let isManagedCookieHttp = false
         let isManagedCookieHttps = false
 
         if (!startHttp) {
-          isManagedCookieHttp = (data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
-          isManagedCookieHttps = (data[contextName]['https://' + cookieDomain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttp = (hasDataContext && data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttps = (hasDataContext && data[contextName]['https://' + cookieDomain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
 
           if (!isManagedCookieHttp && isManagedCookieHttps) cookieDomain = 'https://' + cookieDomain
           else if (isManagedCookieHttp) cookieDomain = 'http://' + cookieDomain
         } else {
-          isManagedCookieHttp = (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
-          isManagedCookieHttps = (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttp = (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttps = (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
         }
 
         if (cookieDomain === rootDomain) cookie['fgRoot'] = true
         if (accountDomain === cookieDomain) cookie['fgProfile'] = true
 
-        let isManagedCookie = (data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined)
+        let isManagedCookie = (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined)
 
         if (!isManagedCookie && cookie['fgRoot'] === undefined) {
           let isEmptyProfile = (protectDomainCookies || !hasLogged)
@@ -647,7 +616,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
         if (cookie['fgProfile'] !== undefined) delete cookie['fgProfile']
 
-        if (data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === false) {
+        if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === false) {
           let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + rootDomain + "'"
           addToLogData(currentTab, msg, timeString, timestamp)
           cookie['fgAllowed'] = true
@@ -667,7 +636,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           let details = { url: 'https://' + cookieDomain + cookie.path, name: cookie.name }
           let details2 = { url: 'http://' + cookieDomain + cookie.path, name: cookie.name }
           if (chrome.cookies.remove(details) !== null) {
-            if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + 'https://' + cookieDomain + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             } else {
@@ -677,11 +646,11 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
           }
 
           if (cookie['fgRemoved'] === undefined && chrome.cookies.remove(details2) !== null) {
-            if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + 'http://' + cookieDomain + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             } else {
@@ -691,7 +660,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
           }
 
           continue
@@ -715,7 +684,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         for (let detail of detailsListTrim) {
           let modifier = detail.url.startsWith('https') ? 'https://' : 'http://'
           if (await browser.cookies.remove(detail) !== null && await browser.cookies.get(detail) === null) {
-            if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomainTrim + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             } else {
@@ -725,15 +694,15 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomainTrim
-            return
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomainTrim
+            break
           }
         }
 
         for (let detail of detailsListCookieDomain) {
           let modifier = detail.url.startsWith('https') ? 'https://' : 'http://'
           if (await browser.cookies.remove(detail) !== null && await browser.cookies.get(detail) === null) {
-            if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookie.domain + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
             } else {
@@ -743,32 +712,29 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookie.domain
-            return
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookie.domain
+            break
           }
         }
       }
     }
   } else {
-    if (data[contextName] === undefined) return
-
     for (let domainKey of Object.keys(cookieData[contextName])) {
       for (let cookie of cookieData[contextName][domainKey]) {
-        if (cookie['fgHandled'] === true) continue
         let cookieDomain = domainKey
         let startHttp = cookieDomain.startsWith('http')
         let isManagedCookieHttp = false
         let isManagedCookieHttps = false
 
         if (!startHttp) {
-          isManagedCookieHttp = (data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
-          isManagedCookieHttps = (data[contextName]['https://' + cookieDomain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttp = (hasDataContext && data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttps = (hasDataContext && data[contextName]['https://' + cookieDomain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain][cookie.name] !== undefined)
 
           if (!isManagedCookieHttp && isManagedCookieHttps) cookieDomain = 'https://' + cookieDomain
           else if (isManagedCookieHttp) cookieDomain = 'http://' + cookieDomain
         } else {
-          isManagedCookieHttp = (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
-          isManagedCookieHttps = (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttp = (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
+          isManagedCookieHttps = (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined)
         }
 
         if (cookieDomain === domainURL) cookie['fgRoot'] = true
@@ -820,7 +786,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
         if (cookie['fgProfile'] !== undefined) delete cookie['fgProfile']
 
-        if (data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === false) {
+        if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === false) {
           let msg = "Permitted cookie on '" + action + "', cookie: '" + cookie.name + "' for '" + rootDomain + "'"
           addToLogData(currentTab, msg, timeString, timestamp)
           cookie['fgAllowed'] = true
@@ -836,7 +802,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
         if (!isManagedCookie && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] === undefined) {
           continue
-        } else if (!isManagedCookie && (data[contextName][cookieDomain] === undefined || data[contextName][cookieDomain][cookie.domain] === undefined || data[contextName][cookieDomain][cookie.domain][cookie.name] === undefined)) {
+        } else if (!isManagedCookie && (hasDataContext && data[contextName][cookieDomain] === undefined || data[contextName][cookieDomain][cookie.domain] === undefined || data[contextName][cookieDomain][cookie.domain][cookie.name] === undefined)) {
           continue
         }
 
@@ -852,7 +818,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
 
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
           }
 
           if (cookie['fgRemoved'] === undefined && chrome.cookies.remove(details2) !== null) {
@@ -861,7 +827,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
             cookie['fgRemoved'] = true
             cookie['fgHandled'] = true
 
-            if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
+            if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
           }
 
           continue
@@ -885,13 +851,13 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         for (let detail of detailsListTrim) {
           let modifier = detail.url.startsWith('https') ? 'https://' : 'http://'
           if (await browser.cookies.remove(detail) !== null && await browser.cookies.get(detail) === null) {
-            if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookieDomainTrim + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
               cookie['fgRemoved'] = true
               cookie['fgHandled'] = true
 
-              if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
+              if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookieDomain
               break
             }
           }
@@ -900,13 +866,13 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         for (let detail of detailsListCookieDomain) {
           let modifier = detail.url.startsWith('https') ? 'https://' : 'http://'
           if (await browser.cookies.remove(detail) !== null && await browser.cookies.get(detail) === null) {
-            if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+            if (hasDataContext && data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
               let msg = "Deleted on '" + action + "', cookie: '" + cookie.name + "' for '" + modifier + cookie.domain + "'"
               addToLogData(currentTab, msg, timeString, timestamp)
               cookie['fgRemoved'] = true
               cookie['fgHandled'] = true
 
-              if (data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookie.domain
+              if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookie.domain] !== undefined && data[contextName][cookieDomain][cookie.domain][cookie.name] !== undefined) cookie['fgRemovedDomain'] = cookie.domain
               break
             }
           }
@@ -936,7 +902,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     else contextName = 'default'
 
     let titleString = '::::::::::::::::::: Flag Cookies :: Action log :::::::::::::::::::'
-    let statuses = ['Global-flag', 'Auto-flag', 'Deleted', 'Permitted']
+    let statuses = [' Global-flag', ' Auto-flag', ' Deleted', ' Permitted', ' allowed ']
     let hasTitleChange = false
 
     if (logData[contextName] !== undefined && logData[contextName][tab.windowId] !== undefined && logData[contextName][tab.windowId][tab.id] !== undefined) {
@@ -946,11 +912,11 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
         for (let msg of logData[contextName][tab.windowId][tab.id]) {
           if (msg.indexOf(status) !== -1) {
-            let cookieName = '"' + msg.match(/cookie: '(.*)' for/)[1] + '"'
+            let cookieName = msg.match(/ cookie: '(.*)' for/)[1]
             if (titleJoin.indexOf(cookieName) === -1) {
               titleJoin.push(cookieName)
 
-              if (index !== 0 && index % 10 === 0) titleJoin.push('\n')
+              if (index !== 0 && index % 7 === 0) titleJoin.push('\n')
               ++index
             }
           }
@@ -978,7 +944,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     let count = 0
     if (logData[contextName] !== undefined && logData[contextName][tab.windowId] !== undefined && logData[contextName][tab.windowId][tab.id] !== undefined) {
       for (let msg of logData[contextName][tab.windowId][tab.id]) {
-        if (msg.toLowerCase().indexOf(' deleted on ') !== -1) ++count
+        if (msg.toLowerCase().indexOf('deleted ') !== -1) ++count
       }
 
       if (useChrome) {
@@ -1077,7 +1043,7 @@ async function setBrowserActionIconFirefox (contextName, tabDomain, tabId) {
 function clearDomainLog (currentTab, details) {
   if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
     for (let x = 0; x < logData[contextName][currentTab.windowId][currentTab.id].length; ++x) {
-      if (logTime[contextName][currentTab.windowId][currentTab.id][x] < details.timeStamp - 10000) {
+      if (logTime[contextName][currentTab.windowId][currentTab.id][x] < details.timeStamp - 2500) {
         logTime[contextName][currentTab.windowId][currentTab.id].splice(x, 1)
         logData[contextName][currentTab.windowId][currentTab.id].splice(x, 1)
         --x
@@ -1173,25 +1139,24 @@ async function getCommand (command) {
 function onCookieChanged (changeInfo) {
   if (!changeInfo.removed && (changeInfo.cause === 'explicit' || changeInfo.cause === 'expired_overwrite' || changeInfo.cause === 'overwrite')) {
     let cookieDetails = changeInfo.cookie
-    let domainName = cookieDetails['domain'].charAt(0) === '.' ? cookieDetails['domain'].substr(1, cookieDetails.length) : cookieDetails['domain']
-    domainName = domainName.replace('www.', '')
 
     if (cookieData[contextName] === undefined) cookieData[contextName] = {}
-    if (cookieData[contextName][domainName] === undefined) cookieData[contextName][domainName] = []
+    if (cookieData[contextName][cookieDetails.domain] === undefined) cookieData[contextName][cookieDetails.domain] = []
 
     let foundCookie = false
-    for (let cookie of cookieData[contextName][domainName]) {
+    for (let cookie of cookieData[contextName][cookieDetails.domain]) {
       if (cookieDetails.name === cookie.name && cookieDetails.domain === cookie.domain) {
-        cookieDetails['fgChanged'] = true
         cookie = cookieDetails
+        cookie['fgChanged'] = true
+        cookie['fgHandled'] = false
         foundCookie = true
         break
       }
     }
 
     if (!foundCookie) {
-      cookieDetails['fgChanged'] = true
-      cookieData[contextName][domainName].push(cookieDetails)
+      cookieDetails['fgHandled'] = false
+      cookieData[contextName][cookieDetails.domain].push(cookieDetails)
     }
 
     clearCookiesWrapper('cookie change')
@@ -1348,6 +1313,24 @@ function clearCookiesOnRequestChrome (details) {
 
       if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
         if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined) {
+          if (cookieData[contextName] !== undefined) {
+            for (let request of Object.keys(openTabData[currentTab.windowId][currentTab.id])) {
+              let domainSplit = openTabData[currentTab.windowId][currentTab.id][request]['d'].split('.')
+              let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
+
+              let keys = Object.keys(cookieData[contextName])
+              let keysLength = keys.length
+              for (let i = 0; i < keysLength; ++i) {
+                if (keys[i].indexOf(domain) !== -1) {
+                  delete cookieData[contextName][keys[i]]
+                  break
+                }
+              }
+            }
+
+            if (Object.keys(cookieData[contextName]).length === 0) delete cookieData[contextName]
+          }
+
           if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
             clearDomainLog(currentTab, details)
           }
@@ -1383,12 +1366,16 @@ async function clearCookiesOnRequest (details) {
     let currentTab
     let tabList
 
+    let sourceDomain = null
+
     switch (details.type) {
       case 'xmlhttprequest':
         tabList = await browser.tabs.query({'url': details.originUrl})
+        sourceDomain = details.url
         break
       case 'sub_frame':
         tabList = await browser.tabs.query({})
+        sourceDomain = details.url
         break
       case 'main_frame':
         tabList = await browser.tabs.query({'url': details.url})
@@ -1415,9 +1402,15 @@ async function clearCookiesOnRequest (details) {
 
     let data = await browser.storage.local.get()
     let domainURL
-    let urlMatch = details.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
-    if (urlMatch !== null) domainURL = urlMatch[0]
-    else domainURL = details.url.replace('www.', '')
+    if (sourceDomain === null) {
+      let urlMatch = details.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
+      if (urlMatch !== null) domainURL = urlMatch[0]
+      else domainURL = details.url.replace('www.', '')
+    } else {
+      let urlMatch = sourceDomain.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
+      if (urlMatch !== null) domainURL = urlMatch[0]
+      else domainURL = sourceDomain.replace('www.', '')
+    }
 
     let domainSplit = domainURL.split('.')
     let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
@@ -1426,6 +1419,24 @@ async function clearCookiesOnRequest (details) {
       await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
       if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined) {
+        if (cookieData[contextName] !== undefined) {
+          for (let request of Object.keys(openTabData[currentTab.windowId][currentTab.id])) {
+            let domainSplit = openTabData[currentTab.windowId][currentTab.id][request]['d'].split('.')
+            let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
+
+            let keys = Object.keys(cookieData[contextName])
+            let keysLength = keys.length
+            for (let i = 0; i < keysLength; ++i) {
+              if (keys[i].indexOf(domain) !== -1) {
+                delete cookieData[contextName][keys[i]]
+                break
+              }
+            }
+          }
+
+          if (Object.keys(cookieData[contextName]).length === 0) delete cookieData[contextName]
+        }
+
         if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
           clearDomainLog(currentTab, details)
         }
@@ -1547,8 +1558,6 @@ async function clearCookiesOnRequest (details) {
 
       if (!hasCookie) cookies.push(cookie)
     }
-
-    if (cookies.length === 0) return
 
     let typeOfRequest = details.type
     switch (details.type) {
