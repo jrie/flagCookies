@@ -225,6 +225,8 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           }
         } else if (index === 1) continue
 
+        if (index !== 1 && cookies.cookies[cookieKey]['isAdded'] !== undefined) continue
+
         let sortedCookies = sortObjectByKey(cookies.cookies[cookieKey]['data'], 'name', true)
         for (let cookie of sortedCookies) {
           activeCookies = true
