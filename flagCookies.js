@@ -148,6 +148,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   let activeTabUrl = document.querySelector('#header-title')
   let introSpan = document.createElement('span')
   introSpan.className = 'intro'
+  console.log(cookies)
 
   if (!useChrome) browser.contextualIdentities.get(tab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   else contextName = 'default'
@@ -297,21 +298,23 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
             pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
 
-            if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined))) {
-              let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
+            if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) || cookie['fgPermitted'] !== undefined || cookie['fgDomain'] !== undefined)) {
               let pCookieDomainMessageElm = document.createElement('span')
               let pCookieDomainMessage = ''
-              if (cookie['fgLogged'] !== undefined) {
-                pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookieDomain + ')'
+              if (cookie['fgPermitted'] !== undefined) {
+                pCookieDomainMessage = '(Allowed cookie of: ' + cookie['fgDomain'] + ')'
+              } else if (cookie['fgLogged'] !== undefined) {
+                pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookie['fgDomain'] + ')'
               } else if (cookie['fgProtected'] !== undefined) {
-                pCookieDomainMessage = '(Protected profile cookie of: ' + cookieDomain + ')'
+                pCookieDomainMessage = '(Protected profile cookie of: ' + cookie['fgDomain'] + ')'
               } else if (cookie['fgProfile'] !== undefined) {
-                pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
+                pCookieDomainMessage = '(Global protected profile cookie of: ' + cookie['fgDomain'] + ')'
               }
 
               if (!isHandledCookie && cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
                 if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
-                else pCookieDomainMessage += ' [Removed by rule]'
+              } else if (cookie['fgDomain'] !== undefined && pCookieDomainMessage === '') {
+                pCookieDomainMessage = ' (Rule present on ' + cookie['fgDomain'] + ')'
               }
 
               if (pCookieDomainMessage !== '') {
@@ -327,21 +330,23 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
               li.className += ' unremoved-secure-cookie'
             }
           } else {
-            if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined))) {
-              let cookieDomain = cookie.domain.charAt(0) === '.' ? cookie.domain.substr(1, cookie.domain.length - 1).replace('/www.', '/') : cookie.domain.replace('/www.', '/')
+            if (cookie['fgRoot'] === undefined && (cookie['fgProfile'] !== undefined || cookie['fgProtected'] !== undefined || cookie['fgLogged'] !== undefined || (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) || cookie['fgPermitted'] !== undefined || cookie['fgDomain'] !== undefined)) {
               let pCookieDomainMessageElm = document.createElement('span')
               let pCookieDomainMessage = ''
-              if (cookie['fgLogged'] !== undefined) {
-                pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookieDomain + ')'
+              if (cookie['fgPermitted'] !== undefined) {
+                pCookieDomainMessage = '(Allowed cookie of: ' + cookie['fgDomain'] + ')'
+              } else if (cookie['fgLogged'] !== undefined) {
+                pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookie['fgDomain'] + ')'
               } else if (cookie['fgProtected'] !== undefined) {
-                pCookieDomainMessage = '(Protected profile cookie of: ' + cookieDomain + ')'
+                pCookieDomainMessage = '(Protected profile cookie of: ' + cookie['fgDomain'] + ')'
               } else if (cookie['fgProfile'] !== undefined) {
-                pCookieDomainMessage = '(Global protected profile cookie of: ' + cookieDomain + ')'
+                pCookieDomainMessage = '(Global protected profile cookie of: ' + cookie['fgDomain'] + ')'
               }
 
-              if (cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
+              if (!isHandledCookie && cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
                 if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
-                else pCookieDomainMessage += ' [Removed by rule]'
+              } else if (cookie['fgDomain'] !== undefined && pCookieDomainMessage === '') {
+                pCookieDomainMessage = ' (Rule present on ' + cookie['fgDomain'] + ')'
               }
 
               if (pCookieDomainMessage !== '') {
