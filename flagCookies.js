@@ -148,7 +148,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   let activeTabUrl = document.querySelector('#header-title')
   let introSpan = document.createElement('span')
   introSpan.className = 'intro'
-  console.log(cookies)
 
   if (!useChrome) browser.contextualIdentities.get(tab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   else contextName = 'default'
