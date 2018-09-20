@@ -58,11 +58,14 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, curr
 
       let contextName = 'default'
 
+      let hasDataContext = data[contextName] !== undefined && data[contextName][domainURL] !== undefined
+
       if (cookieData[contextName] !== undefined && cookieData[contextName][domainURL] !== undefined) {
         let entries = cookieData[contextName][domainURL].length
         for (let i = 0; i < entries; ++i) {
           let isLeftOverCookie = true
           let cookieEntry = cookieData[contextName][domainURL][i]
+          if (hasDataContext && data[contextName][domainURL][cookieEntry.domain] !== undefined && data[contextName][domainURL][cookieEntry.domain][cookieEntry.name] !== undefined) continue
 
           for (let cookie of cookies) {
             if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
@@ -1615,11 +1618,15 @@ async function clearCookiesOnRequest (details) {
       }
     }
 
+    let hasDataContext = data[contextName] !== undefined && data[contextName][domainURL] !== undefined
+
     if (cookieData[contextName] !== undefined && cookieData[contextName][domainURL] !== undefined) {
       let entries = cookieData[contextName][domainURL].length
       for (let i = 0; i < entries; ++i) {
         let isLeftOverCookie = true
         let cookieEntry = cookieData[contextName][domainURL][i]
+        if (hasDataContext && data[contextName][domainURL][cookieEntry.domain] !== undefined && data[contextName][domainURL][cookieEntry.domain][cookieEntry.name] !== undefined) continue
+
 
         for (let cookie of cookies) {
           if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
