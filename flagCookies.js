@@ -85,7 +85,7 @@ function chromeGetStorageAndCookiesForFunc (data, cookies, func, tab) {
     chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func, tab) })
     return
   } else if (cookies === null) {
-    chrome.runtime.sendMessage({'getCookies': domainURL, 'windowId': tab.windowId, 'tabId': tab.id, 'storeId': 'default'}, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response, func, tab) })
+    chrome.runtime.sendMessage({ 'getCookies': domainURL, 'windowId': tab.windowId, 'tabId': tab.id, 'storeId': 'default' }, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response, func, tab) })
     return
   }
 
@@ -130,7 +130,7 @@ async function initDomainURLandProceed (tabs) {
   cookieStoreId = activeCookieStore
   await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
-  let cookies = await browser.runtime.sendMessage({'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id})
+  let cookies = await browser.runtime.sendMessage({ 'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id })
   updateUIData(data, cookies, contextName, tab, activeCookieStore)
 }
 
@@ -464,7 +464,7 @@ function buildHelpIndex () {
 }
 
 function getTempContainerStatus (contextName) {
-  browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', {'method': 'isTempContainer', 'cookieStoreId': cookieStoreId}).then(function (isTmp) {
+  browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', { 'method': 'isTempContainer', 'cookieStoreId': cookieStoreId }).then(function (isTmp) {
     if (isTmp === true) {
       document.querySelectorAll('.intro')[1].textContent += ', is a temporary container'
     }
@@ -559,7 +559,7 @@ function addCookieToList (targetList, name, value, domain, inactiveCookie) {
 }
 
 async function getActiveTab () {
-  return browser.tabs.query({currentWindow: true, active: true})
+  return browser.tabs.query({ currentWindow: true, active: true })
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -1190,14 +1190,14 @@ async function toggleNotifications (evt) {
     evt.target.className += ' active'
     doSwitchOn = true
 
-    if (useChrome) chrome.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png'})
-    else browser.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png'})
+    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png' })
+    else browser.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png' })
   } else {
     evt.target.className = evt.target.className.replace(' active', '')
     doSwitchOn = false
 
-    if (useChrome) chrome.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png'})
-    else browser.notifications.create('notifications_info', {type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png'})
+    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png' })
+    else browser.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png' })
   }
 
   if (useChrome) {
@@ -1500,8 +1500,8 @@ async function accountModeSwitchNeutral (data, evt) {
     evt.target.removeAttribute('class')
 
     // Account mode icon removal
-    if (useChrome) chrome.browserAction.setIcon({'tabId': tabId, 'path': { '19': 'icons/cookie_19.png', '38': 'icons/cookie_38.png', '48': 'icons/cookie_48.png', '64': 'icons/cookie_64.png', '96': 'icons/cookie_96.png', '128': 'icons/cookie_128.png' }})
-    else browser.browserAction.setIcon({'tabId': tabId, 'path': { '19': 'icons/cookie_19.png', '38': 'icons/cookie_38.png', '48': 'icons/cookie_48.png', '64': 'icons/cookie_64.png', '96': 'icons/cookie_96.png', '128': 'icons/cookie_128.png' }})
+    if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '19': 'icons/cookie_19.png', '38': 'icons/cookie_38.png', '48': 'icons/cookie_48.png', '64': 'icons/cookie_64.png', '96': 'icons/cookie_96.png', '128': 'icons/cookie_128.png' } })
+    else browser.browserAction.setIcon({ 'tabId': tabId, 'path': { '19': 'icons/cookie_19.png', '38': 'icons/cookie_38.png', '48': 'icons/cookie_48.png', '64': 'icons/cookie_64.png', '96': 'icons/cookie_96.png', '128': 'icons/cookie_128.png' } })
     return
   }
 
@@ -1514,8 +1514,8 @@ async function accountModeSwitchNeutral (data, evt) {
   else await browser.storage.local.set(data)
 
   // Account mode icon
-  if (useChrome) chrome.browserAction.setIcon({'tabId': tabId, 'path': {'19': 'icons/cookie_19_profil.png', '38': 'icons/cookie_38_profil.png', '48': 'icons/cookie_48_profil.png', '64': 'icons/cookie_64_profil.png', '96': 'icons/cookie_96_profil.png', '128': 'icons/cookie_128_profil.png'}})
-  else browser.browserAction.setIcon({'tabId': tabId, 'path': {'19': 'icons/cookie_19_profil.png', '38': 'icons/cookie_38_profil.png', '48': 'icons/cookie_48_profil.png', '64': 'icons/cookie_64_profil.png', '96': 'icons/cookie_96_profil.png', '128': 'icons/cookie_128_profil.png'}})
+  if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '19': 'icons/cookie_19_profil.png', '38': 'icons/cookie_38_profil.png', '48': 'icons/cookie_48_profil.png', '64': 'icons/cookie_64_profil.png', '96': 'icons/cookie_96_profil.png', '128': 'icons/cookie_128_profil.png' } })
+  else browser.browserAction.setIcon({ 'tabId': tabId, 'path': { '19': 'icons/cookie_19_profil.png', '38': 'icons/cookie_38_profil.png', '48': 'icons/cookie_48_profil.png', '64': 'icons/cookie_64_profil.png', '96': 'icons/cookie_96_profil.png', '128': 'icons/cookie_128_profil.png' } })
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -1535,5 +1535,5 @@ document.querySelector('#confirmNotifications').addEventListener('click', toggle
 document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
 document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
 
-if (useChrome) chrome.tabs.query({currentWindow: true, active: true}, initDomainURLandProceed)
+if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed)
 else getActiveTab().then(initDomainURLandProceed)
