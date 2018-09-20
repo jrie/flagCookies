@@ -52,13 +52,35 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, curr
       checkChromeHadNoErrors()
       if (cookiesSub.length === 0) return
 
-      for (let domainData of Object.values(openTabData[currentTab.windowId][currentTab.id])) {
-        for (let cookie of cookiesSub) {
-          if (cookie.domain.indexOf(domainData.d) !== -1) cookies.push(cookie)
-        }
+      for (let cookie of cookiesSub) {
+        cookies.push(cookie)
       }
 
-      if (cookies.length === 0) return
+      let contextName = 'default'
+
+      if (cookieData[contextName] !== undefined && cookieData[contextName][domainURL] !== undefined) {
+        let entries = cookieData[contextName][domainURL].length
+        for (let i = 0; i < entries; ++i) {
+          let isLeftOverCookie = true
+          let cookieEntry = cookieData[contextName][domainURL][i]
+
+          for (let cookie of cookies) {
+            if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+              isLeftOverCookie = false
+              break
+            }
+          }
+
+          if (isLeftOverCookie) {
+            cookieData[contextName][domainURL].splice(i, 1)
+            --i
+            --entries
+          }
+        }
+
+        if (Object.keys(cookieData[contextName]).length === 0) delete cookieData[contextName]
+      }
+
       clearCookiesAction(action, data, cookies, domainURL, currentTab, 'default')
     })
   }
@@ -1461,14 +1483,6 @@ function clearCookiesOnRequestChrome (details) {
 
       addTabURLtoDataList(currentTab, details, domain)
 
-      if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
-        if (cookieData[contextName] !== undefined && cookieData[contextName][domainURL] !== undefined) {
-          delete cookieData[contextName][domainURL]
-
-          if (Object.keys(cookieData[contextName]).length === 0) delete cookieData[contextName]
-        }
-      }
-
       let typeOfRequest = details.type
       switch (details.type) {
         case 'xmlhttprequest':
@@ -1532,12 +1546,6 @@ async function clearCookiesOnRequest (details) {
 
       if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined && openTabData[currentTab.windowId][currentTab.id][0] !== undefined) {
         openTabData[currentTab.windowId][currentTab.id] = []
-      }
-
-      if (cookieData[contextName] !== undefined && cookieData[contextName][domainURL] !== undefined) {
-        delete cookieData[contextName][domainURL]
-
-        if (Object.keys(cookieData[contextName]).length === 0) delete cookieData[contextName]
       }
 
       if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
@@ -1605,6 +1613,29 @@ async function clearCookiesOnRequest (details) {
           cookies.push(cookie)
         }
       }
+    }
+
+    if (cookieData[contextName] !== undefined && cookieData[contextName][domainURL] !== undefined) {
+      let entries = cookieData[contextName][domainURL].length
+      for (let i = 0; i < entries; ++i) {
+        let isLeftOverCookie = true
+        let cookieEntry = cookieData[contextName][domainURL][i]
+
+        for (let cookie of cookies) {
+          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+            isLeftOverCookie = false
+            break
+          }
+        }
+
+        if (isLeftOverCookie) {
+          cookieData[contextName][domainURL].splice(i, 1)
+          --i
+          --entries
+        }
+      }
+
+      if (Object.keys(cookieData[contextName]).length === 0) delete cookieData[contextName]
     }
 
     let typeOfRequest = details.type
