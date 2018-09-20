@@ -382,8 +382,14 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
       if (cookieDomain === cookies.rootDomain) continue
       for (let cookieKey of Object.keys(domainData[cookieDomain])) {
         if (domainData[cookieDomain][cookieKey] === true) {
-          if (!isDomainCookieInList(flaggedCookieList, cookieKey, cookieDomain)) addCookieToList('cookie-list-flagged', cookieKey, '', cookieDomain, true)
-        } else if (!isDomainCookieInList(permittedCookieList, cookieKey, cookieDomain)) addCookieToList('cookie-list-permitted', cookieKey, '', cookieDomain, true)
+          if (!isDomainCookieInList(flaggedCookieList, cookieKey, cookieDomain)) {
+            addCookieToList('cookie-list-flagged', cookieKey, '', cookieDomain, true)
+            ++countList['#flaggedCookieList']
+          }
+        } else if (domainData[cookieDomain][cookieKey] === false && !isDomainCookieInList(permittedCookieList, cookieKey, cookieDomain)) {
+          addCookieToList('cookie-list-permitted', cookieKey, '', cookieDomain, true)
+          ++countList['#permittedCookieList']
+        }
       }
     }
   }
