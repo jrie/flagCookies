@@ -161,7 +161,7 @@ async function clearCookiesWrapper (action) {
 
   let domainURL = await getDomainURLFirefox()
   if (domainURL === '') return
-  let currentTab = await browser.tabs.getCurrnet()
+  let currentTab = await browser.tabs.getCurrent()
   if (currentTab === undefined) return
 
   let data = await browser.storage.local.get()
@@ -972,92 +972,94 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       }
     }
   }
-
-  if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-  else contextName = 'default'
-
-  let titleString = '::::::::::::::::::: Flag Cookies :: Action log :::::::::::::::::::'
-  let statuses = [' Global-flag ', ' Auto-flag ', 'Deleted ', ' Permitted ', 'Allowed ']
-  let hasTitleChange = false
-
-  if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
-    for (let status of statuses) {
-      let titleJoin = []
-      let index = 0
-
-      for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-        if (msg.indexOf(status) !== -1) {
-          let cookieName = msg.match(/ cookie: '(.*)' for/)[1]
-          if (titleJoin.indexOf(cookieName) === -1) {
-            titleJoin.push(cookieName)
-
-            if (index !== 0 && index % 7 === 0) titleJoin.push('\n')
-            ++index
-          }
-        }
-      }
-
-      if (titleJoin.length !== 0) {
-        titleString += '\n' + status.replace(' ', '') + ': ' + titleJoin.join(', ')
-        hasTitleChange = true
-      }
-    }
-
-    if (!hasTitleChange) titleString += '\nNo actions taken on this page'
-
-    if (useChrome) {
-      chrome.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
-      getChromeStorageForFunc3(setBrowserActionIconChrome, contextName, rootDomain, currentTab.id)
-    } else {
-      browser.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
-      setBrowserActionIconFirefox(contextName, rootDomain, currentTab.id)
-    }
-
-    let count = 0
-    if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
-      for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-        if (msg.toLowerCase().indexOf('deleted ') !== -1) ++count
-      }
-
-      if (useChrome) {
-        if (count !== 0) chrome.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
-        else chrome.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
-      } else {
-        if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
-        else browser.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
-      }
-    }
-
-    if (useChrome) {
-      getChromeStorageForFunc3(displayCookieDeleteChrome, count, rootDomain, contextName)
-      return
-    }
-
-    if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
-      browser.notifications.create('cookie_cleared', { type: 'basic', message: count + ' cookie(s) removed for domain "' + rootDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png' })
-    }
-  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
+async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
   if (changeInfo.status && changeInfo.status === 'loading') {
-    if (useChrome) chrome.browserAction.disable(tab.id)
-    else browser.browserAction.disable(tab.id)
+    if (useChrome) chrome.browserAction.disable(currentTab.id)
+    else browser.browserAction.disable(currentTab.id)
+    clearCookiesWrapper('document load')
   } else if (changeInfo.status !== undefined && changeInfo.status === 'complete') {
     let tabDomain
-    let urlMatch = tab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
+    let urlMatch = currentTab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
     if (urlMatch !== null) tabDomain = urlMatch[0]
-    else tabDomain = tab.url.replace(/\/www./, '')
+    else tabDomain = currentTab.url.replace(/\/www./, '')
 
     let domainSplit = tabDomain.split('.')
     let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
-    addTabURLtoDataList(tab, { 'url': tab.url, 'frameId': 0, 'parentFrameId': -1, 'type': 'main_frame' }, domain, true)
+    addTabURLtoDataList(currentTab, { 'url': tabDomain, 'frameId': 0, 'parentFrameId': -1, 'type': 'main_frame' }, domain, true)
 
     if (useChrome) {
-      chrome.browserAction.enable(tab.id)
+      chrome.browserAction.enable(currentTab.id)
     } else {
-      browser.browserAction.enable(tab.id)
+      browser.browserAction.enable(currentTab.id)
+    }
+
+    if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
+    else contextName = 'default'
+
+    let titleString = '::::::::::::::::::: Flag Cookies :: Action log :::::::::::::::::::'
+    let statuses = [' Global-flag ', ' Auto-flag ', 'Deleted ', ' Permitted ', 'Allowed ']
+    let hasTitleChange = false
+
+    if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
+      for (let status of statuses) {
+        let titleJoin = []
+        let index = 0
+
+        for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
+          if (msg.indexOf(status) !== -1) {
+            let cookieName = msg.match(/ cookie: '(.*)' for/)[1]
+            if (titleJoin.indexOf(cookieName) === -1) {
+              titleJoin.push(cookieName)
+
+              if (index !== 0 && index % 7 === 0) titleJoin.push('\n')
+              ++index
+            }
+          }
+        }
+
+        if (titleJoin.length !== 0) {
+          titleString += '\n' + status.replace(' ', '') + ': ' + titleJoin.join(', ')
+          hasTitleChange = true
+        }
+      }
+
+      if (!hasTitleChange) titleString += '\nNo actions taken on this page'
+
+      if (useChrome) {
+        chrome.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
+        getChromeStorageForFunc3(setBrowserActionIconChrome, contextName, tabDomain, currentTab.id)
+      } else {
+        browser.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
+        setBrowserActionIconFirefox(contextName, tabDomain, currentTab.id)
+      }
+
+      console.log(logData[contextName][currentTab.windowId][currentTab.id])
+      if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
+        let count = 0
+        for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
+          if (msg.toLowerCase().indexOf('deleted') !== -1) ++count
+        }
+
+        if (useChrome) {
+          if (count !== 0) chrome.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
+          else chrome.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
+        } else {
+          if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
+          else browser.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
+        }
+
+        if (useChrome) {
+          getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
+          return
+        }
+
+        if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
+          browser.notifications.create('cookie_cleared', { type: 'basic', message: count + ' cookie(s) removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png' })
+        }
+      }
     }
   }
 }
@@ -1137,12 +1139,10 @@ async function setBrowserActionIconFirefox (contextName, tabDomain, tabId) {
 function clearDomainLog (currentTab, details) {
   if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
     for (let x = 0; x < logData[contextName][currentTab.windowId][currentTab.id].length; ++x) {
-      if (logTime[contextName][currentTab.windowId][currentTab.id][x] < details.timeStamp - 2500) {
+      if (logTime[contextName][currentTab.windowId][currentTab.id][x] < details.timeStamp - 5000) {
         logTime[contextName][currentTab.windowId][currentTab.id].splice(x, 1)
         logData[contextName][currentTab.windowId][currentTab.id].splice(x, 1)
         --x
-      } else {
-        logTime[contextName][currentTab.windowId][currentTab.id][x] += 1500
       }
     }
 
