@@ -974,9 +974,43 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   }
 
   if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
+    let titleString = '::::::::::::::::::: Flag Cookies :: Action log :::::::::::::::::::'
+    let statuses = [' Global-flag ', ' Auto-flag ', 'Deleted ', ' Permitted ', 'Allowed ']
+    let hasTitleChange = false
+
+    for (let status of statuses) {
+      let titleJoin = []
+      let index = 0
+
+      for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
+        if (msg.indexOf(status) !== -1) {
+          let cookieName = msg.match(/ cookie: '(.*)' for/)[1]
+          if (titleJoin.indexOf(cookieName) === -1) {
+            titleJoin.push(cookieName)
+
+            if (index !== 0 && index % 7 === 0) titleJoin.push('\n')
+            ++index
+          }
+        }
+      }
+
+      if (titleJoin.length !== 0) {
+        titleString += '\n' + status.replace(' ', '') + ': ' + titleJoin.join(', ')
+        hasTitleChange = true
+      }
+    }
+
+    if (!hasTitleChange) titleString += '\nNo actions taken on this page'
+
     let count = 0
     for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
       if (msg.toLowerCase().indexOf('deleted') !== -1) ++count
+    }
+
+    if (useChrome) {
+      chrome.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
+    } else {
+      browser.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
     }
 
     if (useChrome) {
@@ -1014,11 +1048,12 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
     if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
     else contextName = 'default'
 
-    let titleString = '::::::::::::::::::: Flag Cookies :: Action log :::::::::::::::::::'
-    let statuses = [' Global-flag ', ' Auto-flag ', 'Deleted ', ' Permitted ', 'Allowed ']
-    let hasTitleChange = false
 
     if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
+      let titleString = '::::::::::::::::::: Flag Cookies :: Action log :::::::::::::::::::'
+      let statuses = [' Global-flag ', ' Auto-flag ', 'Deleted ', ' Permitted ', 'Allowed ']
+      let hasTitleChange = false
+
       for (let status of statuses) {
         let titleJoin = []
         let index = 0
@@ -1051,28 +1086,28 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
         setBrowserActionIconFirefox(contextName, tabDomain, currentTab.id)
       }
 
-      if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
-        let count = 0
-        for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-          if (msg.toLowerCase().indexOf('deleted') !== -1) ++count
-        }
+      let count = 0
+      for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
+        if (msg.toLowerCase().indexOf('deleted') !== -1) ++count
+      }
 
-        if (useChrome) {
-          if (count !== 0) chrome.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
-          else chrome.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
-        } else {
-          if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
-          else browser.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
-        }
+      if (useChrome) {
+        if (count !== 0) chrome.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
+        else chrome.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
+      } else {
+        if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
+        else browser.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
+      }
 
-        if (useChrome) {
-          getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
-          return
-        }
+      if (useChrome) {
+        getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
+        return
+      }
 
-        if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
-          browser.notifications.create('cookie_cleared', { type: 'basic', message: count + ' cookie(s) removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png' })
-        }
+      let data = await browser.storage.local.get()
+
+      if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
+        browser.notifications.create('cookie_cleared', { type: 'basic', message: count + ' cookie(s) removed for domain "' + tabDomain + '" in context "' + contextName + '".', title: 'Flag Cookies: Cookies removed', iconUrl: 'icons/cookie_128.png' })
       }
     }
   }
