@@ -173,6 +173,7 @@ async function clearCookiesWrapper (action) {
   let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
 
   let cookies = []
+  let cookiesBase
   let cookiesURL = []
   let cookiesURL2 = []
   let cookiesSec = []
@@ -180,110 +181,56 @@ async function clearCookiesWrapper (action) {
   let cookiesSec2 = []
   let cookies3 = []
   let cookiesSec3 = []
+  let cookies4 = []
+  let cookiesSec4 = []
+
+  let domainWWW = 'http://www.' + domain.replace(/(http|https):\/\//, '')
+  let domainWWW2 = 'https://www.' + domain.replace(/(http|https):\/\//, '')
 
   if (currentTab.cookieStoreId !== undefined) {
-    cookies = await browser.cookies.getAll({ domain: domain, storeId: currentTab.cookieStoreId })
+    cookiesBase = await browser.cookies.getAll({ domain: domain, storeId: currentTab.cookieStoreId })
     cookiesURL = await browser.cookies.getAll({ url: domainURL, storeId: currentTab.cookieStoreId })
     cookiesURL2 = await browser.cookies.getAll({ url: domainURL.indexOf('http:') !== -1 ? domainURL.replace('http:', 'https:') : domainURL.replace('https:', 'http:'), storeId: currentTab.cookieStoreId })
     cookiesSec = await browser.cookies.getAll({ domain: domain, secure: true, storeId: currentTab.cookieStoreId })
     cookies2 = await browser.cookies.getAll({ domain: domainURL.replace(/(http|https):\/\//, '.'), storeId: currentTab.cookieStoreId })
     cookiesSec2 = await browser.cookies.getAll({ domain: domainURL.replace(/(http|https):\/\//, '.'), secure: true, storeId: currentTab.cookieStoreId })
-    cookies3 = await browser.cookies.getAll({ domain: 'www.' + domain, storeId: currentTab.cookieStoreId })
-    cookiesSec3 = await browser.cookies.getAll({ domain: 'www.' + domain, secure: true, storeId: currentTab.cookieStoreId })
+    cookies3 = await browser.cookies.getAll({ domain: domainWWW, storeId: currentTab.cookieStoreId })
+    cookiesSec3 = await browser.cookies.getAll({ domain: domainWWW, secure: true, storeId: currentTab.cookieStoreId })
+    cookies4 = await browser.cookies.getAll({ domain: domainWWW2, storeId: currentTab.cookieStoreId })
+    cookiesSec4 = await browser.cookies.getAll({ domain: domainWWW2, secure: true, storeId: currentTab.cookieStoreId })
   } else {
-    cookies = await browser.cookies.getAll({ domain: domain })
+    cookiesBase = await browser.cookies.getAll({ domain: domain })
     cookiesURL = await browser.cookies.getAll({ url: domainURL.replace('www.', '') })
+    cookiesURL2 = await browser.cookies.getAll({ url: domainURL.indexOf('http:') !== -1 ? domainURL.replace('http:', 'https:') : domainURL.replace('https:', 'http:') })
     cookiesSec = await browser.cookies.getAll({ domain: domain, secure: true })
     cookies2 = await browser.cookies.getAll({ domain: domainURL.replace(/(http|https):\/\//, '.') })
     cookiesURL2 = await browser.cookies.getAll({ url: domainURL.indexOf('http:') !== -1 ? domainURL.replace('http:', 'https:').replace('www.', '') : domainURL.replace('https:', 'http:').replace('www.', '') })
     cookiesSec2 = await browser.cookies.getAll({ domain: domainURL.replace(/(http|https):\/\//, '.'), secure: true })
-    cookies3 = await browser.cookies.getAll({ domain: 'www.' + domain })
-    cookiesSec3 = await browser.cookies.getAll({ domain: 'www.' + domain, secure: true })
+    cookies3 = await browser.cookies.getAll({ domain: domainWWW })
+    cookiesSec3 = await browser.cookies.getAll({ domain: domainWWW, secure: true })
+    cookies4 = await browser.cookies.getAll({ domain: domainWWW2, storeId: currentTab.cookieStoreId })
+    cookiesSec4 = await browser.cookies.getAll({ domain: domainWWW2, secure: true, storeId: currentTab.cookieStoreId })
   }
 
-  let hasCookie = false
-  for (let cookie of cookiesURL) {
-    hasCookie = false
-    for (let cookieEntry of cookies) {
-      if (cookieEntry.name === cookie.name) {
-        hasCookie = true
-        break
+  let cookieList = [cookiesBase, cookiesURL, cookiesURL2, cookiesSec, cookies2, cookiesSec2, cookies3, cookiesSec3, cookies4, cookiesSec4]
+
+  for (let list of cookieList) {
+    let hasCookie = false
+    for (let cookie of list) {
+      hasCookie = false
+      for (let cookieEntry of cookies) {
+        if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+          hasCookie = true
+          break
+        }
+      }
+
+      if (!hasCookie) {
+        let details = { 'url': currentTab.url }
+        addTabURLtoDataList(currentTab, details, cookie.domain)
+        cookies.push(cookie)
       }
     }
-
-    if (!hasCookie) cookies.push(cookie)
-  }
-
-  for (let cookie of cookiesURL2) {
-    hasCookie = false
-    for (let cookieEntry of cookies) {
-      if (cookieEntry.name === cookie.name) {
-        hasCookie = true
-        break
-      }
-    }
-
-    if (!hasCookie) cookies.push(cookie)
-  }
-
-  for (let cookie of cookies2) {
-    hasCookie = false
-    for (let cookieEntry of cookies) {
-      if (cookieEntry.name === cookie.name) {
-        hasCookie = true
-        break
-      }
-    }
-
-    if (!hasCookie) cookies.push(cookie)
-  }
-
-  for (let cookie of cookies3) {
-    hasCookie = false
-    for (let cookieEntry of cookies) {
-      if (cookieEntry.name === cookie.name) {
-        hasCookie = true
-        break
-      }
-    }
-
-    if (!hasCookie) cookies.push(cookie)
-  }
-
-  for (let cookie of cookiesSec) {
-    hasCookie = false
-    for (let cookieEntry of cookies) {
-      if (cookieEntry.name === cookie.name) {
-        hasCookie = true
-        break
-      }
-    }
-
-    if (!hasCookie) cookies.push(cookie)
-  }
-
-  for (let cookie of cookiesSec2) {
-    hasCookie = false
-    for (let cookieEntry of cookies) {
-      if (cookieEntry.name === cookie.name) {
-        hasCookie = true
-        break
-      }
-    }
-
-    if (!hasCookie) cookies.push(cookie)
-  }
-
-  for (let cookie of cookiesSec3) {
-    hasCookie = false
-    for (let cookieEntry of cookies) {
-      if (cookieEntry.name === cookie.name) {
-        hasCookie = true
-        break
-      }
-    }
-
-    if (!hasCookie) cookies.push(cookie)
   }
 
   if (cookies.length === 0) return
