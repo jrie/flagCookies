@@ -972,6 +972,21 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       }
     }
   }
+
+  if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
+    let count = 0
+    for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
+      if (msg.toLowerCase().indexOf('deleted') !== -1) ++count
+    }
+
+    if (useChrome) {
+      if (count !== 0) chrome.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
+      else chrome.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
+    } else {
+      if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
+      else browser.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
+    }
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -1036,7 +1051,6 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
         setBrowserActionIconFirefox(contextName, tabDomain, currentTab.id)
       }
 
-      console.log(logData[contextName][currentTab.windowId][currentTab.id])
       if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
         let count = 0
         for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
