@@ -212,7 +212,11 @@
   },
   "DeletedState": {
     "message": "Entfernt",
-    "description": "Status deleted, also used as filter for Msg Count in logging and overview display"
+    "description": "Status deleted, also used in overview display"
+  },
+  "DeletedStateMsg": {
+    "message": "Entfernter",
+    "description": "Status deleted, used as filter for Msg Count in logging"
   },
   "GlobalFlagState": {
     "message": "Globaler Modus",

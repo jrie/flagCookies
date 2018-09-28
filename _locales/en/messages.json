@@ -212,7 +212,11 @@
   },
   "DeletedState": {
     "message": "Deleted",
-    "description": "Status deleted, also used as filter for Msg Count in logging and overview display"
+    "description": "Status deleted for overview display"
+  },
+  "DeletedStateMsg": {
+    "message": "Deleted",
+    "description": "Status deleted, used as filter for Msg Count in logging"
   },
   "GlobalFlagState": {
     "message": "Global-flag",
