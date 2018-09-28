@@ -499,7 +499,7 @@
     "description": "Displayed help text for AutoFlag button"
   },
   "HelpButtonHelpText": {
-    "message": "Show help and documentation for FlagCookies",
+    "message": "Show help and documentation for Flag Cookies",
     "description": "Displayed help text for Help button"
   },
   "ActiveCookiesViewHelpText": {
@@ -519,7 +519,7 @@
     "description": "Displayed help text for permitted cookie view tab"
   },
   "ActionLogHelpText": {
-    "message": "The log shows all cookie actions taken by FlagCookies.",
+    "message": "The log shows all cookie actions taken by Flag Cookies.",
     "description": "Displayed help text for action log"
   },
   "ActionLogAreaHelpText": {
