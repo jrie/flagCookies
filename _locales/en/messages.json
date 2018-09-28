@@ -486,11 +486,6 @@
 
 
 
-  "DeleteStoredSettingsText": {
-    "message": "Delete all stored settings",
-    "description": "Shown in settings, delete all stored settings button"
-  },
-
   "GlobalButtonHelpText": {
     "message": "Automatically delete cookies for all domains, if not permitted or while protected in 'profile' mode.",
     "description": "Displayed help text for Global button"
