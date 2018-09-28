@@ -1,0 +1,558 @@
+{
+  "AddonDescription": {
+    "message": "A cookie manager on steroids to flag and manage cookies."
+  },
+  "ProfileShortcut": {
+    "message": "Activate/deactivate profile mode for current url",
+    "description": "Text for keyboard shortcut to active or deactivate the profile"
+  },
+
+
+
+
+  "CookiesForDomainText": {
+    "message": "Cookies for domain:",
+    "description": "Cookies for domain label in UI"
+  },
+  "ActiveContainerGroupText": {
+    "message": "Active container group:",
+    "description": "UI display of active container group"
+  },
+  "NoActiveDomainCookiesText": {
+    "message": "No active cookies for domain, you might need to reload the tab.",
+    "description": "Information that no cookies are active"
+  },
+  "CrossOriginInformationText": {
+    "message": "[CROSS ORIGIN]",
+    "description": "Display the cookies are from a cross origin source"
+  },
+  "CookieFlagButtonAllowedHelpText": {
+    "message": "This cookie is allowed and unhandled. Click to change.",
+    "description": "Display cookie is allowed on hover cookie flag button"
+  },
+  "SetCookieProfileButtonHelpText": {
+    "message": "Set this cookie as profile mode cookie.",
+    "description": "Help text for cookie key icon/button"
+  },
+  "CookieIsFlaggedHelpText": {
+    "message": "This cookie is flagged and will be removed during url load and reload.",
+    "description": "Help for cookie being flagged and removed on action"
+  },
+  "CookieIsPermittedHelpText": {
+    "message": "This cookie is permitted and will be kept, even when global or auto flag mode is active.",
+    "description": "Help for cookie being permitted and not removed by actions"
+  },
+  "CookieIsLockedProfileCookieHelpText": {
+    "message": "This cookie is set locked as profile-mode cookie for this domain.",
+    "description": "Help for cookie being locked as profile key cookie"
+  },
+
+
+
+
+
+
+  "CookieHelpTextBaseDomainAllowed": {
+    "message": "(Allowed cookie of: '$cookieDomain$')",
+    "description": "Cookie is allowed from base domain",
+    "placeholders": {
+      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+    }
+  },
+  "CookieHelpTextBaseDomainUnprotected": {
+    "message": "(Unprotected profile cookie of: '$cookieDomain$')",
+    "description": "Cookie is removed on demand, but was earlier protected by base domain",
+    "placeholders": {
+      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+    }
+  },
+  "CookieHelpTextBaseDomainProtected": {
+    "message": "(Protected profile cookie of: '$cookieDomain$')",
+    "description": "Cookie is not removed because it is protected by base domain",
+    "placeholders": {
+      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+    }
+  },
+  "CookieHelpTextBaseDomainGlobalProtected": {
+    "message": "(Global protected profile cookie of: '$cookieDomain$')",
+    "description": "Cookie is not removed because it is globally protected by base domain",
+    "placeholders": {
+      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+    }
+  },
+  "CookieHelpTextBaseDomainRemoved": {
+    "message": "(Cookie removed due to rule on: '$cookieDomain$')",
+    "description": "Cookie is removed because it has a rule on cookieDomain",
+    "placeholders": {
+      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+    }
+  },
+  "CookieHelpTextBaseDomainRulePresent": {
+    "message": "(Rule present on: '$cookieDomain$')",
+    "description": "Cookie has a rule on cookieDomain",
+    "placeholders": {
+      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+    }
+  },
+  "CookieHelpTextSecureMightNotHandled": {
+    "message": "This cookie is secure for the domain and cannot be handled due to host permission restrictions.",
+    "description": "Cookie might not be handled due to host permission restrictions"
+  },
+  "ContainerTextIsTemporaryContainer": {
+    "message": "$containerGroup$, is a temporary container",
+    "description": "Container is a temporary container",
+    "placeholders": {
+      "containerGroup": { "content": "$1", "example": "tmp-2017"}
+    }
+  },
+  "CookieIsInactiveText": {
+    "message": "Inactive cookie",
+    "description": "Cooke is inactive display in UI"
+  },
+  "CookieIsAutoFlaggedHelpText": {
+    "message": "This cookie is auto-flagged and will be removed.",
+    "description": "Cookie auto-flagged help text"
+  },
+  "CookieIsGlobalFlaggedHelpText": {
+    "message": "This cookie is globally flagged and will be removed.",
+    "description": "Cookie global-flagged help text"
+  },
+  "NoFlaggedCookiesForDomain": {
+    "message": "No flagged cookies for domain.",
+    "description": "Message in flagged cookies view that no cookies are flagged"
+  },
+  "NoPermittedCookiesForDomain": {
+    "message": "No permitted cookies for domain.",
+    "description": "Message in permitted cookies view that no cookies are flagged"
+  },
+  "CookieIsLockedProfileCookieHelpTextSettingsRef": {
+    "message": "This cookie is set locked as profile mode cookie. You can manage profile mode cookies under 'Preferences'.",
+    "description": "Cookie is set as profile mode cookies"
+  },
+  "NotificationsHeadlineNeutral": {
+    "message": "Flag Cookies Notifications",
+    "description": "Notifications title for enabling/diabling"
+  },
+  "NotificationsEnabledNotifications": {
+    "message": "Flag Cookie notifications enabled.",
+    "description": "Notifications that notifications have been enabled."
+  },
+  "NotificationsDisabledNotifications": {
+    "message": "Flag Cookie notifications disabled.",
+    "description": "Notifications that notifications have been disabled."
+  },
+  "ConfirmStorageClearingInfoMsg": {
+    "message": "Please confirm storage clearing.",
+    "description": "Message in action log that clearing was not confirmed"
+  },
+  "ErrorClearingSettingsInfoMsg": {
+    "message": "Error clearing settings.",
+    "description": "There was a error clearing settings"
+  },
+  "SuccessClearingSettingsAndStorageInfoMsg": {
+    "message": "Flag cookies settings and storage cleared.",
+    "description": "Success clearing storage and settings"
+  },
+  "ConfirmDomainSettingsClearingInfoMsg": {
+    "message": "Please confirm domain clearing.",
+    "description": "Confirm domain settings clearing"
+  },
+  "DomainDataClearedInfoMsg": {
+    "message": "Please confirm domain clearing.",
+    "description": "Domain settings and data was cleared"
+  },
+  "ErrorDomainDataClearingInfoMsg": {
+    "message": "Error clearing domain data.",
+    "description": "There was a error clearing domain data"
+  },
+
+
+
+
+
+
+  "BrowserErrorChromeDetail": {
+    "message": "The browser had an error, with mesage: $errorMsg$",
+    "description": "Chrome or Opera encountered a error with message",
+    "placeholders": {
+      "errorMsg": { "content": "$1" }
+    }
+  },
+  "BrowserErrorNeutral": {
+    "message": "The browser encounterd an error.",
+    "description": "The browser encountered a error, without message"
+  },
+  "BrowserUpdateStorageData": {
+    "message": "The browser updated the storage data.",
+    "description": "Message when browser storage is updated"
+  },
+  "BrowserUpdateStorageDataError": {
+    "message": "Error while updating storage.",
+    "description": "Message when browser storage update encounterd an error."
+  },
+  "BrowserRetriveStorageData": {
+    "message": "The browser retrieved storage data.",
+    "description": "Message when browser storage is retrieved succesfully."
+  },
+  "BrowserRetrieveStorageDataError": {
+    "message": "Error on browser storage retrieval.",
+    "description": "Message when browser storage retrievel failed."
+  },
+  "UnknownDomain": {
+    "message": "Unknown domain",
+    "description": "Displayed domain in UI"
+  },
+  "AllowedState": {
+    "message": "Allowed",
+    "description": "Status allowed, also used as filter for Msg Count in logging and overview display"
+  },
+  "PermittedState": {
+    "message": "Permitted",
+    "description": "Status permitted, also used as filter for Msg Count in logging and overview display"
+  },
+  "DeletedState": {
+    "message": "Deleted",
+    "description": "Status deleted, also used as filter for Msg Count in logging and overview display"
+  },
+  "GlobalFlagState": {
+    "message": "Global-flag",
+    "description": "Status global-flag, also used as filter for Msg Count in logging and overview display"
+  },
+  "AutoFlagState": {
+    "message": "Auto-flag",
+    "description": "Status auto-flag, also used as filter for Msg Count in logging and overview display"
+  },
+  "AllowedGlobalProfileCookieMsg": {
+    "message": "Allowed global profile cookie on '$action$', cookie: '$cookieName$' for '$domainName$'",
+    "description": "Log Message for allowed global profile cookie, word for allowed should be equal to 'AllowedState'",
+    "placeholders": {
+      "action": { "content": "$1", "example": "reload, javascript request, document load" },
+      "cookieName": { "content": "$2" },
+      "domainName": { "content": "$3", "example": "https://domain.com"}
+    }
+  },
+  "AllowedProfileCookieMsg": {
+    "message": "Allowed profile cookie on '$action$', cookie: '$cookieName$' for '$domainName$'",
+    "description": "Log Message for allowed profile cookie, word for allowed should be equal to 'AllowedState'",
+    "placeholders": {
+      "action": { "content": "$1", "example": "reload, javascript request, document load" },
+      "cookieName": { "content": "$2" },
+      "domainName": { "content": "$3", "example": "https://domain.com"}
+    }
+  },
+  "PermittedCookieMsg": {
+    "message": "Permitted cookie on '$action$', cookie: '$cookieName$' for '$domainName$'",
+    "description": "Log Message for permitted cookies, word for permitted should be equal to 'AllowedState'",
+    "placeholders": {
+      "action": { "content": "$1", "example": "reload, javascript request, document load" },
+      "cookieName": { "content": "$2" },
+      "domainName": { "content": "$3", "example": "https://domain.com"}
+    }
+  },
+  "DeletedCookieMsg": {
+    "message": "Deleted on '$action$', cookie: '$cookieName$' for '$domainName$'",
+    "description": "Log Message for deleted cookie, word for deleted should be equal to 'DeletedState'",
+    "placeholders": {
+      "action": { "content": "$1", "example": "reload, javascript request, document load" },
+      "cookieName": { "content": "$2" },
+      "domainName": { "content": "$3", "example": "https://domain.com"}
+    }
+  },
+  "DeletedCookieMsgHttpAndHttps": {
+    "message": "Deleted on '$action$', cookie: '$cookieName$' for '$httpHttps$$domainName$'",
+    "description": "Log Message for deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
+    "placeholders": {
+      "action": { "content": "$1", "example": "reload, javascript request, document load" },
+      "cookieName": { "content": "$2" },
+      "domainName": { "content": "$3", "example": "domain.com"},
+      "httpHttps": { "content": "$4", "example": "https:// OR http:// - no need to translate"}
+    }
+  },
+  "DeletedCookieMsgAutoFlag": {
+    "message": "Auto-flag deleted on '$action$', cookie: '$cookieName$' for '$domainName$'",
+    "description": "Log Message for deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
+    "placeholders": {
+      "action": { "content": "$1", "example": "reload, javascript request, document load" },
+      "cookieName": { "content": "$2" },
+      "domainName": { "content": "$3", "example": "https://domain.com"}
+    }
+  },
+  "DeletedCookieMsgHttpAndHttpsAutoFlag": {
+    "message": "Auto-flag deleted on '$action$', cookie: '$cookieName$' for '$httpHttps$$domainName$'",
+    "description": "Log Message for auto-flag deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
+    "placeholders": {
+      "action": { "content": "$1", "example": "reload, javascript request, document load" },
+      "cookieName": { "content": "$2" },
+      "domainName": { "content": "$3", "example": "domain.com"},
+      "httpHttps": { "content": "$4", "example": "https:// OR http:// - no need to translate"}
+    }
+  },
+  "DeletedCookieMsgHttpAndHttpsGlobalFlag": {
+    "message": "Global-flag deleted on '$action$', cookie: '$cookieName$' for '$httpHttps$$domainName$'",
+    "description": "Log Message for global flag deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
+    "placeholders": {
+      "action": { "content": "$1", "example": "reload, javascript request, document load" },
+      "cookieName": { "content": "$2" },
+      "domainName": { "content": "$3", "example": "domain.com"},
+      "httpHttps": { "content": "$4", "example": "https:// OR http:// - no need to translate"}
+    }
+  },
+  "IconDisplayLog": {
+    "message": "Flag Cookies :: Action log",
+    "description": "Info message when hovering the mouse over the browser icon"
+  },
+  "NoActionOnPage": {
+    "message": "No actions taken on this website",
+    "description": "Info message when hovering the mouse over the browser icon and no actions have taken place"
+  },
+  "ActionDocumentLoad": {
+    "message": "document load",
+    "description": "Displayed log action when document is loaded"
+  },
+  "ActionTabClose": {
+    "message": "tab close",
+    "description": "Displayed log action when tab is closed"
+  },
+  "ActionJavascriptRequest": {
+    "message": "javascript request",
+    "description": "Displayed log action when a xmlhttrequest took place"
+  },
+  "NotificationCookiesRemovedTitle": {
+    "message": "Flag Cookies: Cookies removed",
+    "description": "Headline of notification on removal of cookies"
+  },
+  "NotificationCookiesRemoved": {
+    "message": "$count$ cookie(s) removed for domain '$domainName$' in context '$contextName$'.",
+    "description": "Displayed notification text for removed cookies",
+    "placeholders": {
+      "count": { "content": "$1", "example": "1.. 5 ... 10" },
+      "domainName": { "content": "$2", "example": "https://domain.com"},
+      "contextName": { "content": "$3", "example": "default - no need to translate"}
+    }
+  },
+  "NotificationProfileModeTitleEnabled": {
+    "message": "Flag Cookies: Profile mode enabled",
+    "description": "Headline of notification on removal of cookies"
+  },
+  "NotificationProfileModeEnabled": {
+    "message": "Profile mode enabled for domain '$domainName$' in '$contextName$'.",
+    "description": "Displayed notification text body for enabled profile mode",
+    "placeholders": {
+      "domainName": { "content": "$1", "example": "https://domain.com"},
+      "contextName": { "content": "$2", "example": "default - no need to translate"}
+    }
+  },
+  "NotificationProfileModeTitleDisabled": {
+    "message": "Flag Cookies: Profile mode disabled",
+    "description": "Headline of notification on removal of cookies"
+  },
+  "NotificationProfileModeDisabled": {
+    "message": "Profile mode disabled for domain '$domainName$' in '$contextName$'.",
+    "description": "Displayed notification text body for disabled profile mode",
+    "placeholders": {
+      "domainName": { "content": "$1", "example": "https://domain.com"},
+      "contextName": { "content": "$2", "example": "default or current context name - no need to translate"}
+    }
+  },
+
+
+
+
+
+
+
+  "GlobalButtonText": {
+    "message": "Global",
+    "description": "Global button label text, note this is in UI and might require some styling changes."
+  },
+  "AutoFlagButtonText": {
+    "message": "Auto flag",
+    "description": "Auto flag button label text"
+  },
+  "ProfileButtonText": {
+    "message": "Profile",
+    "description": "Profile button label text"
+  },
+  "HelpButtonText": {
+    "message": "Help",
+    "description": "Help button label text"
+  },
+  "CookiesButtonText": {
+    "message": "Cookies",
+    "description": "Cookies tab button label text"
+  },
+  "FlaggedButtonText": {
+    "message": "Flagged",
+    "description": "Flagged tab button label text"
+  },
+  "PermittedButtonText": {
+    "message": "Permitted",
+    "description": "Permitted tab button label text"
+  },
+  "ActionLogLabel": {
+    "message": "Actions log",
+    "description": "Actions label in settings text"
+  },
+  "ActionLogPlaceholderText": {
+    "message": "FlagCookies action log",
+    "description": "Action log button label text"
+  },
+  "DomainSettingsText": {
+    "message": "Domain settings",
+    "description": "Permitted button label text"
+  },
+  "ConfirmClearingText": {
+    "message": "Confirm clearing",
+    "description": "Confirm clearing text in settings view"
+  },
+  "DeleteDomainSettingsText": {
+    "message": "Delete domain settings",
+    "description": "Permitted button label text"
+  },
+  "LoggedInProfileTabText": {
+    "message": "Logged in profile",
+    "description": "Logged in profile tab button label text"
+  },
+  "NoCookiesInProfileText": {
+    "message": "No cookies set for logged in profile.",
+    "description": "Shown in settings, if no profile cookies are set"
+  },
+  "AddonSettingsLabelText": {
+    "message": "Add-on settings",
+    "description": "Shown in settings, add-on settings label"
+  },
+  "DisplayNotificationsLabelText": {
+    "message": "Display notifications",
+    "description": "Shown in settings, display notifications label"
+  },
+  "DeleteStoredSettingsText": {
+    "message": "Delete all stored settings",
+    "description": "Shown in settings, delete all stored settings button"
+  },
+
+
+
+
+
+  "LegendIntroHelp": {
+    "message": "Move the mouse over the items to receive help.",
+    "description": "Flag Legend help information"
+  },
+  "LegendIntroLabelText": {
+    "message": "Flag legend",
+    "description": "Flag legend label text"
+  },
+  "LegendUnhandledHelpText": {
+    "message": "Unhandled cookies are active but not handled through Flag Cookies.",
+    "description": "Legend 'Unhandled' help text"
+  },
+  "LegendUnhandledLabelText": {
+    "message": "Unhandled",
+    "description": "Legend 'Unhandled' label text"
+  },
+  "LegendFlaggedHelpText": {
+    "message": "Flagged cookies will be deleted on page action.",
+    "description": "Legend 'Unhandled' help text"
+  },
+  "LegendFlaggedLabelText": {
+    "message": "Flagged",
+    "description": "Legend 'Flagged' label text"
+  },
+  "LegendPermittedHelpText": {
+    "message": "Permitted cookies won't be removed by global or auto-flag.",
+    "description": "Legend 'Unhandled' help text"
+  },
+  "LegendPermittedLabelText": {
+    "message": "Permitted",
+    "description": "Legend 'Permitted' label text"
+  },
+  "LegendGlobalAutoFlagHelpText": {
+    "message": "Global and auto-flagged cookies are deleted on page action.",
+    "description": "Legend 'Auto/Global flagged' help text"
+  },
+  "LegendGlobalAutoFlagLabelText": {
+    "message": "Auto flagged",
+    "description": "Legend 'Auto/Global flagged' label text"
+  },
+  "SettingsButtonHelpText": {
+    "message": "Show FlagCookies preferences and action log",
+    "description": "Settings button help text"
+  },
+  "SettingsButtonLabelText": {
+    "message": "Preferences",
+    "description": "Preferences/Settigns button lable text"
+  },
+
+
+
+
+  "DeleteStoredSettingsText": {
+    "message": "Delete all stored settings",
+    "description": "Shown in settings, delete all stored settings button"
+  },
+
+  "GlobalButtonHelpText": {
+    "message": "Automatically delete cookies for all domains, if not permitted or while protected in 'profile' mode.",
+    "description": "Displayed help text for Global button"
+  },
+  "AutoFlagButtonHelpText": {
+    "message": "Automatically delete any cookies for this domain, if not permitted or while protected in 'profile' mode.",
+    "description": "Displayed help text for AutoFlag button"
+  },
+  "ProfileButtonHelpText": {
+    "message": "Profile mode - Selected 'key icon' cookies wont be deleted by global, auto-flag or by regular flagging modes on page load/reload/navigation.&#10;If no cookies are keyed, profile mode will allow all domain cookies.&#10;This is the 'logged in account' state. You can also manage the profile cookies list in 'preferences'.",
+    "description": "Displayed help text for AutoFlag button"
+  },
+  "HelpButtonHelpText": {
+    "message": "Show help and documentation for FlagCookies",
+    "description": "Displayed help text for Help button"
+  },
+  "ActiveCookiesViewHelpText": {
+    "message": "Show and manage all discovered domain cookies.",
+    "description": "Displayed help text for active cookies view tab"
+  },
+  "FlaggedCookiesViewHelpText": {
+    "message": "Show manual flagged cookies which are deleted for this domain.",
+    "description": "Displayed help text for flagged cookie view tab"
+  },
+  "PermittedCookiesViewHelpText": {
+    "message": "Show own permitted domain cookies which are to be kept.",
+    "description": "Displayed help text for permitted cookie view tab"
+  },
+  "SearchBarHelpText": {
+    "message": "Search and filter for cookie names and values.",
+    "description": "Displayed help text for permitted cookie view tab"
+  },
+  "ActionLogHelpText": {
+    "message": "The log shows all cookie actions taken by FlagCookies.",
+    "description": "Displayed help text for action log"
+  },
+  "ActionLogAreaHelpText": {
+    "message": "FlagCookie actions.",
+    "description": "Displayed help text for action log"
+  },
+  "DomainSettingsHelpText": {
+    "message": "Domain related settings and control.",
+    "description": "Displayed help text for domain settings"
+  },
+  "DomainConfirmClearHelpText": {
+    "message": "Please check the box to confirm domain data clearing.",
+    "description": "Displayed help text for domain confirm clearing checkbox"
+  },
+  "ProfileCookiesTabHelpText": {
+    "message": "Logged in profile mode cookies, 'keyed' coookies.",
+    "description": "Displayed help text for profile mode cookies"
+  },
+  "GneralAndGlobalSettingsHelpText": {
+    "message": "Flag Cookies general and global settings.",
+    "description": "Displayed help text for action log"
+  },
+  "SettingsNotificationsHelpText": {
+    "message": "Enable or disable browser notifications.",
+    "description": "Displayed help text for action log"
+  },
+  "SettingsConfirmClearCheckboxHelpText": {
+    "message": "Please check the box to confirm storage clearing.",
+    "description": "Displayed help text for action log"
+  }
+}

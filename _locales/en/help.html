@@ -1,0 +1,193 @@
+<h3>FlagCookies help and documentation</h3>
+<hr>
+<h4><strong>NOTE:</strong> This help is work in progress.</h4>
+<hr>
+<div class="helpNavigation">
+  <h4><a name="helpIndexAnchor">Help quick navigation and contents</a></h4>
+  <p>
+    If you reach any headline inside the documentation, you can click on it, to jump back here.
+  </p>
+</div>
+<hr>
+<h4><a name="generalInformation" href="#helpIndexAnchor">General information</a></h4>
+<p>
+  FlagCookies does distinguish between http(s)://domain.com [domain] and http(s)://subdomain.domain.com [subdomain]. This means, every setting you apply to [domain] is <strong><em>not</em></strong> automatically applied to [subdomain] or in the opposite direction.<br/><br/>
+  In particular this affects <span class="help-highlight">'PROFILE'</span> mode, <span class="help-highlight">'profile mode cookies'</span> and the <span class="help-highlight">'AUTO FLAG'</span> mode. <span class="help-highlight">'GLOBAL'</span> mode instead is applied to all and every domain when active/turned on.<br/><br/>
+  Cookies are in general handled by FlagCookies on a website request, so if you load the webpage or while browsing it - it's applying your current cookie settings for the particular domain.<br/><br/>
+  <strong>At every time, you see at the top of the main window:</strong><br/>
+  1) The [domain] and or [subdomain] name FlagCookies detected and is active for.<br/>
+  2) The active <span class="help-highlight">'container group'</span> or <span class="help-highlight">'context name'</span> FlagCookies operates on and in which context it's settings apply to and are stored in.<br/><br/>
+
+  The <span class="help-highlight">'container group'</span>, if supported by your browser, tells FlagCookies in which context settings should be stored and how domains and domain cookies should be treated.<br/>
+  For example, if there is a <span class="help-highlight">'container group'</span> called 'shopping' and one called 'banking'. FlagCookies supports different settings for [domain] or [subdomain] in 'shopping' versus the exact same website(s) in 'banking'.<br/><br/>
+
+  <strong>NOTE:</strong> Not all browsers support this at the moment of writing. In case you are not using any 'container' related extension or add-on, this will not affect the way Flag Cookies is working and you can use it as is.
+</p>
+
+<h4><a name="howitworks" href="#helpIndexAnchor">How it works</a></h4>
+<p>
+  When you surf the web, FlagCookies tries to detect every cookie [domain] or [subdomain] is storing in your browser. In addition to this, any third-party cookies, for example from a possible tracking webpage or another domain the webpage loads information from, is detected and displayed in the <span class="help-highlight">'COOKIES'</span> view.<br/><br/>
+
+  The <span class="help-highlight">'COOKIES'</span> view, which is active by default when you open FlagCookies, is the main place where you can control what to do with the cookies, more on this later.<br/>
+  You also can reach the cookies view at above center of the FlagCookies window, at every time, clicking on the labeled button <span class="help-highlight">'COOKIES'</span>, the one with the cookie in front of it!
+</p>
+
+<hr>
+<h3><a name="mainviews" href="#helpIndexAnchor">What you see in the <span class="help-highlight">'main views'</span>: COOKIES, FLAGGED, PERMITTED</a></h3>
+<p>
+  <strong>What will you see in general?</strong><br/>
+  If the website you are viewing uses no cookies or no cookies are detected, you see a message:<br/>
+  <span class="help-highlight">'No active cookies for domain, you might need to reload the tab'</span> - which means the website does not use any cookies or you need to reload the tab one time in order for FlagCookies to detect the website cookies, if any are present.<br/><br/>
+
+  Second option, you will see a list of the cookies.<br/>
+  Those are displayed by <span class="help-highlight">'name'</span> and secondly by <span class="help-highlight">'value'</span> so you know what information might be stored on your computer by the website using cookies.<br/>
+  Every <span class="help-highlight">'main view'</span> will display this two basic cookie information, so you always see: the name and the value of the cookie.<br/><br/>
+
+  Please note, <span class="help-highlight">'COOKIES'</span> as main view has a lot more controls, <span class="help-highlight">'FLAGGED'</span> and <span class="help-highlight">'PERMITTED'</span> in the center, always at hand - are empty by default as this are explicitly flagged or permitted cookies by yourself.<br/>
+  Don't be confused what all this means, it will be clear once the <span class="help-highlight">'COOKIES'</span> view is explained in more detail.<br/><br/>
+</p>
+
+<hr>
+<h3><a name="basicusage" href="#helpIndexAnchor">Basic usage</a></h3>
+<h4>The <span class="help-highlight">'COOKIES'</span> button and view</h4>
+<p>
+  If cookies are detected (this might need a webpage reload in some cases) FlagCookies will list all detected domain cookies the main cookie view.<br/>
+  That is the default view which opens, when you open FlagCookies using the toolbar icon. But you can reach it any time, at the very top of the window by clicking on the <span class="help-highlight">'COOKIES'</span> button, like the <span class="help-highlight">'HELP'</span> and <span class="help-highlight">'FLAGGED'</span> and <span class="help-highlight">'PERMITTED'</span> views.<br/><br/>
+
+  <strong>What you see in the main view, from left to right:</strong><br/>
+  You see the <span class="help-highlight">'cookie flag switch'</span> for the cookie.<br/>
+  Secondly, you see the cookie name and below the value of the cookie, how it's stored in your browser.<br/>
+  On the very right, you see a <span class="help-highlight">'key icon'.</span><br/><br/>
+
+  <strong>What does this mean?</strong><br/>
+  The <span class="help-highlight">'cookie flag switch':</span><br/>
+  The cookie flag switch controls how cookies are handled inside FlagCookies. By default te cookie flag switch is set to <span class="help-highlight">'Unhandled'</span>. This means, there is no action taken by FlagCookies on this cookie at this moment. There is also a information provided, if you hover the mouse over the switch, which gives you more information about it's current state inside FlagCookies.<br/><br/>
+
+  If you click on it once, it will turn to <span class="help-highlight">'Flagged'</span>.<br/>
+  <span class="help-highlight">'Flagged'</span> basically tells FlagCookies: If you encounter this cookie at this domain.com or sub.domain.com website, remove/delete it, if present.<br/>
+  You can hover your mouse over the switch to receive more help and information.<br/><br/>
+
+  If you click it once more, it will turn to <span class="help-highlight">'Permitted'</span>.<br/>
+  <span class="help-highlight">'Permitted'</span> simply tells FlagCookies, allow this cookie for this domain. This cookie will not be removed by <span class="help-highlight">'GLOBAL'</span> or <span class="help-highlight">'AUTO FLAG'</span> modes. More about the <span class="help-highlight">'operating modes'</span> afterwards.<br/><br/>
+
+  Following up, the <span class="help-highlight">'key icon'</span>:<br/>
+  The <span class="help-highlight">'key icon'</span> enables you to configure <span class="help-highlight">'profile mode cookies'</span>.<br/>
+  If you click on it, the button color changes and displays that the cookie is set as profile cookie. This tells FlagCookies to 'protect' this cookie from being deleted by <span class="help-highlight">'GLOBAL'</span> or <span class="help-highlight">'AUTO FLAG'</span> mode.<br/><br/>
+
+  This is basically the key if you want to have random cookies removed, but keeping the cookies which are required to use a website or while having an account in a service.<br/><br/>
+  But it's to remember when setting 'profile mode cookies' - <span class="help-highlight">'PROFILE'</span>, at the very top of the the window, has to be enabled in order to apply this 'protection' to the cookies.<br/><br/>
+
+  You might wonder why <span class="help-highlight">'PROFILE'</span> has to be enabled, simply put:<br/>
+  You can directly control if you want to allow a <span class="help-highlight">'profile mode cookie'</span> by enabling <span class="help-highlight">'PROFILE'</span> mode. If you are not logged into an account or service anymore, you can deactivate 'PROFILE' so cookies can be removed by <span class="help-highlight">'GLOBAL'</span> or <span class="help-highlight">'AUTO FLAG'</span> mode.<br/><br/>
+
+  If you change your mind and you want to remove the <span class="help-highlight">'profile mode cookie'</span>, you can do so using the <span class="help-highlight">'COOKIES'</span> view, if the cookie is currently active <strong>or</strong> by visiting the <span class="help-highlight">'PREFERENCES'</span> and click the <span class="help-highlight">'dumpster' icon</span> for the particular cookie in the area <span class="help-highlight">'LOGGED IN PROFILE'</span> at any time.<br/><br/>
+
+  With <span class="help-highlight">'flag switch'</span> and the <span class="help-highlight">'key icon'</span> for <span class="help-highlight">'profile mode cookies'</span>, you can control the basics, of what FlagCookies is capable of doing.<br/><br/>
+
+  <strong>Please note:</strong><br/>
+  You can get more information about the present cookie flag, if you hover over the <span class="help-highlight">'cookie flag'</span> switch/button and even more information if you hover the mouse over the <span class="help-highlight">'Flag legend'</span> and the corresponding icon/name <span class="help-highlight">'Unhandled'</span>, <span class="help-highlight">'Flagged'</span> and <span class="help-highlight">'Permitted'</span>, <span class="help-highlight">'Auto flagged'</span> at the very bottom of FlagCookies main window at any time.<br/>
+  For the sake of completeness <span class="help-highlight">'Auto flagged'</span> state is used by <span class="help-highlight">'GLOBAL'</span> and <span class="help-highlight">'AUTO FLAG'</span> mode.<br/><br/>
+
+  <strong>And most important:</strong><br/><br/>
+  Those 'basic' settings won't break anything badly. But you might refer to the <span class="help-highlight">'Troubleshooting'</span> section later on.<br/>
+  [Note: The troubleshooting section is work in progress.]<br/><br/>
+
+  If a cookie is deleted by FlagCookies if its state is set to <span class="help-highlight">'Flagged'</span> the website will try to set the cookie again and storing it again in your browser, this is most likely the case.<br/><br/>
+
+  If you think you made a mistake by <span class="help-highlight">'flagging'</span> a cookie, but it's not shown in the <span class="help-highlight">'COOKIES'</span> view to change it settings, you always can go to <span class="help-highlight">'PREFERENCES'</span> and <span class="help-highlight">'DELETE DOMAIN SETTINGS'</span>, which will remove all cookie settings for this domain you are currently viewing.<br/><br/>
+
+  In any  case, if you think you cannot undo a custom setting, you can go to <span class="help-highlight">'PREFERENCES'</span> and <span class="help-highlight">'DELETE ALL STORED SETTINGS'</span> of FlagCookies. Please note, this removes all cookie settings and stored data.
+</p>
+
+<hr>
+<h3><a name="otherviews" href="#helpIndexAnchor">Other views</a></h3>
+<h4>The <span class="help-highlight">'FLAGGED'</span> and <span class="help-highlight">'PERMITTED'</span> buttons and views</h4>
+<p>
+  Those views are almost identical to each other.<br/>
+  Both views are by default empty, but if you <span class="help-highlight">'Flagged'</span> a cookie, it's displayed in the <span class="help-highlight">'FLAGGED'</span> view and if you <span class="help-highlight">'Permitted'</span> a cookie, it's shown in the <span class="help-highlight">'PERMITTED'</span> view.<br/><br/>
+  They show a button and the cookie name and value.<br/><br/>
+
+  If you click the button, the cookie state becomes removed and resets, meaning: If it's state is <span class="help-highlight">'Flagged'</span>, it turns to <span class="help-highlight">'Unhandled'</span> or in case <span class="help-highlight">'GLOBAL'</span> or <span class="help-highlight">'ATUO FLAG'</span> is enabled, the cookies state is set to <span class="help-highlight">'Auto flagged'</span>, the same goes for the <span class="help-highlight">'PERMITTED'</span> view and <span class="help-highlight">'permitted'</span> cookies which turn either to <span class="help-highlight">'Unhandled'</span> or <span class="help-highlight">'Auto flagged'</span>.<br/>
+  It's a shorthand, if a website does set a lot of cookies and many custom settings are applied to.
+</p>
+
+<hr>
+<h3><a name="operatingmodes" href="#helpIndexAnchor">Operating modes</a></h3>
+<h4><span class="help-highlight">'GLOBAL'</span> mode</h4>
+<p>
+  <span class="help-highlight">'GLOBAL'</span> mode works on all domains and is, most likely, the most often used <span class="help-highlight">'protection'</span> mode against tracking by cookies in general as it flags every cookie by default, for every domain encountered.<br/>
+  For example, when surfing the web and you dont know if a website might use tracking cookies or any other third party website being loaded, having <span class="help-highlight">'Global'</span> activated will automatically remove every cookie FlagCookies detects, if the cookie is not explicity <span class="help-highlight">'Permitted'</span>, set as <span class="help-highlight">'profile  mode cookie'</span> or the domain has activated <span class="help-highlight">'PROFILE'</span> mode without any profile mode cookies.<br/><br/>
+
+  You can activate or deactivate it at any time, using the button <span class="help-highlight">'GLOBAL'</span> button at the very top of the main window.
+</p>
+
+<hr>
+<h4><a name="autoflag" href="#helpIndexAnchor"><span class="help-highlight">'AUTO FLAG'</span></a> mode</h4>
+<p>
+  <span class="help-highlight">'AUTO FLAG'</span> mode is very similar to <span class="help-highlight">'GLOBAL'</span> mode. The main difference is, its only working on the particular domain.<br/><br/>
+  Basically it will remove all discovered cookies for http(s)://domain.com <strong><em>or</em></strong> http(s)://subdomain.domain.com - <strong>only</strong>, not other domains like <span class="help-highlight">'GLOBAL'</span> mode does.<br/><br/>
+  <strong>Please note:</strong> Third party cookies, which are cross-loaded from this website or domain are removed by this mode.
+</p>
+
+<hr>
+<h4><a name="profilemode" href="#helpIndexAnchor"><span class="help-highlight">'PROFILE'</span></a> mode</h4>
+<p>
+  <span class="help-highlight">'PROFILE'</span> mode itself has two key functionalities:<br/>
+  Firstly, if you enable <span class="help-highlight">'profile mode cookies'</span>, <span class="help-highlight">'PROFILE' mode</span> will protect those cookies from removal by <span class="help-highlight">'Flagged'</span> state, <span class="help-highlight">'GLOBAL'</span> and <span class="help-highlight">'AUTO FLAG'</span> modes - if set as <span class="help-highlight">'key cookies'</span>.<br/><br/>
+
+  Secondly, if no <span class="help-highlight">'profile mode cookies'</span> are set for that domain, all own domain cookies will be protected from removal by the other 'operating modes'. This allows you to quickly <span class="help-highlight">'protect' domain cookies</span>, without then need to set any <span class="help-highlight">'PROFILE'</span> mode cookies. If this mode is used, some or all cookies can still be <span class="help-highlight">'flagged'</span> on demand.<br/><br/>
+
+  'Profile mode' will allow you to be logged in into a service or website if configured accordingly, but also allowing <span class="help-highlight">'GLOBAL'</span> or <span class="help-highlight">'AUTO FLAG'</span> to remove cookies, which are undesired or simply not required to use the website.<br/><br/>
+  <span class="help-highlight">'PROFILE'</span> mode can be enabled at the very top of the main window, by clicking on <span class="help-highlight">'PROFILE'</span>.<br/><br/>
+
+  In case you want to know more about, how to set <span class="help-highlight">'profile mode cookies'</span> please refer to <span class="help-highlight">'Basic usage'</span> mentioned earlier in this help to find out more.
+</p>
+
+<hr>
+<h3><a name="preferences" href="#helpIndexAnchor">FlagCookies <span class="help-highlight">'PREFERENCES'</span></a></h3>
+<p>
+  The <span class="help-highlight">'PREFERENCES' view</span> is reachable at the very right bottom of FlagCookies.<br/><br/>
+
+  It contains three main areas:<br/>
+  1) The <span class="help-highlight">'Actions log'</span> - where events and actions of FlagCookies are shown<br/>
+
+  2) The <span class="help-highlight">'Domain settings'</span> - where you can clear the current domain settings or manage <span class="help-highlight">'profile cookies'</span> for the current domain<br/>
+
+  3) The <span class="help-highlight">'Add-on settings'</span> - where you can enable or disable browser notifications or clear all add-on settings<br/><br/>
+
+  A description this areas follows along, but you can also receive more information if you hover over title of the area on the left.
+</p>
+
+<hr>
+<h4><a name="actionslog" href="#helpIndexAnchor"><span class="help-highlight">'Actions log'</span></a></h4>
+<p>
+  The <span class="help-highlight">'Actions log'</span> provides you with a list of events on what FlagCookies was doing, for example if cookies were removed and on which action.<br/>
+  This could be '[TIME] Global flag deleted cookie 'name of cookie' on 'load' for domain 'http(s)://domain.net'<br/><br/>
+
+  There are also other events for cookies, like: <span class="help-highlight">'Permitted'</span> or deleted by <span class="help-highlight">'auto flag'</span> mode.<br/><br/>
+
+  <strong>NOTE:</strong> LogData is cleared upon visiting another url on the same domain <strong>OR</strong> if 15 seconds are passed (when reloading the exact same page) - this might be sometimes confusing in reason that older events are shown but is required in order to display events which occured before the page was loaded accordingly.
+
+  In case you <span class="help-highlight">'DELETE DOMAIN SETTINGS'</span> or <span class="help-highlight">'DELETE ALL STORED SETTINGS'</span>, you will also see a message inside the <span class="help-highlight">'Actions log'</span>.
+</p>
+
+<hr>
+<h4><a name="domainsettings" href="#helpIndexAnchor"><span class="help-highlight">'Domain settings'</span></a></h4>
+<p>
+  The <span class="help-highlight">'Domain settings'</span> enables you to clear the current active domain cookie settings you are currently viewing and manage the <span class="help-highlight">'LOGGED IN PROFILE' cookies</span>.<br/><br/>
+
+  In order to clear the domain settings, you need to click on the button <span class="help-highlight">'Confirm clearing'</span> and then hit <span class="help-highlight">'DELETE DOMAIN SETTINGS'</span>.<br/><br/>
+
+  <span class="help-highlight">'LOGGED IN PROFILE'</span> is the place, where you can remove <span class="help-highlight">'profile cookies'</span>, meaning cookies you are about to use if <span class="help-highlight">'PROFILE' mode</span> is enabled, at any time - even so they are currently not visible in the 'COOKIES' view.<br/>
+  The cookies are listed with the name and a <span class="help-highlight">'dumpster icon'</span>. If you want to remove the <span class="help-highlight">'profile cookie'</span>, simply click on the 'dumpster icon' and it will be removed and its stated reverts to either <span class="help-highlight">'Unhandled'</span> or <span class="help-highlight">'Auto flagged'</span> in case <span class="help-highlight">'GLOBAL' mode</span> or <span class="help-highlight">'AUTO FLAG' mode</span> is enabled.
+</p>
+
+<hr>
+<h4><a name="addonsettings" href="#helpIndexAnchor"><span class="help-highlight">'Add-on settings'</span></a></h4>
+<p>
+  The <span class="help-highlight">'Add-on settings'</span> allows to enable or disable browser <span class="help-highlight">'notifications'</span> of Flag Cookies and to remove all FlagCookies settings and domain settings from the browsers storage.<br/><br/>
+
+  <span class="help-highlight">'Display notifications'</span> if enabled, will show <span class="help-highlight">'browser notifcations'</span> when FlagCookies removes cookies while browsing. If it's state is 'checked', notifications will be shown when cookies are being removed with amount, domain name and context name.<br/><br/>
+
+  In order to clear the FlagCookies settings, you need to click on the button <span class="help-highlight">'Confirm clearing'</span> and then hit <span class="help-highlight">'DELETE ALL STORED SETTINGS'</span>.<br/><br/>
+</p>
