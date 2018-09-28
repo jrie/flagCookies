@@ -134,11 +134,11 @@
     "description": "Notifications title for enabling/diabling"
   },
   "NotificationsEnabledNotifications": {
-    "message": "Flag Cookie notifications enabled.",
+    "message": "Flag Cookies notifications enabled.",
     "description": "Notifications that notifications have been enabled."
   },
   "NotificationsDisabledNotifications": {
-    "message": "Flag Cookie notifications disabled.",
+    "message": "Flag Cookies notifications disabled.",
     "description": "Notifications that notifications have been disabled."
   },
   "ConfirmStorageClearingInfoMsg": {
@@ -394,7 +394,7 @@
     "description": "Actions label in settings text"
   },
   "ActionLogPlaceholderText": {
-    "message": "FlagCookies action log",
+    "message": "Flag Cookies action log",
     "description": "Action log button label text"
   },
   "DomainSettingsText": {
@@ -475,7 +475,7 @@
     "description": "Legend 'Auto/Global flagged' label text"
   },
   "SettingsButtonHelpText": {
-    "message": "Show FlagCookies preferences and action log",
+    "message": "Show Flag Cookies preferences and action log",
     "description": "Settings button help text"
   },
   "SettingsButtonLabelText": {
@@ -523,7 +523,7 @@
     "description": "Displayed help text for action log"
   },
   "ActionLogAreaHelpText": {
-    "message": "FlagCookie actions.",
+    "message": "Flag Cookies actions.",
     "description": "Displayed help text for action log"
   },
   "DomainSettingsHelpText": {
