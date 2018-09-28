@@ -1001,7 +1001,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
   if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
     let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::'
-    let statuses = [getMsg('GlobalFlagState') + ' ', getMsg('AutoFlagState') + ' ', getMsg('DeletedState') + ' ', getMsg('PermittedState') + ' ', getMsg('AllowedState') + ' ']
+    let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('DeletedState'), getMsg('PermittedState'), getMsg('AllowedState')]
     let hasTitleChange = false
 
     for (let status of statuses) {
@@ -1009,8 +1009,8 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       let index = 0
 
       for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-        if (msg.indexOf(status) !== -1) {
-          let cookieName = msg.match(/ cookie: '(.*)' for/)[1]
+        if (msg.toLowerCase().indexOf(status.toLowerCase()) !== -1) {
+          let cookieName = msg.match(/ '(.*)'/g)[2]
           if (titleJoin.indexOf(cookieName) === -1) {
             titleJoin.push(cookieName)
 
@@ -1030,7 +1030,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
     let count = 0
     for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-      if (msg.toLowerCase().indexOf('deleted') !== -1) ++count
+      if (msg.toLowerCase().indexOf(getMsg('DeletedState').toLowerCase()) !== -1) ++count
     }
 
     if (useChrome) {
@@ -1076,7 +1076,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
 
     if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
       let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::'
-      let statuses = [getMsg('GlobalFlagState') + ' ', getMsg('AutoFlagState') + ' ', getMsg('DeletedState') + ' ', getMsg('PermittedState') + ' ', getMsg('AllowedState') + ' ']
+      let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('DeletedState'), getMsg('PermittedState'), getMsg('AllowedState')]
       let hasTitleChange = false
 
       for (let status of statuses) {
@@ -1084,8 +1084,8 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
         let index = 0
 
         for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-          if (msg.indexOf(status) !== -1) {
-            let cookieName = msg.match(/ cookie: '(.*)' for/)[1]
+          if (msg.toLowerCase().indexOf(status.toLowerCase()) !== -1) {
+            let cookieName = msg.match(/ '(.*)'/g)[2]
             if (titleJoin.indexOf(cookieName) === -1) {
               titleJoin.push(cookieName)
 
@@ -1113,7 +1113,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
 
       let count = 0
       for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-        if (msg.toLowerCase().indexOf('deleted') !== -1) ++count
+        if (msg.toLowerCase().indexOf(getMsg('DeletedState').toLowerCase()) !== -1) ++count
       }
 
       if (useChrome) {

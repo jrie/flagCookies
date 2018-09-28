@@ -968,7 +968,7 @@ function switchView (evt) {
   if (list.children.length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
 
-    let contentText = 'No active cookies for domain, you might to reload the tab.'
+    let contentText = getMsg('NoActiveDomainCookiesText')
     if (evt.target.dataset.target === 'cookie-list-flagged') {
       contentText = getMsg('NoFlaggedCookiesForDomain')
     } else if (evt.target.dataset.target === 'cookie-list-permitted') {
@@ -985,7 +985,6 @@ function switchView (evt) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------
-
 // Switch auto flagging
 // Chrome + Firefox
 async function flagAutoSwitch (evt) {
