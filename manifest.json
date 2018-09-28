@@ -8,6 +8,7 @@
     "name": "JanRie",
     "url": "https://github.com/jrie"
   },
+  "default_locale": "en",
   "browser_action": {
     "browser_style": true,
     "default_title": "FlagCookies",
@@ -26,10 +27,10 @@
       "suggested_key": {
         "default": "Alt+Shift+A"
       },
-      "description": "Activate/deactivate profile-mode"
+      "description": "__MSG_ProfileShortcut__"
     }
   },
-  "description": "A cookie manager on steroids.",
+  "description": "__MSG_AddonDescription__",
   "icons": {
     "19": "icons/cookie_19.png",
     "38": "icons/cookie_38.png",
@@ -41,7 +42,7 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "3.0.26",
+  "version": "3.0.27",
   "permissions": ["cookies", "tabs", "webRequest", "<all_urls>", "webRequestBlocking", "storage", "unlimitedStorage", "notifications", "contextualIdentities"],
   "background": {
     "scripts": [
