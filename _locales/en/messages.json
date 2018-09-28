@@ -215,7 +215,7 @@
     "description": "Status deleted for overview display"
   },
   "DeletedStateMsg": {
-    "message": "Deleted",
+    "message": "Deleted on",
     "description": "Status deleted, used as filter for Msg Count in logging"
   },
   "GlobalFlagState": {

@@ -1001,20 +1001,21 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
   if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
     let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::'
-    let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('DeletedState'), getMsg('PermittedState'), getMsg('AllowedState')]
+    let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('PermittedState'), getMsg('AllowedState'), getMsg('DeletedStateMsg')]
     let hasTitleChange = false
 
+    let cookiesInMessages = []
     for (let status of statuses) {
       let titleJoin = []
       let index = 0
-
       let statusLower = status.toLowerCase()
 
       for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-        if (msg.match().indexOf(statusLower) !== -1) {
+        if (msg.toLowerCase().indexOf(statusLower) !== -1) {
           let cookieName = msg.match(/ '([^']*)' /)[1]
-          if (titleJoin.indexOf(cookieName) === -1) {
+          if (cookiesInMessages.indexOf(cookieName) === -1) {
             titleJoin.push(cookieName)
+            cookiesInMessages.push(cookieName)
 
             if (index !== 0 && index % 7 === 0) titleJoin.push('\n')
             ++index
@@ -1023,6 +1024,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       }
 
       if (titleJoin.length !== 0) {
+        if (status === getMsg('DeletedStateMsg')) status = getMsg('DeletedState')
         titleString += '\n' + status.replace(' ', '') + ': ' + titleJoin.join(', ')
         hasTitleChange = true
       }
@@ -1032,7 +1034,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
     let count = 0
     for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-      if (msg.toLowerCase().indexOf(getMsg('DeletedState').toLowerCase()) !== -1) ++count
+      if (msg.toLowerCase().indexOf(getMsg('DeletedStateMsg').toLowerCase()) !== -1) ++count
     }
 
     if (useChrome) {
@@ -1078,20 +1080,21 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
 
     if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
       let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::'
-      let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('DeletedStateMsg'), getMsg('PermittedState'), getMsg('AllowedState')]
+      let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('PermittedState'), getMsg('AllowedState'), getMsg('DeletedStateMsg')]
       let hasTitleChange = false
 
+      let cookiesInMessages = []
       for (let status of statuses) {
         let titleJoin = []
         let index = 0
-
         let statusLower = status.toLowerCase()
 
         for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
           if (msg.toLowerCase().indexOf(statusLower) !== -1) {
             let cookieName = msg.match(/ '([^']*)' /)[1]
-            if (titleJoin.indexOf(cookieName) === -1) {
+            if (cookiesInMessages.indexOf(cookieName) === -1) {
               titleJoin.push(cookieName)
+              cookiesInMessages.push(cookieName)
 
               if (index !== 0 && index % 7 === 0) titleJoin.push('\n')
               ++index
@@ -1100,6 +1103,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
         }
 
         if (titleJoin.length !== 0) {
+          if (status === getMsg('DeletedStateMsg')) status = getMsg('DeletedState')
           titleString += '\n' + status.replace(' ', '') + ': ' + titleJoin.join(', ')
           hasTitleChange = true
         }
@@ -1117,7 +1121,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
 
       let count = 0
       for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-        if (msg.toLowerCase().indexOf(getMsg('DeletedState').toLowerCase()) !== -1) ++count
+        if (msg.toLowerCase().indexOf(getMsg('DeletedStateMsg').toLowerCase()) !== -1) ++count
       }
 
       if (useChrome) {
