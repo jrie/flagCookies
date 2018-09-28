@@ -10,20 +10,34 @@ let countList = {
   '#permittedCookies': 0,
   '#flaggedCookies': 0
 }
-// --------------------------------------------------------------------------------------------------------------------------------
+
+// Localization
+let getMsg = useChrome ? getChromeMessage : getFirefoxMessage
+
+function getChromeMessage (messageName, params) {
+  if (params !== undefined) return chrome.i18n.getMessage(messageName, params)
+  return chrome.i18n.getMessage(messageName)
+}
+
+function getFirefoxMessage (messageName, params) {
+  if (params !== undefined) return browser.i18n.getMessage(messageName, params)
+  return browser.i18n.getMessage(messageName)
+}
+
 // Chrome helpers
 function checkChromeHadNoErrors () {
-  if (chrome.runtime.lastError) {
+  if (chrome.runtime.lastError !== undefined) {
     if (hasConsole) {
       if (chrome.runtime.lastError.message !== undefined) {
         console.log(chrome.runtime.lastError)
-        console.log('Browser had an error, with mesage: ' + chrome.runtime.lastError.message)
+        console.log(getMsg('BrowserErrorChromeDetail', chrome.runtime.lastError.message))
       } else {
-        console.log('Browser had an error.')
+        console.log(getMsg('BrowserErrorNeutral'))
       }
     }
 
     void chrome.runtime.lastError
+
     return false
   }
 
@@ -33,11 +47,11 @@ function checkChromeHadNoErrors () {
 function getChromeStorageForFunc (func) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log('Browser retrieved storage data.')
+      if (hasConsole) console.log(getMsg('BrowserRetriveStorageData'))
 
       func(data)
     } else if (hasConsole) {
-      console.log('Browser storage retrieval error.')
+      console.log(getMsg('BrowserRetrieveStorageDataError'))
     }
   })
 }
@@ -45,11 +59,11 @@ function getChromeStorageForFunc (func) {
 function getChromeStorageForFunc1 (func, par1) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log('Browser retrieved storage data.')
+      if (hasConsole) console.log(getMsg('BrowserRetriveStorageData'))
 
       func(data, par1)
     } else if (hasConsole) {
-      console.log('Browser storage retrieval error.')
+      console.log(getMsg('BrowserRetrieveStorageDataError'))
     }
   })
 }
@@ -57,11 +71,11 @@ function getChromeStorageForFunc1 (func, par1) {
 function getChromeStorageForFunc2 (func, par1, par2) {
   chrome.storage.local.get(null, function (data) {
     if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log('Browser retrieved storage data.')
+      if (hasConsole) console.log(getMsg('BrowserRetriveStorageData'))
 
       func(data, par1, par2)
     } else if (hasConsole) {
-      console.log('Browser storage retrieval error.')
+      console.log(getMsg('BrowserRetrieveStorageDataError'))
     }
   })
 }
@@ -70,10 +84,10 @@ function setChromeStorage (data) {
   chrome.storage.local.set(data, function () {
     if (checkChromeHadNoErrors()) {
       if (hasConsole) {
-        console.log('Browser updated the storage data.')
+        console.log(getMsg('BrowserUpdateStorageData'))
       }
     } else if (hasConsole) {
-      console.log('Browser updating storage error.')
+      console.log(getMsg('BrowserUpdateStorageDataError'))
     }
   })
 }
@@ -152,7 +166,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   if (!useChrome) browser.contextualIdentities.get(tab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
   else contextName = 'default'
 
-  let intro = document.createTextNode('Cookies for domain:')
+  let intro = document.createTextNode(getMsg('CookiesForDomainText'))
   introSpan.appendChild(intro)
   let introUrl = document.createElement('span')
   introUrl.className = 'domainurl'
@@ -164,7 +178,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   let introSpanStore = document.createElement('span')
   introSpanStore.className = 'intro'
 
-  let introStore = document.createTextNode('Active container group: ' + activeCookieStoreName)
+  let introStore = document.createTextNode(getMsg('ActiveContainerGroupText') + ' ' + activeCookieStoreName)
   introSpanStore.appendChild(introStore)
   activeTabUrl.appendChild(introSpanStore)
 
@@ -178,7 +192,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
   if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
-    let contentText = 'No active cookies for domain, you might need to reload the tab.'
+    let contentText = getMsg('NoActiveDomainCookiesText')
     infoDisplay.children[0].textContent = contentText
     infoDisplay.removeAttribute('class')
   } else {
@@ -209,7 +223,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           cookieSubSpan.className = 'subloaded'
 
           if (cookieJoin === null) {
-            let cookieSubSpanText = document.createTextNode('[CROSS ORIGIN]')
+            let cookieSubSpanText = document.createTextNode(getMsg('CrossOriginInformationText'))
             cookieSubSpan.appendChild(cookieSubSpanText)
           }
 
@@ -236,7 +250,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
           let checkMark = document.createElement('button')
           checkMark.className = 'checkmark'
-          checkMark.title = 'This cookie is allowed and unhandled. Click to change.'
+          checkMark.title = getMsg('CookieFlagButtonAllowedHelpText')
 
           checkMark.addEventListener('click', cookieFlagSwitch)
           checkMark.dataset['name'] = cookie.name
@@ -245,7 +259,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
           let lockSwitch = document.createElement('button')
           lockSwitch.className = 'setKeyCookie'
-          lockSwitch.title = 'Set this cookie as profile-mode cookie.'
+          lockSwitch.title = getMsg('SetCookieProfileButtonHelpText')
           lockSwitch.dataset['name'] = cookie.name
           lockSwitch.dataset['domain'] = cookie.domain
           lockSwitch.addEventListener('click', cookieLockSwitch)
@@ -255,13 +269,13 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
             if (data[contextName][domainURL][cookie.domain] !== undefined && data[contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
               if (data[contextName][domainURL][cookie.domain][cookie.name] === true) {
                 checkMark.className = 'checkmark flagged'
-                checkMark.title = 'This cookie is flagged and will be removed during page load.'
+                checkMark.title = getMsg('CookieIsFlaggedHelpText')
                 addCookieToList('cookie-list-flagged', cookie.name, cookie.value, cookie.domain, false)
                 ++countList['#flaggedCookies']
                 isHandledCookie = true
               } else if (data[contextName][domainURL][cookie.domain][cookie.name] === false) {
                 checkMark.className = 'checkmark permit'
-                checkMark.title = 'This cookie is permitted and will be kept, even when global or auto flag mode is active.'
+                checkMark.title = getMsg('CookieIsPermittedHelpText')
                 addCookieToList('cookie-list-permitted', cookie.name, cookie.value, cookie.domain, false)
                 ++countList['#permittedCookies']
                 isHandledCookie = true
@@ -271,7 +285,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
           if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][domainURL] !== undefined && data['flagCookies_logged'][contextName][domainURL][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
             lockSwitch.className += ' locked'
-            lockSwitch.title = 'This cookie is set locked as profile-mode cookie for this domain.'
+            lockSwitch.title = getMsg('CookieIsLockedProfileCookieHelpText')
             loggedInCookieList.removeAttribute('class')
           }
 
@@ -301,19 +315,19 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
               let pCookieDomainMessageElm = document.createElement('span')
               let pCookieDomainMessage = ''
               if (cookie['fgPermitted'] !== undefined) {
-                pCookieDomainMessage = '(Allowed cookie of: ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie['fgDomain']])
               } else if (cookie['fgLogged'] !== undefined) {
-                pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie['fgDomain']])
               } else if (cookie['fgProtected'] !== undefined) {
-                pCookieDomainMessage = '(Protected profile cookie of: ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainProtected', [cookie['fgDomain']])
               } else if (cookie['fgProfile'] !== undefined) {
-                pCookieDomainMessage = '(Global protected profile cookie of: ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainGlobalProtected', [cookie['fgDomain']])
               }
 
               if (!isHandledCookie && cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
-                if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
+                if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie['fgDomain']])
               } else if (cookie['fgDomain'] !== undefined && pCookieDomainMessage === '') {
-                pCookieDomainMessage = ' (Rule present on ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie['fgDomain']])
               }
 
               if (pCookieDomainMessage !== '') {
@@ -325,7 +339,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
             p.appendChild(pCookieValueElm)
             if (cookie['fgHandled'] && !cookie['fgRemoved'] && !cookie['fgAllowed']) {
-              li.title = 'This cookie is secure for the domain and cannot be handled due to host permission restrictions.'
+              li.title = getMsg('CookieHelpTextSecureMightNotHandled')
               li.className += ' unremoved-secure-cookie'
             }
           } else {
@@ -333,19 +347,19 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
               let pCookieDomainMessageElm = document.createElement('span')
               let pCookieDomainMessage = ''
               if (cookie['fgPermitted'] !== undefined) {
-                pCookieDomainMessage = '(Allowed cookie of: ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie['fgDomain']])
               } else if (cookie['fgLogged'] !== undefined) {
-                pCookieDomainMessage = '(Unprotected profile cookie of: ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie['fgDomain']])
               } else if (cookie['fgProtected'] !== undefined) {
-                pCookieDomainMessage = '(Protected profile cookie of: ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainProtected', [cookie['fgDomain']])
               } else if (cookie['fgProfile'] !== undefined) {
-                pCookieDomainMessage = '(Global protected profile cookie of: ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainGlobalProtected', [cookie['fgDomain']])
               }
 
               if (!isHandledCookie && cookie['fgRemoved'] !== undefined && cookie['fgRemovedDomain'] !== undefined) {
-                if (pCookieDomainMessage === '') pCookieDomainMessage = '(Cookie removed due to rule on: ' + cookie['fgRemovedDomain'] + ')'
+                if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie['fgDomain']])
               } else if (cookie['fgDomain'] !== undefined && pCookieDomainMessage === '') {
-                pCookieDomainMessage = ' (Rule present on ' + cookie['fgDomain'] + ')'
+                pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie['fgDomain']])
               }
 
               if (pCookieDomainMessage !== '') {
@@ -368,7 +382,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
     if (!activeCookies) {
       let infoDisplay = document.querySelector('#infoDisplay')
-      let contentText = 'No active cookies for domain, you might need to reload the tab.'
+      let contentText = getMsg('NoActiveDomainCookiesText')
       infoDisplay.children[0].textContent = contentText
       infoDisplay.removeAttribute('class')
     }
@@ -440,7 +454,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   }
 
   if (!useChrome) getTempContainerStatus(contextName)
-  buildHelpIndex()
 }
 
 function buildHelpIndex () {
@@ -472,7 +485,7 @@ function buildHelpIndex () {
 function getTempContainerStatus (contextName) {
   browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', { 'method': 'isTempContainer', 'cookieStoreId': cookieStoreId }).then(function (isTmp) {
     if (isTmp === true) {
-      document.querySelectorAll('.intro')[1].textContent += ', is a temporary container'
+      getMsg('CookieHelpTextSecureMightNotHandled', [document.querySelectorAll('.intro')[1].textContent])
     }
   })
 }
@@ -531,11 +544,11 @@ function addCookieToList (targetList, name, value, domain, inactiveCookie) {
 
   if (targetList === 'cookie-list-flagged') {
     checkMark.className = 'checkmark flagged'
-    checkMark.title = 'This cookie is flagged and will be removed on page action.'
+    checkMark.title = getMsg('CookieIsFlaggedHelpText')
     checkMark.addEventListener('click', flaggedCookieSwitch)
   } else {
     checkMark.className = 'checkmark permit'
-    checkMark.title = 'This cookie is permitted and will be kept, even when global or auto flag mode is active.'
+    checkMark.title = getMsg('CookieIsPermittedHelpText')
     checkMark.addEventListener('click', permittedCookieSwitch)
   }
 
@@ -554,7 +567,7 @@ function addCookieToList (targetList, name, value, domain, inactiveCookie) {
   pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
 
   let pCookieValueElm = document.createElement('span')
-  let pCookieValue = document.createTextNode(value === '' ? 'Inactive cookie' : value)
+  let pCookieValue = document.createTextNode(value === '' ? getMsg('CookieIsInactiveText') : value)
   pCookieValueElm.className = 'cookieValue'
   pCookieValueElm.appendChild(pCookieValue)
   p.appendChild(pCookieValueElm)
@@ -597,13 +610,13 @@ async function flaggedCookieSwitchNeutral (data, evt) {
     if (child.children[0].dataset['name'] === cookieName && child.children[0].dataset['domain'] === cookieDomain) {
       if (hasAutoFlag) {
         child.children[0].className = 'checkmark auto-flagged'
-        child.children[0].title = 'This cookie is auto-flagged and will be deleted.'
+        child.children[0].title = getMsg('CookieIsAutoFlaggedHelpText')
       } else if (hasGlobal) {
         child.children[0].className = 'checkmark auto-flagged'
-        child.children[0].title = 'This cookie is globally flagged and will be deleted.'
+        child.children[0].title = getMsg('CookieIsGlobalFlaggedHelpText')
       } else {
         child.children[0].className = 'checkmark'
-        child.children[0].title = 'This cookie is allowed and unhandled. Click to change.'
+        child.children[0].title = getMsg('CookieFlagButtonAllowedHelpText')
       }
 
       break
@@ -633,7 +646,7 @@ async function flaggedCookieSwitchNeutral (data, evt) {
 
   if (parent.children.length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
-    let contentText = 'No flagged cookies for domain.'
+    let contentText = getMsg('NoFlaggedCookiesForDomain')
     infoDisplay.children[0].textContent = contentText
     parent.className = 'hidden'
     infoDisplay.removeAttribute('class')
@@ -670,13 +683,13 @@ async function permittedCookieSwitchNeutral (data, evt) {
     if (child.children[0].dataset['name'] === cookieName && child.children[0].dataset['domain'] === cookieDomain) {
       if (hasAutoFlag) {
         child.children[0].className = 'checkmark auto-flagged'
-        child.children[0].title = 'This cookie is auto-flagged and will be removed.'
+        child.children[0].title = getMsg('CookieIsAutoFlaggedHelpText')
       } else if (hasGlobal) {
         child.children[0].className = 'checkmark auto-flagged'
-        child.children[0].title = 'This cookie is globally flagged and will be removed.'
+        child.children[0].title = getMsg('CookieIsGlobalFlaggedHelpText')
       } else {
         child.children[0].className = 'checkmark'
-        child.children[0].title = 'This cookie is allowed and unhandled. Click to change.'
+        child.children[0].title = getMsg('CookieFlagButtonAllowedHelpText')
       }
 
       break
@@ -706,7 +719,7 @@ async function permittedCookieSwitchNeutral (data, evt) {
   parent.removeChild(evt.target.parentNode)
   if (parent.children.length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
-    let contentText = 'No permitted cookies for domain.'
+    let contentText = getMsg('NoPermittedCookiesForDomain')
     infoDisplay.children[0].textContent = contentText
     parent.className = 'hidden'
     infoDisplay.removeAttribute('class')
@@ -745,13 +758,13 @@ async function cookieFlagSwitchNeutral (data, evt) {
   if (!hasCookie || (hasAutoFlag && (hasCookie && data[contextName][domainURL][cookieDomain][cookieName] !== true && data[contextName][domainURL][cookieDomain][cookieName] !== false))) {
     data[contextName][domainURL][cookieDomain][cookieName] = true
     evt.target.className = 'checkmark flagged'
-    evt.target.title = 'This cookie is flagged and will be removed on page action.'
+    evt.target.title = getMsg('CookieIsFlaggedHelpText')
     addCookieToList('cookie-list-flagged', cookieName, cookieValue, cookieDomain, false)
     ++countList['#flaggedCookies']
   } else if (data[contextName][domainURL][cookieDomain][cookieName] === true) {
     data[contextName][domainURL][cookieDomain][cookieName] = false
     evt.target.className = 'checkmark permit'
-    evt.target.title = 'This cookie is permitted and will be kept, even when global or auto flag mode is active.'
+    evt.target.title = getMsg('CookieIsPermittedHelpText')
     addCookieToList('cookie-list-permitted', cookieName, cookieValue, cookieDomain, false)
     ++countList['#permittedCookies']
 
@@ -782,7 +795,7 @@ async function cookieFlagSwitchNeutral (data, evt) {
     }
 
     evt.target.className = 'checkmark auto-flagged'
-    evt.target.title = 'This cookie is auto-flagged and will be removed.'
+    evt.target.title = getMsg('CookieIsAutoFlaggedHelpText')
   } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
     delete data[contextName][domainURL][cookieDomain][cookieName]
 
@@ -801,7 +814,7 @@ async function cookieFlagSwitchNeutral (data, evt) {
     }
 
     evt.target.className = 'checkmark auto-flagged'
-    evt.target.title = 'This cookie is globally flagged and will be removed.'
+    evt.target.title = getMsg('CookieIsGlobalFlaggedHelpText')
   } else {
     delete data[contextName][domainURL][cookieDomain][cookieName]
 
@@ -820,7 +833,7 @@ async function cookieFlagSwitchNeutral (data, evt) {
     }
 
     evt.target.className = 'checkmark'
-    evt.target.title = 'This cookie is allowed and unhandled. Click to change.'
+    evt.target.title = getMsg('CookieFlagButtonAllowedHelpText')
   }
 
   if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieName] === undefined) {
@@ -896,7 +909,7 @@ async function cookieLockSwitchNeutral (data, evt) {
       let loggedInCookieList = document.querySelector('#loggedInCookies')
       removeCookieOfProfileList(loggedInCookieList, cookieName, cookieDomain)
       evt.target.className = evt.target.className.replace(' locked', '')
-      evt.target.title = 'Set this cookie as profile-mode cookie.'
+      evt.target.title = getMsg('SetCookieProfileButtonHelpText')
 
       if (data['flagCookies_logged'] === undefined || data['flagCookies_logged'][contextName] === undefined || data['flagCookies_logged'][contextName][domainURL] === undefined) {
         document.querySelector('#profileNoData').removeAttribute('class')
@@ -914,7 +927,7 @@ async function cookieLockSwitchNeutral (data, evt) {
 
     document.querySelector('#profileNoData').className = 'hidden'
     evt.target.className += ' locked'
-    evt.target.title = 'This cookie is set locked as profile-mode cookie. You can manage those in "Preferences"'
+    evt.target.title = getMsg('CookieIsLockedProfileCookieHelpTextSettingsRef')
   }
 }
 
@@ -957,9 +970,9 @@ function switchView (evt) {
 
     let contentText = 'No active cookies for domain, you might to reload the tab.'
     if (evt.target.dataset.target === 'cookie-list-flagged') {
-      contentText = 'No flagged cookies for domain.'
+      contentText = getMsg('NoFlaggedCookiesForDomain')
     } else if (evt.target.dataset.target === 'cookie-list-permitted') {
-      contentText = 'No permitted cookies for domain.'
+      contentText = getMsg('NoPermittedCookiesForDomain')
     }
 
     infoDisplay.children[0].textContent = contentText
@@ -1100,7 +1113,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
       if (contentChild.className !== 'checkmark') continue
 
       contentChild.className = 'checkmark auto-flagged'
-      contentChild.title = 'This cookie is auto-flagged and will be removed.'
+      contentChild.title = getMsg('CookieIsAutoFlaggedHelpText')
     }
   } else {
     for (let child of searchTarget.children) {
@@ -1111,7 +1124,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
 
       if (data['flagCookies_flagGlobal'] === undefined || data['flagCookies_flagGlobal'][contextName] === undefined || data['flagCookies_flagGlobal'][contextName] !== true) {
         contentChild.className = 'checkmark'
-        contentChild.title = 'This cookie is allowed and unhandled. Click to change.'
+        contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
       }
     }
   }
@@ -1145,7 +1158,7 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 
       if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieKey] === undefined || (data[contextName][domainURL][cookieDomain][cookieKey] !== true && data[contextName][domainURL][cookieDomain][cookieKey] !== false)) {
         contentChild.className = 'checkmark auto-flagged'
-        contentChild.title = 'This cookie is globally flagged and will be removed.'
+        contentChild.title = getMsg('CookieIsGlobalFlaggedHelpText')
       }
     }
   } else {
@@ -1157,7 +1170,7 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 
       if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieKey] === undefined || (data[contextName][domainURL][cookieDomain][cookieKey] !== true && data[contextName][domainURL][cookieDomain][cookieKey] !== false)) {
         contentChild.className = 'checkmark'
-        contentChild.title = 'This cookie is allowed and unhandled. Click to change.'
+        contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
       }
     }
   }
@@ -1196,14 +1209,14 @@ async function toggleNotifications (evt) {
     evt.target.className += ' active'
     doSwitchOn = true
 
-    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png' })
-    else browser.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications enabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png' })
+    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/cookie_128.png' })
+    else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/cookie_128.png' })
   } else {
     evt.target.className = evt.target.className.replace(' active', '')
     doSwitchOn = false
 
-    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png' })
-    else browser.notifications.create('notifications_info', { type: 'basic', message: 'Flag Cookie notifications disabled.', title: 'Flag Cookies Notifications', iconUrl: 'icons/cookie_128.png' })
+    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/cookie_128.png' })
+    else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/cookie_128.png' })
   }
 
   if (useChrome) {
@@ -1225,16 +1238,16 @@ function switchNotificationsChrome (data, doSwitchOn) {
 async function clearSettings (evt) {
   let log = document.querySelector('#log')
   if (document.querySelector('#confirmSettingsClearing').className.indexOf('active') === -1) {
-    document.querySelector('#log').textContent = 'Please confirm storage clearing.'
+    document.querySelector('#log').textContent = getMsg('ConfirmStorageClearingInfoMsg')
     return
   }
 
   if (useChrome) {
     chrome.storage.local.clear(function () {
       if (!checkChromeHadNoErrors) {
-        log.textContent = 'Error clearing settings.'
+        log.textContent = getMsg('ErrorClearingSettingsInfoMsg')
       } else {
-        log.textContent = 'Flag cookies settings and storage cleared.'
+        log.textContent = getMsg('SuccessClearingSettingsAndStorageInfoMsg')
         resetUI()
       }
     })
@@ -1243,10 +1256,10 @@ async function clearSettings (evt) {
   }
 
   if (await browser.storage.local.clear() === null) {
-    log.textContent = 'Flag cookies settings and storage cleared.'
+    log.textContent = getMsg('SuccessClearingSettingsAndStorageInfoMsg')
     resetUI()
   } else {
-    log.textContent = 'Error clearing settings.'
+    log.textContent = getMsg('ErrorClearingSettingsInfoMsg')
   }
 }
 
@@ -1254,17 +1267,17 @@ async function clearSettings (evt) {
 async function clearDomain (evt) {
   let log = document.querySelector('#log')
   if (document.querySelector('#confirmDomainClearing').className.indexOf('active') === -1) {
-    document.querySelector('#log').textContent = 'Please confirm domain clearing.'
+    document.querySelector('#log').textContent = getMsg('ConfirmDomainSettingsClearingInfoMsg')
     return
   }
 
   if (useChrome) {
     chrome.storage.local.remove(domainURL, function () {
       if (!checkChromeHadNoErrors) {
-        log.textContent = 'Error clearing domain data.'
+        log.textContent = getMsg('ErrorDomainDataClearingInfoMsg')
       } else {
         getChromeStorageForFunc(resetUIDomain)
-        if (checkChromeHadNoErrors) log.textContent = 'Flag cookies domain data cleared.'
+        if (checkChromeHadNoErrors) log.textContent = getMsg('DomainDataClearedInfoMsg')
       }
     })
 
@@ -1272,8 +1285,8 @@ async function clearDomain (evt) {
   }
 
   let data = await browser.storage.local.get()
-  if (resetUIDomain(data)) log.textContent = 'Flag cookies domain data cleared.'
-  else log.textContent = 'Error clearing domain data.'
+  if (resetUIDomain(data)) log.textContent = getMsg('DomainDataClearedInfoMsg')
+  else log.textContent = getMsg('ErrorDomainDataClearingInfoMsg')
 }
 
 function resetUI () {
@@ -1286,7 +1299,7 @@ function resetUI () {
   for (let child of cookieList.children) {
     let contentChild = child.children[0]
     contentChild.className = 'checkmark'
-    contentChild.title = 'This cookie is allowed and unhandled. Click to change.'
+    contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
   }
 
   let clearLists = ['cookie-list-flagged', 'cookie-list-permitted']
@@ -1320,14 +1333,14 @@ async function resetUIDomain (data) {
 
     if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
       contentChild.className = 'checkmark auto-flagged'
-      contentChild.title = 'This cookie is globally flagged and will be removed.'
+      contentChild.title = getMsg('CookieIsGlobalFlaggedHelpText')
     } else {
       contentChild.className = 'checkmark'
-      contentChild.title = 'This cookie is allowed and unhandled. Click to change.'
+      contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
     }
 
     contentChildProfile.className = contentChildProfile.className.replace(' locked', '')
-    contentChildProfile.title = 'Set this cookie as profile-mode cookie.'
+    contentChildProfile.title = getMsg('SetCookieProfileButtonHelpText')
   }
 
   let clearLists = ['cookie-list-flagged', 'cookie-list-permitted', 'loggedInCookies']
@@ -1461,7 +1474,7 @@ async function dumpProfileCookieNeutral (data, evt) {
     let contentChild = child.children[2]
     if (contentChild.dataset['name'] === cookieName && contentChild.dataset['domain'] === cookieDomain) {
       contentChild.className = contentChild.className.replace(' locked', '')
-      contentChild.title = 'Set this cookie as profile-mode cookie.'
+      contentChild.title = getMsg('SetCookieProfileButtonHelpText')
       break
     }
   }
@@ -1526,6 +1539,23 @@ async function accountModeSwitchNeutral (data, evt) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
+let currentLocal = browser.i18n.getUILanguage()
+let helpLoader = new XMLHttpRequest()
+helpLoader.addEventListener('readystatechange', function (evt) {
+  if (evt.target.status === 200 && evt.target.readyState === 4) {
+    document.querySelector('#help-view').innerHTML = evt.target.responseText
+    buildHelpIndex()
+  }
+
+  if (evt.target.status !== 200 && evt.target.readyState === 4) {
+    helpLoader.open('GET', './_locales/en/help.html')
+    helpLoader.send()
+  }
+})
+
+helpLoader.open('GET', './_locales/' + currentLocal + '/help.html')
+helpLoader.send()
+
 document.querySelector('#activeCookies').addEventListener('click', switchView)
 document.querySelector('#flaggedCookies').addEventListener('click', switchView)
 document.querySelector('#permittedCookies').addEventListener('click', switchView)
