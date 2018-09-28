@@ -40,6 +40,16 @@ The extension is not listed in the Chrome addon store, because of costs. You mig
 ## Help, documentation and usage
 Please read along here: https://github.com/jrie/flagCookies/wiki/FlagCookies-help-and-documentation
 
+## Translations
+As of version 3.0.27 translations can be done for Flag Cookies.
+
+All translations are located inside **\_locales/** folder - and the folders **en** for general English,as well as **de** for German language. Inside every folder is a **messages.json** located. This file holds all translated strings.
+
+To create a new language, for example French language, use **fr** as code. So it ends up to everything French language related inside **\_locales/fr/messages.json**. To add another layer of help copy the **help.html** from the **en** directory to **fr/help.html** - when everything is done correctly, you will be able to see changes when using **about:debugging** in Firefox and loading the add-on.
+
+More information can be found here: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
+
+
 ## Providing feedback/feature wishes/ideas
 Please file an issue on the ***issues*** page. I gladly try to respond to feedback and to improve Flag cookies. If you think a feature is missing or at worst, not working as expected, please also open an issue.
 
