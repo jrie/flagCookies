@@ -127,7 +127,6 @@
   },
   "CookieIsLockedProfileCookieHelpTextSettingsRef": {
     "message": "Dieser Cookie ist ein Profil Cookie. In den 'Einstellungen' kann dieser verwaltet werden.",
-    "message": "This cookie is set locked as profile mode cookie. You can manage profile mode cookies under 'Preferences'.",
     "description": "Cookie is set as profile mode cookies"
   },
   "NotificationsHeadlineNeutral": {
@@ -225,7 +224,6 @@
   },
   "AllowedGlobalProfileCookieMsg": {
     "message": "Erlaubter Cookie bei '$action$', Cookie: '$cookieName' für '$domainName$'",
-    "message": "Allowed global profile cookie on '$action$', cookie: '$cookieName$' for '$domainName$'",
     "description": "Log Message for allowed global profile cookie, word for allowed should be equal to 'AllowedState'",
     "placeholders": {
       "action": { "content": "$1", "example": "reload, javascript request, document load" },
@@ -446,7 +444,6 @@
   },
   "LegendUnhandledHelpText": {
     "message": "Unbehandelte Cookies sind aktiv, werden aber nicht durch Flag Cookies behandelt.",
-    "message": "Unhandled cookies are active but not handled through Flag Cookies.",
     "description": "Legend 'Unhandled' help text"
   },
   "LegendUnhandledLabelText": {
@@ -454,7 +451,7 @@
     "description": "Legend 'Unhandled' label text"
   },
   "LegendFlaggedHelpText": {
-    "message": "Markierte Cookies werden bei Aktionen wie Laden/Neuladen entfernt",
+    "message": "Markierte Cookies werden bei Aktionen wie Laden/Neuladen entfernt.",
     "description": "Legend 'Unhandled' help text"
   },
   "LegendFlaggedLabelText": {
@@ -462,9 +459,8 @@
     "description": "Legend 'Flagged' label text"
   },
   "LegendPermittedHelpText": {
-    "message": "Zugelasse Cookies werden nicht durch Globalen oder Auto Modus entfernt",
-    "message": "Permitted cookies won't be removed by global or auto-flag.",
-    "description": "Legend 'Unhandled' help text"
+    "message": "Zugelasse Cookies werden nicht durch Global oder Auto Modus entfernt.",
+        "description": "Legend 'Unhandled' help text"
   },
   "LegendPermittedLabelText": {
     "message": "Zugelassen",
