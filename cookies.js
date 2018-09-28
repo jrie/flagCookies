@@ -1008,9 +1008,11 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       let titleJoin = []
       let index = 0
 
+      let statusLower = status.toLowerCase()
+
       for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-        if (msg.toLowerCase().indexOf(status.toLowerCase()) !== -1) {
-          let cookieName = msg.match(/ '(.*)'/g)[2]
+        if (msg.match().indexOf(statusLower) !== -1) {
+          let cookieName = msg.match(/ '([^']*)' /)[1]
           if (titleJoin.indexOf(cookieName) === -1) {
             titleJoin.push(cookieName)
 
@@ -1076,16 +1078,18 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
 
     if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
       let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::'
-      let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('DeletedState'), getMsg('PermittedState'), getMsg('AllowedState')]
+      let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('DeletedStateMsg'), getMsg('PermittedState'), getMsg('AllowedState')]
       let hasTitleChange = false
 
       for (let status of statuses) {
         let titleJoin = []
         let index = 0
 
+        let statusLower = status.toLowerCase()
+
         for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
-          if (msg.toLowerCase().indexOf(status.toLowerCase()) !== -1) {
-            let cookieName = msg.match(/ '(.*)'/g)[2]
+          if (msg.toLowerCase().indexOf(statusLower) !== -1) {
+            let cookieName = msg.match(/ '([^']*)' /)[1]
             if (titleJoin.indexOf(cookieName) === -1) {
               titleJoin.push(cookieName)
 
