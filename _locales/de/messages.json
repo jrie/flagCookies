@@ -1,6 +1,6 @@
 {
   "AddonDescription": {
-    "message": "Ein Cookie Manager um Cookies zu 'flagged' und zu verwalten."
+    "message": "Ein Cookie Manager um Cookies explizit, automatisch oder global für eine oder alle Webseiten durch Regeln zu verwalten."
   },
   "ProfileShortcut": {
     "message": "Aktiviert/deaktiviert den Profil Modus für die aktuelle Webseite",
