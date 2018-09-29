@@ -33,13 +33,13 @@
             <div id="settings-log"><div class="settings-title setting-info" title="__MSG_ActionLogHelpText__"><p>__MSG_ActionLogLabel__</p></div><textarea id="log" title="__MSG_ActionLogAreaHelpText__" disabled="disabled" placeholder="__MSG_ActionLogPlaceholderText__"></textarea></div>
             <hr/>
             <div id="settings-domains"><div class="settings-title setting-info" title="__MSG_DomainSettingsHelpText__"><p>__MSG_DomainSettingsText__</p></div>
-              <div id="domain-confirm-clear" title="__MSG_DomainConfirmClearHelpText__"><button id="confirmDomainClearing" class="checkmark-confirm"></button><span>__MSG_ConfirmClearingText__</span></div><button id="domain-action-clear" title="This will delete all domain related data from Flag Cookies.">__MSG_DeleteDomainSettingsText__</button>
               <div id="domainDetails">
                 <button class="profileTab" data-target="loggedIn" title="__MSG_ProfileCookiesTabHelpText__">__MSG_LoggedInProfileTabText__</button>
                 <div id="profilePane">
                   <ul id="loggedInCookies" class="hidden"></ul>
                   <span id="profileNoData" class="hidden">__MSG_NoCookiesInProfileText__</span>
                 </div>
+                <div id="domain-confirm-clear" title="__MSG_DomainConfirmClearHelpText__"><button id="confirmDomainClearing" class="checkmark-confirm"></button><span>__MSG_ConfirmClearingText__</span></div><button id="domain-action-clear" title="This will delete all domain related data from Flag Cookies.">__MSG_DeleteDomainSettingsText__</button>
               </div>
             </div>
             <hr/>
@@ -59,9 +59,10 @@
           <span id="leg-unhandled" title="__MSG_LegendUnhandledHelpText__">__MSG_LegendUnhandledLabelText__</span>
           <span id="leg-flagged" title="__MSG_LegendFlaggedHelpText__">__MSG_LegendFlaggedLabelText__</span>
           <span id="leg-permitted" title="__MSG_LegendPermittedHelpText__">__MSG_LegendPermittedLabelText__</span>
-          <span id="leg-auto-flagged" title="__MSG_LegendGlobalAutoFlagHelpText__">__MSG_LegendGlobalAutoFlagLabelText__</span><button data-target="settings-view" id="prefs" title="Show FlagCookies preferences and action log">Preferences</button></div>
+          <span id="leg-auto-flagged" title="__MSG_LegendGlobalAutoFlagHelpText__">__MSG_LegendGlobalAutoFlagLabelText__</span>
+          <button data-target="settings-view" id="prefs" title="__MSG_SettingsButtonHelpText__">__MSG_SettingsButtonLabelText__</button></div>
       </div>
+      <script type="text/javascript" src="libs/l10n/l10n.js"></script>
       <script src="flagCookies.js" async="false"></script>
-      <script type="text/javascript" src="./libs/l10n/l10n.js" async="false"></script>
   </body>
 </html>
