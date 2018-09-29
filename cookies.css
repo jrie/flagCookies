@@ -79,7 +79,7 @@ span, p, h1, h2, h3, h4, h5 {
 }
 
 .legend p.intro {
-  margin-right: 28px;
+  margin-right: 24px;
   margin-bottom: 12px;
   display: inline-block;
 }
@@ -87,7 +87,7 @@ span, p, h1, h2, h3, h4, h5 {
 .legend span {
   background-color: #ddd;
   background-color: transparent;
-  padding: 2px 16px 4px 28px;
+  padding: 2px 8px 4px 28px;
   background-repeat: no-repeat;
   background-clip:border-box;
   margin-right: 16px;
@@ -100,6 +100,7 @@ span, p, h1, h2, h3, h4, h5 {
 
 .chrome .legend span {
   margin-top: 1em;
+  margin-right: 2px;
 }
 
 .legend #leg-unhandled {
@@ -146,7 +147,7 @@ span, p, h1, h2, h3, h4, h5 {
 
 #header-title {
   display: block;
-  max-width: 75%;
+  max-width: 85%;
   margin-bottom: 8px;
 }
 
@@ -547,14 +548,14 @@ button#global-flag.active {
   margin: 0px;
   padding: 4px 12px 7px 4%;
   font-weight: bold;
-  width: 43%;
+  width: 40%;
   position: absolute;
   right: 1%;
   bottom: 9px;
 }
 
 .chrome #searchBar {
-  width: 41%;
+  width: 40%;
   margin-left: 1px;
   padding: 7px 12px 6px 4%;
 }
@@ -597,8 +598,15 @@ button#global-flag.active {
   top: -0.5em;
   font-size: 1.15em;
   float: left;
-  width: 21%;
+  max-width: 17%;
+  width: 17%;
+  padding-right: 3%;
+  margin-right: 1%;
   font-weight: bold;
+}
+
+.chrome div.settings-title {
+  padding-right: 4%
 }
 
 .setting-info p,
@@ -761,6 +769,7 @@ textarea#log {
   border-radius: 0px 0px 0px 15px;
   padding: 0px;
   margin: 0px;
+  margin-bottom: 30px;
 }
 
 #profilePane span {
