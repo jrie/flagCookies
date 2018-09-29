@@ -63,7 +63,7 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, curr
 
     if (count === undefined) count = 0
 
-    if (openTabData[currentTab.windowId][currentTab.id][count]['d'] !== undefined) {
+    if (openTabData[currentTab.windowId][currentTab.id][count] !== undefined && openTabData[currentTab.windowId][currentTab.id][count]['d'] !== undefined) {
       let targetURL = openTabData[currentTab.windowId][currentTab.id][count]['d'].replace(/(http|https):\/\//, '').replace('www.', '')
       chrome.cookies.getAll({ 'domain': targetURL }, function (cookiesSub) {
         ++count
