@@ -1,6 +1,7 @@
 # FlagCookies
 
-A cookie manager allowing to manage explicitly domain cookies, also third-party cookies for domain and subdomain. Providing several modes to manage cookies and keeping a cookie profile, while being logged in in a website.
+A cookie manager allowing to flag and set rules explicitly for cookies, also third-party cookies.
+domain.net and subdomain.domain.net have individual rights. Providing several modes to set rules onto cookies and keeping a cookie profile, while being logged in in a website or service.
 
 ## Screenshot
 ![Flag Cookies main user interface](https://www.picflash.org/img/2018/09/12/pmr8j816rm7p7tt.png "Flag Cookies main interface")
@@ -21,7 +22,7 @@ A cookie manager allowing to manage explicitly domain cookies, also third-party 
 
 ## Requirements
 
-**Firefox in version 58.0a1** or a recent version of **Chrome** or **Opera** browser(s).
+**Firefox 58.0a1+** or a recent version of **Chrome** or **Opera** browser(s).
 
 
 ## Installation
