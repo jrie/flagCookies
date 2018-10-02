@@ -882,7 +882,7 @@ async function cookieLockSwitchNeutral (data, evt) {
   if (data['flagCookies_logged'][contextName][domainURL] === undefined) data['flagCookies_logged'][contextName][domainURL] = {}
   if (data['flagCookies_logged'][contextName][domainURL][cookieDomain] === undefined) data['flagCookies_logged'][contextName][domainURL][cookieDomain] = {}
 
-  if (!evt.target.classList.contains('locked')) {
+  if (evt.target.classList.contains('locked')) {
     if (data['flagCookies_logged'][contextName][domainURL][cookieDomain][cookieName] !== undefined) {
       delete data['flagCookies_logged'][contextName][domainURL][cookieDomain][cookieName]
 
