@@ -15,7 +15,7 @@
           <button id="account-mode" title="__MSG_ProfileButtonHelpText__">__MSG_ProfileButtonText__</button>
           <button id="help" data-target="help-view" title="__MSG_HelpButtonHelpText__">__MSG_HelpButtonText__</button>
         </div>
-        <hr/>
+        <hr>
         <div id="tabs">
           <button id="activeCookies" data-target="cookie-list" title="__MSG_ActiveCookiesViewHelpText__">__MSG_CookiesButtonText__</button>
           <button id="flaggedCookies" data-target="cookie-list-flagged"  title="__MSG_FlaggedCookiesViewHelpText__">__MSG_FlaggedButtonText__</button>
@@ -30,10 +30,10 @@
           <ul class="hidden" id="cookie-list-flagged"></ul>
           <ul class="hidden" id="cookie-list-permitted"></ul>
           <div class="hidden" id="settings-view">
-            <div id="settings-log"><div class="settings-title setting-info" title="__MSG_ActionLogHelpText__"><p>__MSG_ActionLogLabel__</p></div><textarea id="log" title="__MSG_ActionLogAreaHelpText__" disabled="disabled" placeholder="__MSG_ActionLogPlaceholderText__"></textarea></div>
-            <hr/>
+            <div id="settings-log"><div class="settings-title setting-info inline-block" title="__MSG_ActionLogHelpText__"><p>__MSG_ActionLogLabel__</p></div><textarea id="log" title="__MSG_ActionLogAreaHelpText__" disabled="disabled" placeholder="__MSG_ActionLogPlaceholderText__"></textarea></div>
+            <hr>
             <div id="settings-domains"><div class="settings-title setting-info" title="__MSG_DomainSettingsHelpText__"><p>__MSG_DomainSettingsText__</p></div>
-              <div id="domainDetails">
+              <div id="domainDetails" class="inline-block">
                 <button class="profileTab" data-target="loggedIn" title="__MSG_ProfileCookiesTabHelpText__">__MSG_LoggedInProfileTabText__</button>
                 <div id="profilePane">
                   <ul id="loggedInCookies" class="hidden"></ul>
@@ -42,11 +42,15 @@
                 <div id="domain-confirm-clear" title="__MSG_DomainConfirmClearHelpText__"><button id="confirmDomainClearing" class="checkmark-confirm"></button><span>__MSG_ConfirmClearingText__</span></div><button id="domain-action-clear" title="This will delete all domain related data from Flag Cookies.">__MSG_DeleteDomainSettingsText__</button>
               </div>
             </div>
-            <hr/>
+            <hr>
             <div id="settings-general"><div class="settings-title setting-info" title="__MSG_GneralAndGlobalSettingsHelpText__"><p>__MSG_AddonSettingsLabelText__</p></div>
               <div class="inline-block">
                 <div id="settings-notification" title="__MSG_SettingsNotificationsHelpText__"><button id="confirmNotifications" class="checkmark-confirm"></button><span>__MSG_DisplayNotificationsLabelText__</span></div>
                 <div id="settings-confirm-clear" title="__MSG_SettingsConfirmClearCheckboxHelpText__"><button id="confirmSettingsClearing" class="checkmark-confirm"></button><span>__MSG_ConfirmClearingText__</span></div><button id="settings-action-clear" title="This will delete all and every domain and cookie settings of Flag Cookies.">__MSG_DeleteStoredSettingsText__</button>
+                <hr>
+                <div id="settings-all-export"><span>__MSG_ExportSettingsDescription__</span></div><button id="settings-action-all-export" title="__MSG_ExportCookieSettingsHelp__">__MSG_ExportSettingsText__</button>
+                <hr>
+                <div id="settings-all-import"><span>__MSG_ImportSettingsDescription__</span></div><label id="settings-action-all-import" for="importFile" title="__MSG_ImportCookieSettingsHelp__"> __MSG_ImportSettingsText__<input type="file" accept=".zip" name="importFile" id="importFile" hidden="true" /></label>
               </div>
             </div>
           </div>
@@ -63,6 +67,7 @@
           <button data-target="settings-view" id="prefs" title="__MSG_SettingsButtonHelpText__">__MSG_SettingsButtonLabelText__</button></div>
       </div>
       <script type="text/javascript" src="libs/l10n/l10n.js"></script>
-      <script src="flagCookies.js" async="false"></script>
+      <script src="libs/jszip/jszip.js"></script>
+      <script src="flagCookies.js"></script>
   </body>
 </html>

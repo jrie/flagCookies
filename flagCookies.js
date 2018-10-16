@@ -1568,6 +1568,47 @@ document.querySelector('#confirmDomainClearing').addEventListener('click', toggl
 document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
 document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
 document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
+document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
+document.querySelector('#importFile').addEventListener('change', importSettings)
+
+function generateZip (rawData) {
+  let data = JSON.stringify(rawData)
+  let zip = new JSZip()
+  zip.file('flagCookieSettings.json', data)
+
+  zip.generateAsync({ 'type': 'blob' }).then(function (blob) {
+    let dlLink = document.createElement('a')
+    dlLink.href = URL.createObjectURL(blob)
+
+    let dateObj = new Date()
+    dlLink.download = 'FlagCookieSettings_' + dateObj.getFullYear().toString() + '-' + (dateObj.getMonth() + 1).toString() + '-' + dateObj.getDate().toString() + '.zip'
+    document.body.appendChild(dlLink)
+    dlLink.click()
+    dlLink.parentNode.removeChild(dlLink)
+    URL.revokeObjectURL(dlLink.href)
+  })
+}
+
+async function exportSettings () {
+  if (useChrome) chrome.storage.local.get(null, generateZip)
+  else generateZip(await browser.storage.local.get())
+}
+
+function importSettings (evt) {
+  let file = evt.target.files[0]
+
+  JSZip.loadAsync(file).then(function(zip) {
+    if (zip.files["flagCookieSettings.json"] === undefined) {
+      return
+    }
+
+    zip.files["flagCookieSettings.json"].async("string").then(function (stringData) {
+      let data = JSON.parse(stringData)
+      if (!useChrome) browser.storage.local.set(data)
+      else chrome.storage.local.set(data)
+    })
+  })
+}
 
 if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed)
 else getActiveTab().then(initDomainURLandProceed)

@@ -270,7 +270,9 @@ li.unremoved-secure-cookie {
   display: inline-block;
 }
 
-button {
+
+button,
+label[for="importFile"] {
   text-transform: uppercase;
   text-align: center;
   background-color: #446;
@@ -643,24 +645,56 @@ textarea#log {
   width: 75.5%;
 }
 
-#settings-action-clear,
-#domain-action-clear {
-  margin-left: 35px;
-  width: 250px;
+#settings-general hr {
+  clear: both;
+  margin: 20px 0px;
 }
 
-#settings-confirm-clear,
-#domain-confirm-clear {
+#settings-action-clear,
+#domain-action-clear,
+#settings-action-all-export,
+#settings-action-all-import {
+  margin-left: 35px;
+  width: 240px;
+  max-width:  240px;
+}
+
+#settings-all-import,
+#settings-all-export {
+  width: 240px;
+  max-width:  240px;
+  clear: both;
+  float:left;
+}
+
+#settings-action-all-import,
+#settings-action-all-export {
+  margin-left: 20px;
   float: left;
 }
 
+#settings-confirm-clear,
+#domain-confirm-clear,
+#settings-all-export,
+#settings-all-import {
+  float: left;
+}
+
+#settings-all-export,
+#settings-all-import {
+  width: 158px;
+  max-width: 158px;
+  margin-bottom: 35px;
+}
 #settings-notification {
   margin-bottom: 25px;
 }
 
 #settings-confirm-clear span,
 #domain-confirm-clear span,
-#settings-notification span {
+#settings-notification span,
+#settings-all-export span,
+#settings-all-import span {
   position: relative;
   top: 0.65em;
   font-weight: bold;
@@ -752,7 +786,7 @@ textarea#log {
 }
 
 #domainDetails {
-  float: right;
+  float: left;
   width: 605px;
   margin-top: 20px;
   margin-bottom: 12px;
@@ -836,6 +870,7 @@ button.checkmark-confirm.active {
 
 .inline-block {
   display: inline-block;
+  width: 600px;
 }
 
 #help-view {
