@@ -433,6 +433,30 @@
     "message": "Lösche alle Einstellungen",
     "description": "Shown in settings, delete all stored settings button"
   },
+  "ExportCookieSettingsHelp": {
+    "message": "Klicken Sie um die Einstellung aus Flag Cookies in einer ZIP Datei zu exportieren.",
+    "description": "Help message that settings can be exported"
+  },
+  "ExportSettingsText": {
+    "message": "Einstellungen exportieren",
+    "description": "Label for export settings button"
+  },
+  "ImportCookieSettingsHelp": {
+    "message": "Klicken Sie um die Einstellungen aus einer ZIP Datei zu importieren.",
+    "description": "Help message that settings can be exported"
+  },
+  "ImportSettingsText": {
+    "message": "Einstellungen importieren",
+    "description": "Label for import settings button"
+  },
+  "ExportSettingsDescription": {
+    "message": "Einstellungen exportieren",
+    "description": "Label info for exporting cookie settings"
+  },
+  "ImportSettingsDescription": {
+    "message": "Einstellungen importieren",
+    "description": "Label info for importing cookie settings"
+  },
 
 
 
