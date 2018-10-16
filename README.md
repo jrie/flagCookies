@@ -15,6 +15,7 @@ domain.net and subdomain.domain.net have individual rights. Providing several mo
 * **Profile** mode for a domain or cookies - to switch between *logged into a website/service* and *not logged in* modes in order to remove or keep cookies on demand
 * **Auto flag** mode only affecting this particular (sub)domain, removing every domain cookie which is not permitted or used as ***profile cookie***, this also includes third-party and cross origin cookies.
 * Support for *Firefox Multi-Account-Containers*
+* **Preferences** allowing to import and export settings to a ZIP file. *Note* - Import overwrites settings.
 * **Preferences** allows to manage *logged in profile* cookiee, delete all domain settings and add-on settings and provides a **Action log** to display what FlagCookies is doing
 * **Displays count** of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon
 * *Keyboard Shortcut* **Alt + Shift + A** to enable/disable **profile mode** for a (sub)domain
