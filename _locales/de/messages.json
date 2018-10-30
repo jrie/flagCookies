@@ -454,7 +454,7 @@
     "description": "Label info for exporting cookie settings"
   },
   "ImportSettingsDescription": {
-    "message": "Einstellungen importieren",
+    "message": "Einstellungen bei Import überschreiben",
     "description": "Label info for importing cookie settings"
   },
 

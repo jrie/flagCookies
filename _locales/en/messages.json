@@ -450,11 +450,11 @@
     "description": "Label for import settings button"
   },
   "ExportSettingsDescription": {
-    "message": "Export Flag Cookie settings",
+    "message": "Export add-on settings",
     "description": "Label info for exporting cookie settings"
   },
   "ImportSettingsDescription": {
-    "message": "Import Flag Cookie settings",
+    "message": "Overwrite settings on import",
     "description": "Label info for importing cookie settings"
   },
 
