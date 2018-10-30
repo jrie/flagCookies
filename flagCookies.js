@@ -1417,7 +1417,7 @@ async function resetUIDomain (data) {
   else await browser.storage.local.set(data)
 
   let confirmClearing = document.querySelector('#confirmDomainClearing')
-  confirmClearing.classList.remfove('active')
+  confirmClearing.classList.remove('active')
   return true
 }
 
