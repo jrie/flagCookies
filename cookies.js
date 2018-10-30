@@ -1510,10 +1510,6 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
     if (Object.keys(openTabData[removeInfo.windowId]).length === 0) {
       delete openTabData[removeInfo.windowId]
     }
-
-    if (Object.keys(openTabData[removeInfo.windowId]).length === 0) {
-      delete openTabData[removeInfo.windowId]
-    }
   }
 }
 
@@ -1746,7 +1742,100 @@ async function clearCookiesOnRequest (details) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
+// Import settings
+let doImportOverwrite = false
+let jszipScript = document.createElement('script')
+jszipScript.type = 'text/javascript'
+jszipScript.src = 'libs/jszip/jszip.js'
 
+document.body.appendChild(jszipScript)
+
+// Called in frontend/UI
+function importSettings (evt) {
+  if (evt.target.files[0] === undefined) return
+
+  let file = evt.target.files[0]
+
+  JSZip.loadAsync(file).then(function (zip) {
+    if (zip.files['flagCookieSettings.json'] === undefined) return
+
+    zip.files['flagCookieSettings.json'].async('string').then(async function (stringData) {
+      let data = JSON.parse(stringData)
+
+      if (doImportOverwrite) {
+        if (!useChrome) browser.storage.local.set(data)
+        else chrome.storage.local.set(data)
+        return
+      }
+
+      if (!useChrome) {
+        let existingData = await browser.storage.local.get()
+        browser.storage.local.set(mergeData(existingData, data))
+        return
+      }
+
+      chrome.storage.local.get(null, function (existingData) {
+        chrome.storage.local.set(mergeData(existingData, data))
+      })
+    })
+  })
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+
+function mergeData (existingData, data) {
+  let flagCookieSettings = ['flagCookies_logged', 'flagCookies_flagGlobal', 'flagCookies_autoflag', 'flagCookies_notifications']
+
+  for (let key of Object.keys(data)) {
+    if (flagCookieSettings.indexOf(key) === -1) {
+      if (existingData[key] === undefined) existingData[key] = data[key]
+      else {
+        for (let domain of Object.keys(data[key])) {
+          if (existingData[key][domain] === undefined) existingData[key][domain] = data[key][domain]
+          else {
+            for (let setDomain of Object.keys(data[key][domain])) {
+              if (existingData[key][domain][setDomain] === undefined) existingData[key][domain][setDomain] = data[key][domain][setDomain]
+              else {
+                for (let cookieKey of Object.keys(data[key][domain][setDomain])) {
+                  if (existingData[key][domain][setDomain][cookieKey] === undefined) existingData[key][domain][setDomain][cookieKey] = data[key][domain][setDomain][cookieKey]
+                }
+              }
+            }
+          }
+        }
+      }
+    } else {
+      if (key === 'flagCookies_logged') {
+        if (existingData[key] === undefined) existingData[key] = data[key]
+        else {
+          for (let domain of Object.keys(data[key])) {
+            if (existingData[key][domain] === undefined) existingData[key][domain] = data[key][domain]
+            else {
+              for (let setDomain of Object.keys(data[key][domain])) {
+                if (existingData[key][domain][setDomain] === undefined) existingData[key][domain][setDomain] = data[key][domain][setDomain]
+                else {
+                  for (let cookieKey of Object.keys(data[key][domain][setDomain])) {
+                    if (existingData[key][domain][setDomain][cookieKey] === undefined) existingData[key][domain][setDomain][cookieKey] = data[key][domain][setDomain][cookieKey]
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else if (key === 'flagCookies_autoFlag') {
+        if (existingData[key] === undefined) existingData[key] = data[key]
+        else {
+          for (let domain of Object.keys(data[key])) {
+            if (existingData[key][domain] === undefined) existingData[key][domain] = data[key][domain]
+          }
+        }
+      } else if ((key === 'flagCookies_flagGlobal' || key === 'flagCookies_notifications') && existingData[key] === undefined) existingData[key] = data[key]
+    }
+  }
+
+  return existingData
+}
+// --------------------------------------------------------------------------------------------------------------------------------
 if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
   chrome.tabs.onUpdated.addListener(clearCookiesOnUpdate)

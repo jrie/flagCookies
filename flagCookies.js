@@ -399,11 +399,11 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         if (domainData[cookieDomain][cookieKey] === true) {
           if (!isDomainCookieInList(flaggedCookieList, cookieKey, cookieDomain)) {
             addCookieToList('cookie-list-flagged', cookieKey, '', cookieDomain, true)
-            ++countList['#flaggedCookieList']
+            ++countList['#flaggedCookies']
           }
         } else if (domainData[cookieDomain][cookieKey] === false && !isDomainCookieInList(permittedCookieList, cookieKey, cookieDomain)) {
           addCookieToList('cookie-list-permitted', cookieKey, '', cookieDomain, true)
-          ++countList['#permittedCookieList']
+          ++countList['#permittedCookies']
         }
       }
     }
@@ -1333,7 +1333,6 @@ async function resetUIDomain (data) {
       contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
     }
 
-
     contentChildProfile.classList.remove('locked')
     contentChildProfile.title = getMsg('SetCookieProfileButtonHelpText')
   }
@@ -1418,7 +1417,7 @@ async function resetUIDomain (data) {
   else await browser.storage.local.set(data)
 
   let confirmClearing = document.querySelector('#confirmDomainClearing')
-  confirmClearing.classList.remove('active')
+  confirmClearing.classList.remfove('active')
   return true
 }
 
@@ -1551,25 +1550,11 @@ function loadHelp (currentLocal) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-// Startup code
-useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
 
-document.querySelector('#activeCookies').addEventListener('click', switchView)
-document.querySelector('#flaggedCookies').addEventListener('click', switchView)
-document.querySelector('#permittedCookies').addEventListener('click', switchView)
-document.querySelector('#help').addEventListener('click', switchView)
-document.querySelector('#prefs').addEventListener('click', switchView)
-document.querySelector('#auto-flag').addEventListener('click', flagAutoSwitch)
-document.querySelector('#global-flag').addEventListener('click', flagGlobalAuto)
-document.querySelector('#account-mode').addEventListener('click', accountModeSwitch)
-document.querySelector('#searchBar').addEventListener('keyup', searchContent)
-document.querySelector('#confirmSettingsClearing').addEventListener('click', toggleClearing)
-document.querySelector('#confirmDomainClearing').addEventListener('click', toggleClearing)
-document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
-document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
-document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
-document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
-document.querySelector('#importFile').addEventListener('change', importSettings)
+function toggleImportOverwrite (evt) {
+  if (!evt.target.classList.contains('active')) evt.target.classList.add('active')
+  else evt.target.classList.remove('active')
+}
 
 function generateZip (rawData) {
   let data = JSON.stringify(rawData)
@@ -1589,26 +1574,55 @@ function generateZip (rawData) {
   })
 }
 
+// --------------------------------------------------------------------------------------------------------------------------------
+
 async function exportSettings () {
   if (useChrome) chrome.storage.local.get(null, generateZip)
   else generateZip(await browser.storage.local.get())
 }
 
-function importSettings (evt) {
-  let file = evt.target.files[0]
+// --------------------------------------------------------------------------------------------------------------------------------
+async function triggerImport () {
+  let bgPage = await browser.runtime.getBackgroundPage()
+  bgPage.doImportOverwrite = document.querySelector('#confirmImportOverwrite').classList.contains('active')
+  bgPage.document.adoptNode(document.querySelector('#importFile')).addEventListener('change', bgPage.importSettings)
+}
 
-  JSZip.loadAsync(file).then(function(zip) {
-    if (zip.files["flagCookieSettings.json"] === undefined) {
-      return
-    }
-
-    zip.files["flagCookieSettings.json"].async("string").then(function (stringData) {
-      let data = JSON.parse(stringData)
-      if (!useChrome) browser.storage.local.set(data)
-      else chrome.storage.local.set(data)
-    })
+// --------------------------------------------------------------------------------------------------------------------------------
+function shadowInputChrome () {
+  chrome.runtime.getBackgroundPage(function (bgPage) {
+    alert('Settings will be imported.') // Dirty hack(?) to keep the popup window open
+    bgPage.doImportOverwrite = document.querySelector('#confirmImportOverwrite').classList.contains('active')
+    bgPage.document.adoptNode(document.querySelector('#importFile')).addEventListener('change', bgPage.importSettings)
   })
 }
+
+// --------------------------------------------------------------------------------------------------------------------------------
+// Startup code
+try {
+  useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
+} catch (e) {
+  console.log(e)
+}
+
+document.querySelector('#activeCookies').addEventListener('click', switchView)
+document.querySelector('#flaggedCookies').addEventListener('click', switchView)
+document.querySelector('#permittedCookies').addEventListener('click', switchView)
+document.querySelector('#help').addEventListener('click', switchView)
+document.querySelector('#prefs').addEventListener('click', switchView)
+document.querySelector('#auto-flag').addEventListener('click', flagAutoSwitch)
+document.querySelector('#global-flag').addEventListener('click', flagGlobalAuto)
+document.querySelector('#account-mode').addEventListener('click', accountModeSwitch)
+document.querySelector('#searchBar').addEventListener('keyup', searchContent)
+document.querySelector('#confirmSettingsClearing').addEventListener('click', toggleClearing)
+document.querySelector('#confirmDomainClearing').addEventListener('click', toggleClearing)
+document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
+document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
+document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
+document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
+if (useChrome) document.querySelector('label[for="importFile"]').addEventListener('click', shadowInputChrome)
+else document.querySelector('#importFile').addEventListener('click', triggerImport)
+document.querySelector('#confirmImportOverwrite').addEventListener('click', toggleImportOverwrite)
 
 if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed)
 else getActiveTab().then(initDomainURLandProceed)
