@@ -1203,14 +1203,14 @@ async function toggleNotifications (evt) {
     evt.target.classList.add('active')
     doSwitchOn = true
 
-    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/cookie_128.png' })
-    else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/cookie_128.png' })
+    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' })
+    else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' })
   } else {
     evt.target.classList.remove('active')
     doSwitchOn = false
 
-    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/cookie_128.png' })
-    else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/cookie_128.png' })
+    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' })
+    else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' })
   }
 
   if (useChrome) {
@@ -1512,8 +1512,8 @@ async function accountModeSwitchNeutral (data, evt) {
     evt.target.removeAttribute('class')
 
     // Account mode icon removal
-    if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '19': 'icons/cookie_19.png', '38': 'icons/cookie_38.png', '48': 'icons/cookie_48.png', '64': 'icons/cookie_64.png', '96': 'icons/cookie_96.png', '128': 'icons/cookie_128.png' } })
-    else browser.browserAction.setIcon({ 'tabId': tabId, 'path': { '19': 'icons/cookie_19.png', '38': 'icons/cookie_38.png', '48': 'icons/cookie_48.png', '64': 'icons/cookie_64.png', '96': 'icons/cookie_96.png', '128': 'icons/cookie_128.png' } })
+    if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '48': 'icons/flagcookies_icon.svg', '64': 'icons/flagcookies_icon.svg', '96': 'icons/flagcookies_icon.svg', '128': 'icons/flagcookies_icon.svg' } })
+    else browser.browserAction.setIcon({ 'tabId': tabId, 'path': { '48': 'icons/flagcookies_icon.svg', '64': 'icons/flagcookies_icon.svg', '96': 'icons/flagcookies_icon.svg', '128': 'icons/flagcookies_icon.svg' } })
     return
   }
 
@@ -1526,8 +1526,8 @@ async function accountModeSwitchNeutral (data, evt) {
   else await browser.storage.local.set(data)
 
   // Account mode icon
-  if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '19': 'icons/cookie_19_profil.png', '38': 'icons/cookie_38_profil.png', '48': 'icons/cookie_48_profil.png', '64': 'icons/cookie_64_profil.png', '96': 'icons/cookie_96_profil.png', '128': 'icons/cookie_128_profil.png' } })
-  else browser.browserAction.setIcon({ 'tabId': tabId, 'path': { '19': 'icons/cookie_19_profil.png', '38': 'icons/cookie_38_profil.png', '48': 'icons/cookie_48_profil.png', '64': 'icons/cookie_64_profil.png', '96': 'icons/cookie_96_profil.png', '128': 'icons/cookie_128_profil.png' } })
+  if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '48': 'icons/flagcookies_profil_icon.svg', '64': 'icons/flagcookies_profil_icon.svg', '96': 'icons/flagcookies_profil_icon.svg', '128': 'icons/flagcookies_profil_icon.svg' } })
+  else browser.browserAction.setIcon({ 'tabId': tabId, 'path': { '48': 'icons/flagcookies_profil_icon.svg', '64': 'icons/flagcookies_profil_icon.svg', '96': 'icons/flagcookies_profil_icon.svg', '128': 'icons/flagcookies_profil_icon.svg' } })
 }
 
 function loadHelp (currentLocal) {

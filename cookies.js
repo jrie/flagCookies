@@ -1163,24 +1163,20 @@ function setBrowserActionIconChrome (data, contextName, tabDomain, tabId) {
     chrome.browserAction.setIcon({
       'tabId': tabId,
       'path': {
-        '19': 'icons/cookie_19_profil.png',
-        '38': 'icons/cookie_38_profil.png',
-        '48': 'icons/cookie_48_profil.png',
-        '64': 'icons/cookie_64_profil.png',
-        '96': 'icons/cookie_96_profil.png',
-        '128': 'icons/cookie_128_profil.png'
+        '48': 'icons/flagcookies_profil_icon.svg',
+        '64': 'icons/flagcookies_profil_icon.svg',
+        '96': 'icons/flagcookies_profil_icon.svg',
+        '128': 'icons/flagcookies_profil_icon.svg'
       }
     })
   } else {
     chrome.browserAction.setIcon({
       'tabId': tabId,
       'path': {
-        '19': 'icons/cookie_19.png',
-        '38': 'icons/cookie_38.png',
-        '48': 'icons/cookie_48.png',
-        '64': 'icons/cookie_64.png',
-        '96': 'icons/cookie_96.png',
-        '128': 'icons/cookie_128.png'
+        '48': 'icons/flagcookies_icon.svg',
+        '64': 'icons/flagcookies_icon.svg',
+        '96': 'icons/flagcookies_icon.svg',
+        '128': 'icons/flagcookies_icon.svg'
       }
     })
   }
@@ -1194,24 +1190,20 @@ async function setBrowserActionIconFirefox (contextName, tabDomain, tabId) {
     browser.browserAction.setIcon({
       'tabId': tabId,
       'path': {
-        '19': 'icons/cookie_19_profil.png',
-        '38': 'icons/cookie_38_profil.png',
-        '48': 'icons/cookie_48_profil.png',
-        '64': 'icons/cookie_64_profil.png',
-        '96': 'icons/cookie_96_profil.png',
-        '128': 'icons/cookie_128_profil.png'
+        '48': 'icons/flagcookies_profil_icon.svg',
+        '64': 'icons/flagcookies_profil_icon.svg',
+        '96': 'icons/flagcookies_profil_icon.svg',
+        '128': 'icons/flagcookies_profil_icon.svg'
       }
     })
   } else {
     browser.browserAction.setIcon({
       'tabId': tabId,
       'path': {
-        '19': 'icons/cookie_19.png',
-        '38': 'icons/cookie_38.png',
-        '48': 'icons/cookie_48.png',
-        '64': 'icons/cookie_64.png',
-        '96': 'icons/cookie_96.png',
-        '128': 'icons/cookie_128.png'
+        '48': 'icons/flagcookies_icon.svg',
+        '64': 'icons/flagcookies_icon.svg',
+        '96': 'icons/flagcookies_icon.svg',
+        '128': 'icons/flagcookies_icon.svg'
       }
     })
   }

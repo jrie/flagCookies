@@ -14,12 +14,10 @@
     "default_title": "FlagCookies",
     "default_popup": "cookies.html",
     "default_icon": {
-      "19": "icons/cookie_19.png",
-      "38": "icons/cookie_38.png",
-      "48": "icons/cookie_48.png",
-      "64": "icons/cookie_64.png",
-      "96": "icons/cookie_96.png",
-      "128": "icons/cookie_128.png"
+      "48": "icons/flagcookies_icon.svg",
+      "64": "icons/flagcookies_icon.svg",
+      "96": "icons/flagcookies_icon.svg",
+      "128": "icons/flagcookies_icon.svg"
     }
   },
   "commands": {
@@ -32,17 +30,15 @@
   },
   "description": "__MSG_AddonDescription__",
   "icons": {
-    "19": "icons/cookie_19.png",
-    "38": "icons/cookie_38.png",
-    "48": "icons/cookie_48.png",
-    "64": "icons/cookie_64.png",
-    "96": "icons/cookie_96.png",
-    "128": "icons/cookie_128.png"
+    "48": "icons/flagcookies_icon.svg",
+    "64": "icons/flagcookies_icon.svg",
+    "96": "icons/flagcookies_icon.svg",
+    "128": "icons/flagcookies_icon.svg"
   },
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "3.0.33",
+  "version": "3.0.34",
   "permissions": ["cookies", "tabs", "webRequest", "<all_urls>", "storage", "unlimitedStorage", "notifications", "contextualIdentities"],
   "background": {
     "scripts": [
