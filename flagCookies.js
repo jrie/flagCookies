@@ -1512,7 +1512,7 @@ async function accountModeSwitchNeutral (data, evt) {
     evt.target.removeAttribute('class')
 
     // Account mode icon removal
-    if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '48': 'icons/flagcookies_icon.svg', '64': 'icons/flagcookies_icon.svg', '96': 'icons/flagcookies_icon.svg', '128': 'icons/flagcookies_icon.svg' } })
+    if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '16': 'icons/fc16.png', '48': 'icons/fc48.png', '128': 'icons/fc128.png' } })
     else browser.browserAction.setIcon({ 'tabId': tabId, 'path': { '48': 'icons/flagcookies_icon.svg', '64': 'icons/flagcookies_icon.svg', '96': 'icons/flagcookies_icon.svg', '128': 'icons/flagcookies_icon.svg' } })
     return
   }
@@ -1526,7 +1526,7 @@ async function accountModeSwitchNeutral (data, evt) {
   else await browser.storage.local.set(data)
 
   // Account mode icon
-  if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '48': 'icons/flagcookies_profil_icon.svg', '64': 'icons/flagcookies_profil_icon.svg', '96': 'icons/flagcookies_profil_icon.svg', '128': 'icons/flagcookies_profil_icon.svg' } })
+  if (useChrome) chrome.browserAction.setIcon({ 'tabId': tabId, 'path': { '16': 'icons/fc16p.png', '48': 'icons/fc48p.png', '128': 'icons/fc128p.png' } })
   else browser.browserAction.setIcon({ 'tabId': tabId, 'path': { '48': 'icons/flagcookies_profil_icon.svg', '64': 'icons/flagcookies_profil_icon.svg', '96': 'icons/flagcookies_profil_icon.svg', '128': 'icons/flagcookies_profil_icon.svg' } })
 }
 

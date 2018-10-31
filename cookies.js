@@ -1163,20 +1163,18 @@ function setBrowserActionIconChrome (data, contextName, tabDomain, tabId) {
     chrome.browserAction.setIcon({
       'tabId': tabId,
       'path': {
-        '48': 'icons/flagcookies_profil_icon.svg',
-        '64': 'icons/flagcookies_profil_icon.svg',
-        '96': 'icons/flagcookies_profil_icon.svg',
-        '128': 'icons/flagcookies_profil_icon.svg'
+        '16': 'icons/fc16p.png',
+        '48': 'icons/fc48p.png',
+        '128': 'icons/fc128p.png'
       }
     })
   } else {
     chrome.browserAction.setIcon({
       'tabId': tabId,
       'path': {
-        '48': 'icons/flagcookies_icon.svg',
-        '64': 'icons/flagcookies_icon.svg',
-        '96': 'icons/flagcookies_icon.svg',
-        '128': 'icons/flagcookies_icon.svg'
+        '16': 'icons/fc16.png',
+        '48': 'icons/fc48.png',
+        '128': 'icons/fc128.png'
       }
     })
   }
