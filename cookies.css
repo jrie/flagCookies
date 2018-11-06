@@ -485,6 +485,7 @@ button#help {
   border: 1px solid #99a;
   transition: background-color,color;
   transition-duration: 120ms;
+  background-size: 24px;
 }
 
 .chrome button#auto-flag,
@@ -581,6 +582,7 @@ button#global-flag.active {
   background-repeat: no-repeat;
   background-clip: border-box;
   background-position: 4px center;
+  background-size: 21px;
 }
 
 .chrome #prefs {
