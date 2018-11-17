@@ -318,7 +318,7 @@ li.unremoved-secure-cookie {
 
 button,
 #settings-action-all-import {
-  text-transform: uppercase;
+  text-transform: capitalize;
   text-align: center;
   background-color: #446;
   border-radius: 24px 24px;
@@ -563,7 +563,7 @@ button#help {
   padding: 7px 20px 8px 34px;
 }
 
-.dark button#help {
+body.dark button#help {
   background-image: url('icons/help_28w.png');
 }
 
@@ -692,7 +692,7 @@ button#global-flag.active {
 
 }
 
-.dark .legend .intro  {
+body.dark .legend .intro  {
   background-image: url('icons/help_16w.png');
 }
 
@@ -766,12 +766,11 @@ textarea#log {
 }
 
 .helpNavigation li {
-  border-radius: 2px;
+  color: #335;
   background-color: #ddd;
   margin-bottom: 4px;
   display: block;
   border: none;
-  border-bottom: 1px solid #ddd;
   transition-property: background-color,border-color;
   transition-duration: 150ms;
   padding-top: 4px;
@@ -779,8 +778,13 @@ textarea#log {
   padding-left: 8px;
 }
 
+.dark .helpNavigation li {
+  color: #335;
+  border: 1px solid #ddd;
+}
+
 .helpNavigation li:hover {
-  color: #000;
+  color: #111;
 }
 
 .helpNavigation a {
