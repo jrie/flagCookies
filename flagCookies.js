@@ -964,7 +964,13 @@ function switchView (evt) {
   let prefsActive = false
   if (prefs !== evt.target) prefs.removeAttribute('class')
   else if (prefs.classList.contains('active')) prefsActive = true
+
+  let help = document.querySelector('#help')
+  let helpActive = false
+  if (help !== evt.target) help.removeAttribute('class')
+  else if (help.classList.contains('active')) helpActive = true
   evt.target.className = 'active'
+
 
   if (list.children.length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
@@ -982,7 +988,7 @@ function switchView (evt) {
     list.removeAttribute('class')
   }
 
-  if (prefsActive) document.querySelector('#activeCookies').click()
+  if (prefsActive || helpActive) document.querySelector('#activeCookies').click()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -1172,9 +1178,11 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 // --------------------------------------------------------------------------------------------------------------------------------
 // Search related
 function searchContent (evt) {
-  let searchVal = evt.target.value.trim().toLowerCase()
+  let searchVal = evt.target.value.trimRight().toLowerCase()
+  console.log(searchVal)
   doSearch(searchVal, 'cookie-list')
   doSearch(searchVal, 'cookie-list-flagged')
+  doSearch(searchVal, 'cookie-list-permitted')
 }
 
 function doSearch (searchVal, targetList) {
@@ -1184,9 +1192,9 @@ function doSearch (searchVal, targetList) {
     let contentChild = child.children[0]
     let cookieKey = contentChild.dataset['name'].toLowerCase()
     let cookieValue = contentChild.dataset['value'].toLowerCase()
-    if (cookieKey.indexOf(searchVal) === -1 && cookieValue.indexOf(searchVal) === -1) {
+    if (searchVal.length !== 0 && cookieKey.indexOf(searchVal) === -1 && cookieValue.indexOf(searchVal) === -1) {
       child.classList.add('hidden')
-    } else contentChild.classList.remove('hidden')
+    } else child.classList.remove('hidden')
   }
 }
 
