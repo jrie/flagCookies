@@ -425,6 +425,14 @@
     "message": "Add-on Einstellungen",
     "description": "Shown in settings, add-on settings label"
   },
+  "UseDarkLabelText": {
+    "message": "Dunkles Farbschema",
+    "description": "Label for usage of dark theme"
+  },
+  "SettingsUseDarkHelpText": {
+    "message": "Dunkles Farbschema aktivieren",
+    "description": "Button text to enable dark theme"
+  },
   "DisplayNotificationsLabelText": {
     "message": "Zeige Benachrichtigungen",
     "description": "Shown in settings, display notifications label"

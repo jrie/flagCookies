@@ -5,11 +5,16 @@ html, body {
   width: 800px;
   max-height: 600px;
   color: #557;
-  background-color: #ccc;
+  background-color: #eee;
   font-size: 0.9em;
   font-family: 'Open Sans', Helvetica, Verdana, Geneva, Arial, sans-serif;
   font-weight: normal;
+}
+
+html .dark, body.dark {
+  background-color: #ccc;
   text-shadow: 1px 1px 0px rgba(255,255,255, 0.175);
+  color: #eef;
 }
 
 body {
@@ -29,6 +34,9 @@ body {
 
 span, p, h1, h2, h3, h4, h5 {
   cursor: default;
+}
+
+.dark span, .dark p, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5 {
   text-shadow: 1px 1px 0px rgba(255,255,255, 0.25);
   color: #557;
 }
@@ -57,10 +65,10 @@ span, p, h1, h2, h3, h4, h5 {
   z-index: 10;
   background-color: #eee;
   border-bottom: 1px solid #aaa;
-  background-color: #333355;
 }
 
-.panel-section-header {
+.dark .panel-section-header,
+.dark .legend {
   background-color: #333355;
 }
 
@@ -103,6 +111,10 @@ span, p, h1, h2, h3, h4, h5 {
   margin-bottom: 12px;
   display: inline-block;
   border-right: 1px solid #aaa;
+}
+
+.dark .legend span,
+.dark .legend p.intro {
   color: #eef;
 }
 
@@ -136,10 +148,15 @@ span, p, h1, h2, h3, h4, h5 {
 .intro,
 .settings-title {
   display: block;
-  color: #bbc;
+  color: #888;
   font-size: 0.65em;
   margin-top: 0px;
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.85)
+}
+
+.dark .intro,
+.dark .settings-title {
+  color: #bbc;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.85);
 }
 
 .info {
@@ -148,8 +165,11 @@ span, p, h1, h2, h3, h4, h5 {
   font-size: 1.25em;
 }
 
-.domainurl {
+.dark .domainurl {
   color: #ddf;
+}
+
+.domainurl {
   font-size: 0.7em;
 }
 
@@ -162,8 +182,12 @@ span, p, h1, h2, h3, h4, h5 {
 hr {
   clear: both;
   border: none;
-  border-bottom: 1px solid #aac;
+  border-bottom: 1px solid #cdcdcd;
   margin: 0px;
+}
+
+.dark hr {
+  border-bottom: 1px solid #aac;
 }
 
 ul {
@@ -198,18 +222,30 @@ li.inactive-cookie {
 li:hover {
   background-color: #557;
   color: #eef;
-  border-top: 1px solid #779;
+  border-top: 1px solid #668;
   border-right: 1px solid #668;
   border-bottom: 1px solid #668;
 }
 
-li:hover .cookieValue,
-li:hover .cookieKey {
+.dark li:hover {
+  border-top: 1px solid #779;
+}
+
+.dark li:hover .cookieValue {
+  color: #fff;
+}
+
+li:hover .cookieValue {
   color: #fff;
 }
 
 li:hover .secure-cookie,
 li:hover .cookie-domain {
+  color: #ff7000;
+}
+
+.dark li:hover .secure-cookie,
+.dark li:hover .cookie-domain {
   color: #ff8020;
 }
 
@@ -297,8 +333,8 @@ button,
 
 .chrome button,
 #settings-action-all-import {
-  padding: 8px 12px 7px 12px;
-  outline: none;
+    padding: 8px 12px 7px 12px;
+    outline: none;
 }
 
 button,
@@ -387,6 +423,10 @@ button#permittedCookies {
   position: absolute;
   top: 23px;
   right: -8px;
+}
+
+.dark .cookieCount {
+  color: #fff;
 }
 
 .chrome .cookieCount {
@@ -480,19 +520,30 @@ button#auto-flag,
 button#global-flag,
 button#account-mode,
 button#help {
+  background-color: #ddd;
   background-image: url('icons/cookie_wflag_28.png');
   background-position: 8px center;
   background-repeat: no-repeat;
   background-clip: border-box;
   padding: 7px 18px 8px 38px;
-  border-color: #335;
-  color: #fff;
+  border-color: #ddd;
+  color: #557;
   display: inline;
   margin-right:  7px;
-  border: 1px solid #66a;
+  border: 1px solid #99a;
   transition: background-color,color;
   transition-duration: 120ms;
   background-size: 24px;
+}
+
+.dark button#auto-flag,
+.dark button#global-flag,
+.dark button#account-mode,
+.dark button#help {
+  background-color: #446;
+  border-color: #335;
+  color: #fff;
+  border: 1px solid #66a;
 }
 
 .chrome button#auto-flag,
@@ -504,12 +555,16 @@ button#help {
 }
 
 button#help {
-  background-image: url('icons/help_28w.png');
+  background-image: url('icons/help_28.png');
   background-size: 21px;
   background-repeat: no-repeat;
   background-position: 8px center;
   margin-right: 0px;
   padding: 7px 20px 8px 34px;
+}
+
+.dark button#help {
+  background-image: url('icons/help_28w.png');
 }
 
 button#account-mode {
@@ -634,9 +689,10 @@ button#global-flag.active {
   background-position: right center;
   background-repeat: no-repeat;
   background-clip: border-box;
+
 }
 
-.legend .intro {
+.dark .legend .intro  {
   background-image: url('icons/help_16w.png');
 }
 
@@ -687,7 +743,8 @@ textarea#log {
   max-width: 300px;
 }
 
-#settings-notification {
+#settings-notification,
+#settings-use-dark {
   margin-bottom: 25px;
 }
 
@@ -695,7 +752,8 @@ textarea#log {
 #domain-confirm-clear span,
 #settings-notification span,
 #settings-all-export span,
-#settings-all-import span {
+#settings-all-import span,
+#settings-use-dark span {
   position: relative;
   top: 0.65em;
   font-weight: bold;

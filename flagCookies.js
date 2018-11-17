@@ -97,6 +97,11 @@ function chromeGetStorageAndCookiesForFunc (data, cookies, func, tab) {
 
   if (data === null) {
     chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func, tab) })
+
+    if (data['flagCookies_darkTheme'] === true) {
+      document.body.classList.add('dark')
+    }
+
     return
   } else if (cookies === null) {
     chrome.runtime.sendMessage({ 'getCookies': domainURL, 'windowId': tab.windowId, 'tabId': tab.id, 'storeId': 'default' }, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response, func, tab) })
@@ -140,12 +145,19 @@ async function initDomainURLandProceed (tabs) {
   // Get storage and cookies Firefox
   let data = await browser.storage.local.get()
   let activeCookieStore = 'default'
+
+  if (data['flagCookies_darkTheme'] === true) {
+    document.body.classList.add('dark')
+  }
+
   activeCookieStore = tab.cookieStoreId
   cookieStoreId = activeCookieStore
   await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
   let cookies = await browser.runtime.sendMessage({ 'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id })
   updateUIData(data, cookies, contextName, tab, activeCookieStore)
+
+
 }
 
 function sortObjectByKey (ObjectElements, keyName, doReverse) {
@@ -439,6 +451,10 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
   if (data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][contextName] !== undefined && data['flagCookies_accountMode'][contextName][domainURL] !== undefined) {
     document.querySelector('#account-mode').classList.add('active')
+  }
+
+  if (data['flagCookies_darkTheme'] !== undefined && data['flagCookies_darkTheme'] === true) {
+    document.querySelector('#confirmDarkTheme').classList.add('active')
   }
 
   if (data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
@@ -1204,6 +1220,34 @@ function toggleClearing (evt) {
   else evt.target.classList.remove('active')
 }
 
+async function toggleDarkTheme (evt) {
+  let doSwitchOn = false
+
+  if (!evt.target.classList.contains('active')) {
+    evt.target.classList.add('active')
+    doSwitchOn = true
+    document.body.classList.add('dark')
+  } else {
+    evt.target.classList.remove('active')
+    doSwitchOn = false
+    document.body.classList.remove('dark')
+  }
+
+  if (useChrome) {
+    getChromeStorageForFunc1(switchDarkThemeChrome, doSwitchOn)
+    return
+  }
+
+  let data = await browser.storage.local.get(null)
+  data['flagCookies_darkTheme'] = doSwitchOn
+  await browser.storage.local.set(data)
+}
+
+function switchDarkThemeChrome (data, doSwitchOn) {
+  data['flagCookies_darkTheme'] = doSwitchOn
+  setChromeStorage(data)
+}
+
 async function toggleNotifications (evt) {
   let doSwitchOn = false
 
@@ -1625,6 +1669,7 @@ document.querySelector('#searchBar').addEventListener('keyup', searchContent)
 document.querySelector('#confirmSettingsClearing').addEventListener('click', toggleClearing)
 document.querySelector('#confirmDomainClearing').addEventListener('click', toggleClearing)
 document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
+document.querySelector('#confirmDarkTheme').addEventListener('click', toggleDarkTheme)
 document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
 document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
 document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
