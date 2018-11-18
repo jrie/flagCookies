@@ -554,6 +554,10 @@
     "message": "Search and filter for cookie names and values.",
     "description": "Displayed help text for permitted cookie view tab"
   },
+  "SearchBarText": {
+    "message": "Search cookie list",
+    "description": "Searchbar placeholder text"
+  },
   "ActionLogHelpText": {
     "message": "The log shows all cookie actions taken by Flag Cookies.",
     "description": "Displayed help text for action log"
