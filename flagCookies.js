@@ -97,13 +97,12 @@ function chromeGetStorageAndCookiesForFunc (data, cookies, func, tab) {
 
   if (data === null) {
     chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func, tab) })
-
-    if (data['flagCookies_darkTheme'] === true) {
+    return
+  } else if (cookies === null) {
+    if (data['flagCookies_darkTheme'] !== undefined && data['flagCookies_darkTheme'] === true) {
       document.body.classList.add('dark')
     }
 
-    return
-  } else if (cookies === null) {
     chrome.runtime.sendMessage({ 'getCookies': domainURL, 'windowId': tab.windowId, 'tabId': tab.id, 'storeId': 'default' }, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response, func, tab) })
     return
   }
@@ -146,7 +145,7 @@ async function initDomainURLandProceed (tabs) {
   let data = await browser.storage.local.get()
   let activeCookieStore = 'default'
 
-  if (data['flagCookies_darkTheme'] === true) {
+  if (data['flagCookies_darkTheme'] !== undefined && data['flagCookies_darkTheme'] === true) {
     document.body.classList.add('dark')
   }
 
@@ -182,6 +181,8 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   introSpan.appendChild(intro)
   let introUrl = document.createElement('span')
   introUrl.className = 'domainurl'
+  if (cookies.rootDomain.startsWith('.')) cookies.rootDomain.replace('.', '')
+
   let url = document.createTextNode(cookies.rootDomain)
   introUrl.appendChild(url)
   activeTabUrl.appendChild(introSpan)
@@ -509,8 +510,14 @@ function getTempContainerStatus (contextName) {
 
 function addCookieToProfileList (targetList, cookieName, cookieDomain, src) {
   let li = document.createElement('li')
+
   let cookieKey = document.createElement('span')
+  cookieKey.classList.add('key')
   cookieKey.appendChild(document.createTextNode(cookieName))
+
+  let cookieKeyDomain = document.createElement('span')
+  cookieKeyDomain.classList.add('domain')
+  cookieKeyDomain.appendChild(document.createTextNode(cookieDomain))
 
   let dumpster = document.createElement('button')
   dumpster.addEventListener('click', dumpProfileCookie)
@@ -520,6 +527,7 @@ function addCookieToProfileList (targetList, cookieName, cookieDomain, src) {
   dumpster.className = 'dumpster'
 
   li.appendChild(cookieKey)
+  li.appendChild(cookieKeyDomain)
   li.appendChild(dumpster)
   targetList.appendChild(li)
 }
@@ -527,7 +535,7 @@ function addCookieToProfileList (targetList, cookieName, cookieDomain, src) {
 function removeCookieOfProfileList (targetList, cookieName, cookieDomain) {
   for (let child of targetList.children) {
     if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
-    if (child.children[1].dataset['name'] === cookieName && child.children[1].dataset['domain'] === cookieDomain) {
+    if (child.children[2].dataset['name'] === cookieName && child.children[2].dataset['domain'] === cookieDomain) {
       targetList.removeChild(child)
       return
     }
@@ -538,6 +546,8 @@ function isDomainCookieInList (targetList, cookieKey, cookieDomain) {
   for (let child of targetList.children) {
     if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
     if (child.children[0].dataset['name'] === cookieKey && child.children[0].dataset['domain'] === cookieDomain) {
+      return true
+    } else if (child.children[2].dataset['name'] === cookieKey && child.children[2].dataset['domain'] === cookieDomain) {
       return true
     }
   }
@@ -939,7 +949,7 @@ async function cookieLockSwitchNeutral (data, evt) {
     else await browser.storage.local.set(data)
 
     let loggedInCookieList = document.querySelector('#loggedInCookies')
-    addCookieToProfileList(loggedInCookieList, cookieName, cookieDomain, 'flagCookies_logged')
+    if (!isDomainCookieInList(loggedInCookieList, cookieName, cookieDomain)) addCookieToProfileList(loggedInCookieList, cookieName, cookieDomain, 'flagCookies_logged')
     loggedInCookieList.removeAttribute('class')
 
     document.querySelector('#profileNoData').className = 'hidden'
@@ -986,7 +996,6 @@ function switchView (evt) {
   if (help !== evt.target) help.removeAttribute('class')
   else if (help.classList.contains('active')) helpActive = true
   evt.target.className = 'active'
-
 
   if (list.children.length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
@@ -1195,7 +1204,6 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 // Search related
 function searchContent (evt) {
   let searchVal = evt.target.value.trimRight().toLowerCase()
-  console.log(searchVal)
   doSearch(searchVal, 'cookie-list')
   doSearch(searchVal, 'cookie-list-flagged')
   doSearch(searchVal, 'cookie-list-permitted')
@@ -1340,6 +1348,9 @@ function resetUI () {
   document.querySelector('#global-flag').removeAttribute('class')
   document.querySelector('#account-mode').removeAttribute('class')
 
+  document.body.classList.remove('dark')
+  document.querySelector('#confirmDarkTheme').classList.remove('active')
+
   // Reset cookie list
   let cookieList = document.querySelector('#cookie-list')
   for (let child of cookieList.children) {
@@ -1348,7 +1359,7 @@ function resetUI () {
     contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
   }
 
-  let clearLists = ['cookie-list-flagged', 'cookie-list-permitted']
+  let clearLists = ['cookie-list-flagged', 'cookie-list-permitted', 'loggedInCookies']
 
   for (let child of clearLists) {
     let parent = document.getElementById(child)
@@ -1359,8 +1370,7 @@ function resetUI () {
     parent.className = 'hidden'
   }
 
-  let confirmClearing = document.querySelector('#confirmSettingsClearing')
-  confirmClearing.classList.remove('active')
+  document.querySelector('#confirmSettingsClearing').classList.remove('active')
 }
 
 async function resetUIDomain (data) {
@@ -1643,7 +1653,7 @@ async function triggerImport () {
 // --------------------------------------------------------------------------------------------------------------------------------
 function shadowInputChrome () {
   chrome.runtime.getBackgroundPage(function (bgPage) {
-    alert('Settings will be imported.') // Dirty hack(?) to keep the popup window open
+    window.alert('Settings will be imported.') // Dirty hack(?) to keep the popup window open
     bgPage.doImportOverwrite = document.querySelector('#confirmImportOverwrite').classList.contains('active')
     bgPage.document.adoptNode(document.querySelector('#importFile')).addEventListener('change', bgPage.importSettings)
   })
