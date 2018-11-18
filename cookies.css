@@ -5,10 +5,11 @@ html, body {
   width: 800px;
   max-height: 600px;
   color: #557;
-  background-color: #eee;
+  background-color: #ddd0e0;
   font-size: 0.9em;
   font-family: 'Open Sans', Helvetica, Verdana, Geneva, Arial, sans-serif;
   font-weight: normal;
+  text-shadow: 1px 1px 0px rgba(255,255,255, 0.175);
 }
 
 html .dark, body.dark {
@@ -33,6 +34,7 @@ body {
 }
 
 span, p, h1, h2, h3, h4, h5 {
+  text-shadow: 1px 1px 0px rgba(0,0,0, 0.15);
   cursor: default;
 }
 
@@ -63,8 +65,9 @@ span, p, h1, h2, h3, h4, h5 {
   position: sticky;
   top: 0px;
   z-index: 10;
-  background-color: #eee;
+  background-color: #bbbbc8;
   border-bottom: 1px solid #aaa;
+  color: #222035:
 }
 
 .dark .panel-section-header,
@@ -98,6 +101,7 @@ span, p, h1, h2, h3, h4, h5 {
   margin-right: 24px;
   margin-bottom: 12px;
   display: inline-block;
+  color: #eef;
 }
 
 .legend span {
@@ -111,6 +115,11 @@ span, p, h1, h2, h3, h4, h5 {
   margin-bottom: 12px;
   display: inline-block;
   border-right: 1px solid #aaa;
+}
+
+.legend span,
+.legend p.intro {
+  color: #446;
 }
 
 .dark .legend span,
@@ -129,7 +138,6 @@ span, p, h1, h2, h3, h4, h5 {
 }
 
 .legend #leg-flagged {
-  /*background-image: url('icons/checkmark.png');*/
   background-image: url('icons/ban.png');
   background-position: 0px center;
 }
@@ -146,11 +154,13 @@ span, p, h1, h2, h3, h4, h5 {
 }
 
 .intro,
+span.domainurl,
 .settings-title {
   display: block;
   color: #888;
   font-size: 0.65em;
   margin-top: 0px;
+  text-shadow: 1px 1px 0px rgba(255,255,255, 0.4);
 }
 
 .dark .intro,
@@ -159,10 +169,16 @@ span, p, h1, h2, h3, h4, h5 {
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.85);
 }
 
+.dark span.domainurl {
+  color: inherit;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.85);
+}
+
 .info {
   padding-left: 21px;
   font-weight: bold;
   font-size: 1.25em;
+  color: #222035:
 }
 
 .dark .domainurl {
@@ -177,6 +193,20 @@ span, p, h1, h2, h3, h4, h5 {
   display: block;
   max-width: 85%;
   margin-bottom: 8px;
+}
+
+#header-title span.intro {
+  color: #446;
+}
+
+#header-title span {
+  color: #225;
+}
+
+.dark #header-title,
+.dark #header-title span.intro,
+.dark #header-title span {
+  color: inherit;
 }
 
 hr {
@@ -216,7 +246,7 @@ li:nth-child(2n+1) {
 }
 
 li.inactive-cookie {
-  opacity: 0.55;
+  opacity: 0.525;
 }
 
 li:hover {
@@ -231,6 +261,7 @@ li:hover {
   border-top: 1px solid #779;
 }
 
+.dark li:hover .cookieKey,
 .dark li:hover .cookieValue {
   color: #fff;
 }
@@ -255,7 +286,7 @@ li.unremoved-secure-cookie {
 
 .cookieKey, .cookieValue, .secure-cookie {
   transition-property: color;
-  transition-duration: 150ms;
+  transition-duration: 170ms;
 }
 
 .cookieKey {
@@ -288,7 +319,7 @@ li.unremoved-secure-cookie {
   background-color: #eee;
   display: block;
   margin: 0px;
-  padding: 9px 12px;
+  padding: 11px 14px 11px 0px;
   border-radius: 8px;
   margin-bottom: 8px;
   font-size: 1em;
@@ -329,8 +360,6 @@ button,
   color: #ddd;
 }
 
-
-
 .chrome button,
 #settings-action-all-import {
     padding: 8px 12px 7px 12px;
@@ -370,7 +399,8 @@ button::-moz-focus-inner {
 }
 
 .chrome #tabs {
-  top: 16px;
+  margin-top: 20px;
+  top: 3px;
 }
 
 #tabs button {
@@ -512,10 +542,6 @@ li:hover button.checkmark {
   display: block;
 }
 
-.chrome #modes {
-  right: 0%;
-}
-
 button#auto-flag,
 button#global-flag,
 button#account-mode,
@@ -614,12 +640,12 @@ button#global-flag.active {
   border-radius: 8px;
   border: 1px solid #ccc;
   margin: 0px;
-  padding: 4px 12px 7px 4%;
+  padding: 4px 5px 7px 4%;
   font-weight: bold;
   width: 40%;
   position: absolute;
   right: 1%;
-  bottom: 9px;
+  bottom: 6px;
 }
 
 .chrome #searchBar {
@@ -689,7 +715,7 @@ button#global-flag.active {
   background-position: right center;
   background-repeat: no-repeat;
   background-clip: border-box;
-
+  color: #446;
 }
 
 body.dark .legend .intro  {
@@ -871,6 +897,12 @@ textarea#log {
 
 #profilePane span {
   font-weight: bold;
+}
+
+#profilePane .domain {
+  float: left;
+  min-width: 24%;
+  padding-right: 1%;
 }
 
 #profilePane #profileNoData {
