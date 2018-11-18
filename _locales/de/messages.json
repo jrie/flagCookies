@@ -215,7 +215,7 @@
     "description": "Status deleted, also used in overview display"
   },
   "DeletedStateMsg": {
-    "message": "Entfernter",
+    "message": "Entfernte",
     "description": "Status deleted, used as filter for Msg Count in logging"
   },
   "GlobalFlagState": {
@@ -292,7 +292,7 @@
     }
   },
   "DeletedCookieMsgHttpAndHttpsGlobalFlag": {
-    "message": "Globaler Modus entfern  te Cookie bei '$action$', Cookie: '$cookieName$' für '$httpHttps$$domainName$'",
+    "message": "Globaler Modus entfernte Cookie bei '$action$', Cookie: '$cookieName$' für '$httpHttps$$domainName$'",
     "description": "Log Message for global flag deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
     "placeholders": {
       "action": { "content": "$1", "example": "reload, javascript request, document load" },
