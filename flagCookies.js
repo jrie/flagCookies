@@ -844,7 +844,7 @@ async function cookieFlagSwitchNeutral (data, evt) {
       if (child.firstChild.dataset['name'] === cookieName && child.firstChild.dataset['domain'] === cookieDomain) {
         child.parentNode.removeChild(child)
         --countList['#flaggedCookies']
-        break
+        breakk
       }
     }
   } else if (hasAutoFlag) {
@@ -1249,17 +1249,28 @@ function searchContent (evt) {
 }
 
 function doSearch (searchVal, targetList) {
-  //let searchTarget = document.getElementById(targetList)
   let subListing = document.querySelectorAll('#' + targetList + ' .cookieEntry')
+  let currentParent = null
+  let hasVisible = false
   for (let child of subListing) {
-    console.log(child)
-    let contentChild = child.firstChild
-    let cookieKey = contentChild.dataset['name'].toLowerCase()
-    let cookieValue = contentChild.dataset['value'].toLowerCase()
+    if (currentParent === null || currentParent !== child.parentNode.parentNode) {
+      if (currentParent !== null && !hasVisible) currentParent.classList.add('hidden')
+      hasVisible = false
+      currentParent = child.parentNode.parentNode
+      currentParent.classList.remove('hidden')
+    }
+
+    let cookieKey =  child.firstChild.dataset['name'].toLowerCase()
+    let cookieValue = child.firstChild.dataset['value'].toLowerCase()
     if (searchVal.length !== 0 && cookieKey.indexOf(searchVal) === -1 && cookieValue.indexOf(searchVal) === -1) {
-      child.classList.add('hidden')
-    } else child.classList.remove('hidden')
+      child.classList.add('hidden') 
+    } else {
+      child.classList.remove('hidden')
+      hasVisible = true
+    }
   }
+
+  if (currentParent !== null && !hasVisible) currentParent.classList.add('hidden')
 }
 
 // Settings dialog - clearing flag cookies data

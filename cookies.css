@@ -371,6 +371,7 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
 .subloaded {
   color: #9a0000;
   margin-right: 1em;
+  margin-left: 1em;
 }
 
 .chrome .subloaded {
