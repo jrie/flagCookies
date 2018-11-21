@@ -181,7 +181,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   introSpan.appendChild(intro)
   let introUrl = document.createElement('span')
   introUrl.className = 'domainurl'
-  if (cookies.rootDomain.startsWith('.')) cookies.rootDomain.replace('.', '')
 
   let url = document.createTextNode(cookies.rootDomain)
   introUrl.appendChild(url)
@@ -230,10 +229,28 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
         if ((cookieJoin === null && cookieKey !== previousCookieDomain && cookies.cookies[cookieKey]['isAdded'] === undefined) || (cookieJoin !== null && cookieKey.indexOf(cookieJoinRoot) !== -1)) {
           previousCookieDomain = cookieKey
+          
+          let cookieSubDiv = document.createElement('li')
+          cookieSubDiv.className = 'subcontainer'
+          
           let cookieSub = document.createElement('h4')
           cookieSub.className = 'subloadbar'
           let cookieSubSpan = document.createElement('span')
           cookieSubSpan.className = 'subloaded'
+
+          let menuItemsDiv = document.createElement('div')
+          menuItemsDiv.className = 'domainNameMenu'
+          
+          let subCollapse = document.createElement('button')
+          subCollapse.textContent = '+'
+          subCollapse.className = 'collapseToogle active'
+          menuItemsDiv.appendChild(subCollapse)
+
+          /*let subFlag = document.createElement('button')
+          subFlag.className = 'flagToggle'
+          menuItemsDiv.appendChild(subFlag)*/
+
+          cookieSub.appendChild(menuItemsDiv)
 
           if (cookieJoin === null) {
             let cookieSubSpanText = document.createTextNode(getMsg('CrossOriginInformationText'))
@@ -245,12 +262,18 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           else subName = document.createTextNode(cookieKey)
           cookieSub.appendChild(cookieSubSpan)
           cookieSub.appendChild(subName)
-          cookieList.appendChild(cookieSub)
+          cookieSubDiv.appendChild(cookieSub)
+          let cookieSubContent = document.createElement('ul')
+          cookieSubContent.className = 'subloadContainer'
+          cookieSubDiv.appendChild(cookieSubContent)
+          cookieList.appendChild(cookieSubDiv)
+
+          
 
           if (index === 1) {
             cookies.cookies[cookieKey]['isAdded'] = true
           }
-        } else if (index === 1) continue
+        }
 
         if (index !== 1 && cookies.cookies[cookieKey]['isAdded'] !== undefined) continue
 
@@ -260,6 +283,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           ++countList['#activeCookies']
 
           let li = document.createElement('li')
+          li.className = 'cookieEntry'
 
           let checkMark = document.createElement('button')
           checkMark.className = 'checkmark'
@@ -389,7 +413,9 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           li.appendChild(checkMark)
           li.appendChild(p)
           li.appendChild(lockSwitch)
-          cookieList.appendChild(li)
+          cookieList.lastChild.childNodes[1].appendChild(li)
+          cookieList.lastChild.childNodes[1].classList.add('hidden')
+          cookieList.lastChild.childNodes[0].classList.add('active')
         }
       }
     }
@@ -410,11 +436,11 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
       if (cookieDomain === cookies.rootDomain) continue
       for (let cookieKey of Object.keys(domainData[cookieDomain])) {
         if (domainData[cookieDomain][cookieKey] === true) {
-          if (!isDomainCookieInList(flaggedCookieList, cookieKey, cookieDomain)) {
+          if (!isDomainCookieInList('#cookie-list-flagged', cookieKey, cookieDomain)) {
             addCookieToList('cookie-list-flagged', cookieKey, '', cookieDomain, true)
             ++countList['#flaggedCookies']
           }
-        } else if (domainData[cookieDomain][cookieKey] === false && !isDomainCookieInList(permittedCookieList, cookieKey, cookieDomain)) {
+        } else if (domainData[cookieDomain][cookieKey] === false) {
           addCookieToList('cookie-list-permitted', cookieKey, '', cookieDomain, true)
           ++countList['#permittedCookies']
         }
@@ -441,13 +467,12 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   document.querySelector('#activeCookies').className = 'active'
   if (cookies['logData'] !== null) {
     let log = document.querySelector('#log')
-
     for (let entry of cookies['logData']) log.textContent += entry + '\n'
   }
 
   if (data['flagCookies_autoFlag'] && data['flagCookies_autoFlag'][contextName] && data['flagCookies_autoFlag'][contextName][domainURL]) {
     document.querySelector('#auto-flag').classList.add('active')
-    switchAutoFlag(true, 'cookie-list')
+    switchAutoFlag(true, '#cookie-list')
   }
 
   if (data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][contextName] !== undefined && data['flagCookies_accountMode'][contextName][domainURL] !== undefined) {
@@ -471,7 +496,26 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     document.querySelector(key).appendChild(bubble)
   }
 
+  for (let collapse of document.querySelectorAll('.collapseToogle')) {
+    collapse.addEventListener('click', toggleCollapse)
+  }
+
+  document.querySelector('.collapseToogle').click()
+
   if (!useChrome) getTempContainerStatus(contextName)
+}
+
+function toggleCollapse (evt) {
+  if (evt.target.classList.contains('active')) {
+    evt.target.parentNode.parentNode.parentNode.lastChild.classList.remove('hidden')
+    evt.target.classList.remove('active')
+    evt.target.textContent = '-'
+    return
+  }
+  
+  evt.target.classList.add('active')
+  evt.target.parentNode.parentNode.parentNode.lastChild.classList.add('hidden')
+  evt.target.textContent = '+'
 }
 
 function buildHelpIndex () {
@@ -510,6 +554,7 @@ function getTempContainerStatus (contextName) {
 
 function addCookieToProfileList (targetList, cookieName, cookieDomain, src) {
   let li = document.createElement('li')
+  li.classList.add('cookieEntry')
 
   let cookieKey = document.createElement('span')
   cookieKey.classList.add('key')
@@ -543,11 +588,8 @@ function removeCookieOfProfileList (targetList, cookieName, cookieDomain) {
 }
 
 function isDomainCookieInList (targetList, cookieKey, cookieDomain) {
-  for (let child of targetList.children) {
-    if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
-    if (child.children[0].dataset['name'] === cookieKey && child.children[0].dataset['domain'] === cookieDomain) {
-      return true
-    } else if (child.children[2].dataset['name'] === cookieKey && child.children[2].dataset['domain'] === cookieDomain) {
+  for (let child of document.querySelectorAll(targetList + ' .cookieEntry')) {
+    if (child.firstChild.dataset['name'] === cookieKey && child.firstChild.dataset['domain'] === cookieDomain) {
       return true
     }
   }
@@ -556,8 +598,10 @@ function isDomainCookieInList (targetList, cookieKey, cookieDomain) {
 }
 
 function addCookieToList (targetList, name, value, domain, inactiveCookie) {
+  console.log(targetList)
   let targetCookieList = document.getElementById(targetList)
   let li = document.createElement('li')
+  li.classList.add('cookieEntry')
   li.dataset['name'] = name
   li.dataset['domain'] = domain
 
@@ -628,22 +672,21 @@ async function flaggedCookieSwitchNeutral (data, evt) {
   let cookieDomain = evt.target.dataset['domain']
 
   // Uncheck from flagged in active cookies, if present
-  let domainCookieList = document.querySelector('#cookie-list')
+  let domainCookieList = document.querySelectorAll('#cookie-list .cookieEntry')
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined
   let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true
 
-  for (let child of domainCookieList.children) {
-    if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
-    if (child.children[0].dataset['name'] === cookieName && child.children[0].dataset['domain'] === cookieDomain) {
+  for (let child of domainCookieList) {
+    if (child.firstChild.dataset['name'] === cookieName && child.firstChild.dataset['domain'] === cookieDomain) {
       if (hasAutoFlag) {
-        child.children[0].className = 'checkmark auto-flagged'
-        child.children[0].title = getMsg('CookieIsAutoFlaggedHelpText')
+        child.firstChild.className = 'checkmark auto-flagged'
+        child.firstChild.title = getMsg('CookieIsAutoFlaggedHelpText')
       } else if (hasGlobal) {
-        child.children[0].className = 'checkmark auto-flagged'
-        child.children[0].title = getMsg('CookieIsGlobalFlaggedHelpText')
+        child.firstChild.className = 'checkmark auto-flagged'
+        child.firstChild.title = getMsg('CookieIsGlobalFlaggedHelpText')
       } else {
-        child.children[0].className = 'checkmark'
-        child.children[0].title = getMsg('CookieFlagButtonAllowedHelpText')
+        child.firstChild.className = 'checkmark'
+        child.firstChild.title = getMsg('CookieFlagButtonAllowedHelpText')
       }
 
       break
@@ -701,22 +744,22 @@ async function permittedCookieSwitchNeutral (data, evt) {
   let cookieDomain = evt.target.dataset['domain']
 
   // Uncheck from permitted in active cookies, if present
-  let domainCookieList = document.querySelector('#cookie-list')
+  let domainCookieList = document.querySelectorAll('#cookie-list .cookieEntry')
   let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined
   let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true
 
-  for (let child of domainCookieList.children) {
-    if (child.nodeName !== 'LI' || child.hasAttribute('title')) continue
-    if (child.children[0].dataset['name'] === cookieName && child.children[0].dataset['domain'] === cookieDomain) {
+  for (let child of domainCookieList) {
+    console.log(child)
+    if (child.firstChild.dataset['name'] === cookieName && child.firstChild.dataset['domain'] === cookieDomain) {
       if (hasAutoFlag) {
-        child.children[0].className = 'checkmark auto-flagged'
-        child.children[0].title = getMsg('CookieIsAutoFlaggedHelpText')
+        child.firstChild.className = 'checkmark auto-flagged'
+        child.firstChild.title = getMsg('CookieIsAutoFlaggedHelpText')
       } else if (hasGlobal) {
-        child.children[0].className = 'checkmark auto-flagged'
-        child.children[0].title = getMsg('CookieIsGlobalFlaggedHelpText')
+        child.firstChild.className = 'checkmark auto-flagged'
+        child.firstChild.title = getMsg('CookieIsGlobalFlaggedHelpText')
       } else {
-        child.children[0].className = 'checkmark'
-        child.children[0].title = getMsg('CookieFlagButtonAllowedHelpText')
+        child.firstChild.className = 'checkmark'
+        child.firstChild.title = getMsg('CookieFlagButtonAllowedHelpText')
       }
 
       break
@@ -796,9 +839,9 @@ async function cookieFlagSwitchNeutral (data, evt) {
     ++countList['#permittedCookies']
 
     // Remove from flagged list if present
-    let flaggedCookieList = document.querySelector('#cookie-list-flagged')
-    for (let child of flaggedCookieList.children) {
-      if (child.children[0].dataset['name'] === cookieName && child.children[0].dataset['domain'] === cookieDomain) {
+    let flaggedCookieList = document.querySelectorAll('#cookie-list-flagged .cookieEntry')
+    for (let child of flaggedCookieList) {
+      if (child.firstChild.dataset['name'] === cookieName && child.firstChild.dataset['domain'] === cookieDomain) {
         child.parentNode.removeChild(child)
         --countList['#flaggedCookies']
         break
@@ -865,9 +908,9 @@ async function cookieFlagSwitchNeutral (data, evt) {
 
   if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieName] === undefined) {
     // Remove from permitted list if present
-    let permittedCookieList = document.querySelector('#cookie-list-permitted')
-    for (let child of permittedCookieList.children) {
-      if (child.children[0].dataset['name'] === cookieName && child.children[0].dataset['domain'] === cookieDomain) {
+    let permittedCookieList = document.querySelectorAll('#cookie-list-permitted .cookieEntry')
+    for (let child of permittedCookieList) {
+      if (child.firstChild.dataset['name'] === cookieName && child.firstChild.dataset['domain'] === cookieDomain) {
         child.parentNode.removeChild(child)
         --countList['#permittedCookies']
         break
@@ -949,7 +992,7 @@ async function cookieLockSwitchNeutral (data, evt) {
     else await browser.storage.local.set(data)
 
     let loggedInCookieList = document.querySelector('#loggedInCookies')
-    if (!isDomainCookieInList(loggedInCookieList, cookieName, cookieDomain)) addCookieToProfileList(loggedInCookieList, cookieName, cookieDomain, 'flagCookies_logged')
+    if (!isDomainCookieInList('#loggedInCookies', cookieName, cookieDomain)) addCookieToProfileList(loggedInCookieList, cookieName, cookieDomain, 'flagCookies_logged')
     loggedInCookieList.removeAttribute('class')
 
     document.querySelector('#profileNoData').className = 'hidden'
@@ -1039,7 +1082,7 @@ async function flagAutoSwitchNeutral (data, evt) {
     else await browser.storage.local.set(data)
 
     evt.target.classList.add('active')
-    switchAutoFlag(true, 'cookie-list')
+    switchAutoFlag(true, '#cookie-list')
   } else {
     delete data['flagCookies_autoFlag'][contextName][domainURL]
 
@@ -1047,7 +1090,7 @@ async function flagAutoSwitchNeutral (data, evt) {
     else await browser.storage.local.set(data)
     evt.target.classList.remove('active')
 
-    switchAutoFlag(false, 'cookie-list')
+    switchAutoFlag(false, '#cookie-list')
   }
 }
 
@@ -1063,7 +1106,7 @@ function flagGlobalAutoNonEventWrapper (data) {
     globalFlagButton.classList.add('active')
     data['flagCookies_flagGlobal'][contextName] = true
     setChromeStorage(data)
-    switchAutoFlagGlobal(true, 'cookie-list')
+    switchAutoFlagGlobal(true, '#cookie-list')
   } else {
     globalFlagButton.classList.remove('active')
     data['flagCookies_flagGlobal'][contextName] = false
@@ -1071,8 +1114,8 @@ function flagGlobalAutoNonEventWrapper (data) {
 
     let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined
 
-    if (hasAutoFlag) switchAutoFlagGlobal(true, 'cookie-list')
-    else switchAutoFlagGlobal(false, 'cookie-list')
+    if (hasAutoFlag) switchAutoFlagGlobal(true, '#cookie-list')
+    else switchAutoFlagGlobal(false, '#cookie-list')
   }
 }
 
@@ -1094,7 +1137,7 @@ async function flagGlobalAutoNonEvent () {
     globalFlagButton.classList.add('active')
     data['flagCookies_flagGlobal'][contextName] = true
     await browser.storage.local.set(data)
-    switchAutoFlagGlobal(true, 'cookie-list')
+    switchAutoFlagGlobal(true, '#cookie-list')
   } else {
     globalFlagButton.classList.remove('active')
     data['flagCookies_flagGlobal'][contextName] = false
@@ -1102,8 +1145,8 @@ async function flagGlobalAutoNonEvent () {
 
     let hasAutoFlag = data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined
 
-    if (hasAutoFlag) switchAutoFlag(true, 'cookie-list')
-    else switchAutoFlagGlobal(false, 'cookie-list')
+    if (hasAutoFlag) switchAutoFlag(true, '#cookie-list')
+    else switchAutoFlagGlobal(false, '#cookie-list')
   }
 }
 
@@ -1129,10 +1172,9 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
   if (data[contextName] === undefined) data[contextName] = {}
   if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
 
-  let searchTarget = document.getElementById(targetList)
+  let searchTarget = document.querySelectorAll(targetList + ' .cookieEntry')
   if (doSwitchOn) {
-    for (let child of searchTarget.children) {
-      if (child.nodeName !== 'LI') continue
+    for (let child of searchTarget) {
       let contentChild = child.children[0]
       if (!contentChild.classList.contains('checkmark')) continue
 
@@ -1140,8 +1182,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
       contentChild.title = getMsg('CookieIsAutoFlaggedHelpText')
     }
   } else {
-    for (let child of searchTarget.children) {
-      if (child.nodeName !== 'LI') continue
+    for (let child of searchTarget) {
       let contentChild = child.children[0]
 
       if (!contentChild.classList.contains('checkmark') && !contentChild.classList.contains('auto-flagged')) continue
@@ -1171,12 +1212,11 @@ async function switchAutoFlagGlobal (doSwitchOn, targetList) {
 
 // Neutral
 function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
-  let searchTarget = document.getElementById(targetList)
+  let searchTarget = document.querySelectorAll(targetList + ' .cookieEntry')
 
   if (doSwitchOn) {
-    for (let child of searchTarget.children) {
-      if (child.nodeName !== 'LI') continue
-      let contentChild = child.children[0]
+    for (let child of searchTarget) {
+      let contentChild = child.firstChild
       let cookieKey = contentChild.dataset['name']
       let cookieDomain = contentChild.dataset['domain']
 
@@ -1186,9 +1226,8 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
       }
     }
   } else {
-    for (let child of searchTarget.children) {
-      if (child.nodeName !== 'LI') continue
-      let contentChild = child.children[0]
+    for (let child of searchTarget) {
+      let contentChild = child.firstChild
       let cookieKey = contentChild.dataset['name']
       let cookieDomain = contentChild.dataset['domain']
 
@@ -1203,17 +1242,18 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 // --------------------------------------------------------------------------------------------------------------------------------
 // Search related
 function searchContent (evt) {
-  let searchVal = evt.target.value.trimRight().toLowerCase()
+  let searchVal = evt.target.value.trim().toLowerCase()
   doSearch(searchVal, 'cookie-list')
   doSearch(searchVal, 'cookie-list-flagged')
   doSearch(searchVal, 'cookie-list-permitted')
 }
 
 function doSearch (searchVal, targetList) {
-  let searchTarget = document.getElementById(targetList)
-  for (let child of searchTarget.children) {
-    if (child.nodeName !== 'LI') continue
-    let contentChild = child.children[0]
+  //let searchTarget = document.getElementById(targetList)
+  let subListing = document.querySelectorAll('#' + targetList + ' .cookieEntry')
+  for (let child of subListing) {
+    console.log(child)
+    let contentChild = child.firstChild
     let cookieKey = contentChild.dataset['name'].toLowerCase()
     let cookieValue = contentChild.dataset['value'].toLowerCase()
     if (searchVal.length !== 0 && cookieKey.indexOf(searchVal) === -1 && cookieValue.indexOf(searchVal) === -1) {
@@ -1524,9 +1564,8 @@ async function dumpProfileCookieNeutral (data, evt) {
   if (useChrome) setChromeStorage(data)
   else await browser.storage.local.set(data)
 
-  let cookieList = document.querySelector('#cookie-list')
-  for (let child of cookieList.children) {
-    if (child.nodeName !== 'LI') continue
+  let cookieList = document.querySelectorAll('#cookie-list .cookieEntry')
+  for (let child of cookieList) {
     let contentChild = child.children[2]
     if (contentChild.dataset['name'] === cookieName && contentChild.dataset['domain'] === cookieDomain) {
       contentChild.classList.remove('locked')
