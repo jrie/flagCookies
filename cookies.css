@@ -65,7 +65,7 @@ span, p, h1, h2, h3, h4, h5 {
   position: sticky;
   top: 0px;
   z-index: 10;
-  background-color: #bbbbc8;
+  background-color: #ccc;
   border-bottom: 1px solid #aaa;
 }
 
@@ -412,6 +412,7 @@ button,
 input,
 textarea {
   box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.17);
+  font-family: inherit;
 }
 
 .chrome input,
