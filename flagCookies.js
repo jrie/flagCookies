@@ -598,7 +598,6 @@ function isDomainCookieInList (targetList, cookieKey, cookieDomain) {
 }
 
 function addCookieToList (targetList, name, value, domain, inactiveCookie) {
-  console.log(targetList)
   let targetCookieList = document.getElementById(targetList)
   let li = document.createElement('li')
   li.classList.add('cookieEntry')
@@ -749,7 +748,6 @@ async function permittedCookieSwitchNeutral (data, evt) {
   let hasGlobal = data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true
 
   for (let child of domainCookieList) {
-    console.log(child)
     if (child.firstChild.dataset['name'] === cookieName && child.firstChild.dataset['domain'] === cookieDomain) {
       if (hasAutoFlag) {
         child.firstChild.className = 'checkmark auto-flagged'
@@ -844,7 +842,7 @@ async function cookieFlagSwitchNeutral (data, evt) {
       if (child.firstChild.dataset['name'] === cookieName && child.firstChild.dataset['domain'] === cookieDomain) {
         child.parentNode.removeChild(child)
         --countList['#flaggedCookies']
-        breakk
+        break
       }
     }
   } else if (hasAutoFlag) {
