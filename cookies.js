@@ -1543,7 +1543,7 @@ function clearCookiesOnRequestChrome (details) {
 
       if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
         if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined && openTabData[currentTab.windowId][currentTab.id][0] !== undefined) {
-          openTabData[currentTab.windowId][currentTab.id] = []
+          openTabData[currentTab.windowId][currentTab.id].length = 0
         }
 
         if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
@@ -1618,7 +1618,7 @@ async function clearCookiesOnRequest (details) {
       await browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
       if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined && openTabData[currentTab.windowId][currentTab.id][0] !== undefined) {
-        openTabData[currentTab.windowId][currentTab.id] = []
+        openTabData[currentTab.windowId][currentTab.id].length = 0
       }
 
       if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
