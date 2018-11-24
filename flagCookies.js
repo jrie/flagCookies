@@ -155,8 +155,6 @@ async function initDomainURLandProceed (tabs) {
 
   let cookies = await browser.runtime.sendMessage({ 'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id })
   updateUIData(data, cookies, contextName, tab, activeCookieStore)
-
-
 }
 
 function sortObjectByKey (ObjectElements, keyName, doReverse) {
@@ -195,8 +193,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   activeTabUrl.appendChild(introSpanStore)
 
   let cookieList = document.querySelector('#cookie-list')
-  let flaggedCookieList = document.querySelector('#cookie-list-flagged')
-  let permittedCookieList = document.querySelector('#cookie-list-permitted')
   let loggedInCookieList = document.querySelector('#loggedInCookies')
 
   // let hasAutoFlag = (data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined)
@@ -229,10 +225,10 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
         if ((cookieJoin === null && cookieKey !== previousCookieDomain && cookies.cookies[cookieKey]['isAdded'] === undefined) || (cookieJoin !== null && cookieKey.indexOf(cookieJoinRoot) !== -1)) {
           previousCookieDomain = cookieKey
-          
+
           let cookieSubDiv = document.createElement('li')
           cookieSubDiv.className = 'subcontainer'
-          
+
           let cookieSub = document.createElement('h4')
           cookieSub.className = 'subloadbar'
           let cookieSubSpan = document.createElement('span')
@@ -240,15 +236,15 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
           let menuItemsDiv = document.createElement('div')
           menuItemsDiv.className = 'domainNameMenu'
-          
+
           let subCollapse = document.createElement('button')
           subCollapse.textContent = '+'
           subCollapse.className = 'collapseToogle active'
           menuItemsDiv.appendChild(subCollapse)
 
-          /*let subFlag = document.createElement('button')
+          /* let subFlag = document.createElement('button')
           subFlag.className = 'flagToggle'
-          menuItemsDiv.appendChild(subFlag)*/
+          menuItemsDiv.appendChild(subFlag) */
 
           cookieSub.appendChild(menuItemsDiv)
 
@@ -267,8 +263,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           cookieSubContent.className = 'subloadContainer'
           cookieSubDiv.appendChild(cookieSubContent)
           cookieList.appendChild(cookieSubDiv)
-
-          
 
           if (index === 1) {
             cookies.cookies[cookieKey]['isAdded'] = true
@@ -512,7 +506,7 @@ function toggleCollapse (evt) {
     evt.target.textContent = '-'
     return
   }
-  
+
   evt.target.classList.add('active')
   evt.target.parentNode.parentNode.parentNode.lastChild.classList.add('hidden')
   evt.target.textContent = '+'
@@ -1261,7 +1255,7 @@ function doSearch (searchVal, targetList) {
     let cookieKey =  child.firstChild.dataset['name'].toLowerCase()
     let cookieValue = child.firstChild.dataset['value'].toLowerCase()
     if (searchVal.length !== 0 && cookieKey.indexOf(searchVal) === -1 && cookieValue.indexOf(searchVal) === -1) {
-      child.classList.add('hidden') 
+      child.classList.add('hidden')
     } else {
       child.classList.remove('hidden')
       hasVisible = true

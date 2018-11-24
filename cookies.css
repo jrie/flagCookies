@@ -36,6 +36,7 @@ body {
 span, p, h1, h2, h3, h4, h5 {
   text-shadow: 1px 1px 0px rgba(0,0,0, 0.15);
   cursor: default;
+  user-select: none;
 }
 
 .dark span, .dark p, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5 {
@@ -213,12 +214,12 @@ span.domainurl,
 hr {
   clear: both;
   border: none;
-  border-bottom: 1px solid #cdcdcd;
+  border-bottom: 1px solid #aaa;
   margin: 0px;
 }
 
 .dark hr {
-  border-bottom: 1px solid #aac;
+  border-bottom: 1px solid #aaa;
 }
 
 ul {
@@ -351,7 +352,7 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
   top: -6px;
   float: left;
   margin-right: 12px;
-  
+
 }
 
 .collapseToogle {
