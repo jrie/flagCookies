@@ -40,7 +40,7 @@ span, p, h1, h2, h3, h4, h5 {
 }
 
 .dark span, .dark p, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5 {
-  text-shadow: 1px 1px 0px rgba(0,0,0, 0.25);
+  text-shadow: 1px 1px 0px rgba(255,255,255, 0.25);
   color: #557;
 }
 
