@@ -494,7 +494,8 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     collapse.addEventListener('click', toggleCollapse)
   }
 
-  document.querySelector('.collapseToogle').click()
+  let firstToogle = document.querySelector('.collapseToogle')
+  if (firstToogle !== null) firstToogle.click()
 
   if (!useChrome) getTempContainerStatus(contextName)
 }
@@ -1252,7 +1253,7 @@ function doSearch (searchVal, targetList) {
       currentParent.classList.remove('hidden')
     }
 
-    let cookieKey =  child.firstChild.dataset['name'].toLowerCase()
+    let cookieKey = child.firstChild.dataset['name'].toLowerCase()
     let cookieValue = child.firstChild.dataset['value'].toLowerCase()
     if (searchVal.length !== 0 && cookieKey.indexOf(searchVal) === -1 && cookieValue.indexOf(searchVal) === -1) {
       child.classList.add('hidden')
