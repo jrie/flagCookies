@@ -212,6 +212,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
     let cookieDataLists = [Object.keys(cookies.cookies), Object.keys(cookies.cookies).sort()]
     let index = 0
+
     for (let cookieListEntry of cookieDataLists) {
       ++index
 
@@ -221,6 +222,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
         if (index === 1) {
           let cookieBase = cookieKey.split('.')
           cookieJoin = cookieBase.splice(cookieBase.length - 2, 2).join('.')
+          if (previousCookieDomain.indexOf(cookieJoin) === -1) continue
         }
 
         if ((cookieJoin === null && cookieKey !== previousCookieDomain && cookies.cookies[cookieKey]['isAdded'] === undefined) || (cookieJoin !== null && cookieKey.indexOf(cookieJoinRoot) !== -1)) {
@@ -1636,7 +1638,6 @@ async function accountModeSwitchNeutral (data, evt) {
 }
 
 function loadHelp (currentLocal) {
-  console.log(currentLocal)
   let helpLoader = new XMLHttpRequest()
   helpLoader.addEventListener('readystatechange', function (evt) {
     if (evt.target.status === 200 && evt.target.readyState === 4) {
