@@ -62,7 +62,6 @@ span, p, h1, h2, h3, h4, h5 {
   display: block;
   font-weight: bold;
   font-size: 1.35em;
-  text-transform: none;
   position: sticky;
   top: 0px;
   z-index: 10;
@@ -333,6 +332,10 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
   margin-left: 6px;
 }
 
+.chrome .subloadbar span {
+  margin-left: 16px;
+}
+
 .subloadbar {
   border: 1px solid #ccc;
   background-color: #eee;
@@ -395,7 +398,6 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
 
 button,
 #settings-action-all-import {
-  text-transform: capitalize;
   text-align: center;
   background-color: #446;
   border-radius: 24px 24px;
@@ -405,6 +407,13 @@ button,
   cursor: pointer;
   color: #ddd;
   box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.12);
+}
+
+#settings-action-all-import span {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  word-wrap: break-word;
 }
 
 .chrome button,
@@ -453,7 +462,6 @@ button::-moz-focus-inner {
   transition-duration: 120ms;
   position: relative;
   margin-right: 8px;
-  text-transform: capitalize;
   top: -2px;
 }
 
@@ -796,10 +804,10 @@ textarea#log {
 #settings-action-all-import {
   margin-left: 35px;
   margin-bottom: 35px;
-  width: 240px;
-  min-width: 240px;
-  max-width:  240px;
+  min-width: 210px;
+  max-width: 210px;
   float: right;
+  word-wrap: break-word;
 }
 
 #settings-confirm-clear,
