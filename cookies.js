@@ -395,15 +395,12 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     if (hasGlobalProfile) {
       if (data['flagCookies_accountMode'][contextName]['https://' + domain] !== undefined) accountDomain = 'https://' + domain
       else accountDomain = 'http://' + domain
-
       hasLogged = data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][accountDomain] !== undefined
       if (hasLogged && Object.keys(data['flagCookies_logged'][contextName][accountDomain]).length === 0) protectDomainCookies = true
     } else if (hasLocalProfile) {
       hasLogged = data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][domainURL] !== undefined
       accountDomain = domainURL
-      if (hasLogged) {
-        if (Object.keys(data['flagCookies_logged'][contextName][domainURL]).length === 0) protectDomainCookies = true
-      }
+      if (hasLogged && Object.keys(data['flagCookies_logged'][contextName][domainURL]).length === 0) protectDomainCookies = true
     }
   }
 
@@ -1067,11 +1064,8 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
     let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
     addTabURLtoDataList(currentTab, { 'url': tabDomain, 'frameId': 0, 'parentFrameId': -1, 'type': 'main_frame' }, domain, true)
 
-    if (useChrome) {
-      chrome.browserAction.enable(currentTab.id)
-    } else {
-      browser.browserAction.enable(currentTab.id)
-    }
+    if (useChrome) chrome.browserAction.enable(currentTab.id)
+    else browser.browserAction.enable(currentTab.id)
 
     if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
     else contextName = 'default'
@@ -1130,17 +1124,20 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
         if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
         else browser.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
       }
+    }
 
-      if (useChrome) {
-        getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
-        return
-      }
+    if (useChrome) {
+      chrome.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
+      getChromeStorageForFunc3(setBrowserActionIconChrome, contextName, tabDomain, currentTab.id)
+      getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
+      return
+    }
+    browser.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
+    setBrowserActionIconFirefox(contextName, tabDomain, currentTab.id)
+    let data = await browser.storage.local.get()
 
-      let data = await browser.storage.local.get()
-
-      if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
-        browser.notifications.create('cookie_cleared', { type: 'basic', message: getMsg('NotificationCookiesRemoved', [count, tabDomain, contextName]), title: getMsg('NotificationCookiesRemovedTitle'), iconUrl: 'icons/cookie_128.png' })
-      }
+    if (count !== 0 && data['flagCookies_notifications'] !== undefined && data['flagCookies_notifications'] === true) {
+      browser.notifications.create('cookie_cleared', { type: 'basic', message: getMsg('NotificationCookiesRemoved', [count, tabDomain, contextName]), title: getMsg('NotificationCookiesRemovedTitle'), iconUrl: 'icons/cookie_128.png' })
     }
   }
 }
@@ -1245,7 +1242,7 @@ function addToLogData (currentTab, msg, timeString, timestamp, domain) {
 }
 
 // Account mode switch key command
-async function toggleAccountMode (data, contextName, url, tabid, useNotifcations) {
+async function toggleAccountMode (data, contextName, url, tabid) {
   if (data['flagCookies_accountMode'] === undefined) data['flagCookies_accountMode'] = {}
   if (data['flagCookies_accountMode'][contextName] === undefined) data['flagCookies_accountMode'][contextName] = {}
 
