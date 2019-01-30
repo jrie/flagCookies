@@ -1303,8 +1303,6 @@ async function getCommand (command) {
 async function onCookieChanged (changeInfo) {
   let cookieDetails = changeInfo.cookie
 
-  let details
-
   if (!useChrome) {
     let currentTab = await browser.tabs.getCurrent()
 
@@ -1313,7 +1311,7 @@ async function onCookieChanged (changeInfo) {
       return
     }
 
-    details = { 'url': currentTab.url }
+    let details = { 'url': currentTab.url }
 
     let rootDomain = openTabData[currentTab.windowId][currentTab.id][0] === undefined ? currentTab.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)[0] : openTabData[currentTab.windowId][currentTab.id][0]['u']
 
@@ -1350,7 +1348,7 @@ async function onCookieChanged (changeInfo) {
       return
     }
 
-    details = { 'url': currentTab.url }
+    let details = { 'url': currentTab.url }
 
     let rootDomain = openTabData[currentTab.windowId][currentTab.id][0] === undefined ? currentTab.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)[0] : openTabData[currentTab.windowId][currentTab.id][0]['u']
 
@@ -1362,6 +1360,7 @@ async function onCookieChanged (changeInfo) {
     for (let cookie of cookieData[contextName][rootDomain][cookieDetails.domain]) {
       if (cookieDetails.name === cookie.name) {
         cookie = cookieDetails
+
         cookie['fgChanged'] = true
         cookie['fgHandled'] = false
         foundCookie = true
@@ -1420,7 +1419,6 @@ function addTabURLtoDataList (tab, details, domain, timestamp) {
     if (openTabData[tab.windowId] === undefined) openTabData[tab.windowId] = {}
     if (openTabData[tab.windowId][tab.id] === undefined) openTabData[tab.windowId][tab.id] = {}
 
-    // NOTE: add origin to tabdata?
     let targetURL = domain.replace(/(http|https):\/\//, '')
     if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
       if (openTabData[tab.windowId][tab.id][details.frameId] !== undefined) {
@@ -1428,6 +1426,7 @@ function addTabURLtoDataList (tab, details, domain, timestamp) {
         else openTabData[tab.windowId][tab.id][details.frameId] = { 's': tab.cookieStoreId, 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'o': details.originUrl, 'du': details.documentUrl, 'k': domain, 'd': targetURL, 'isRoot': true, 'time': openTabData[tab.windowId][tab.id][details.frameId]['time'] }
         return
       }
+
       if (useChrome) openTabData[tab.windowId][tab.id][details.frameId] = { 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'd': targetURL, 'o': details.originUrl, 'du': details.documentUrl, 'k': domain, 'isRoot': true, 'time': timestamp }
       else openTabData[tab.windowId][tab.id][details.frameId] = { 's': tab.cookieStoreId, 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'o': details.originUrl, 'du': details.documentUrl, 'k': domain, 'd': targetURL, 'isRoot': true, 'time': timestamp }
       return
@@ -1436,6 +1435,12 @@ function addTabURLtoDataList (tab, details, domain, timestamp) {
     let id = Object.keys(openTabData[tab.windowId][tab.id]).length
     if (openTabData[tab.windowId][tab.id][0] === undefined) {
       ++id
+    }
+
+    if (openTabData[tab.windowId][tab.id][id] !== undefined) {
+      if (useChrome) openTabData[tab.windowId][tab.id][id] = { 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'd': targetURL, 'o': details.originUrl, 'du': details.documentUrl, 'k': domain, 'isRoot': true, 'time': openTabData[tab.windowId][tab.id][id]['time'] }
+      else openTabData[tab.windowId][tab.id][id] = { 's': tab.cookieStoreId, 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'o': details.originUrl, 'du': details.documentUrl, 'k': domain, 'd': targetURL, 'isRoot': true, 'time': openTabData[tab.windowId][tab.id][id]['time'] }
+      return
     }
 
     if (useChrome) openTabData[tab.windowId][tab.id][id] = { 'u': details.url.replace('/www.', '/').match(/(http|https):\/\/.[^/]*/)[0], 'o': details.originUrl, 'du': details.documentUrl, 'k': domain, 'd': targetURL, 'time': timestamp }
@@ -1681,9 +1686,9 @@ async function clearCookiesOnRequest (details) {
     }
 
     let cookieList = [cookiesBase, cookiesURL, cookiesURL2, cookiesSec, cookies2, cookiesSec2, cookies3, cookiesSec3, cookies4, cookiesSec4]
+    let hasCookie = false
 
     for (let list of cookieList) {
-      let hasCookie = false
       for (let cookie of list) {
         hasCookie = false
         for (let cookieEntry of cookies) {
@@ -1693,10 +1698,7 @@ async function clearCookiesOnRequest (details) {
           }
         }
 
-        if (!hasCookie) {
-          addTabURLtoDataList(currentTab, details, cookie.domain, timeVal)
-          cookies.push(cookie)
-        }
+        if (!hasCookie) cookies.push(cookie)
       }
     }
 
