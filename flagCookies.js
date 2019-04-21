@@ -437,8 +437,10 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
             ++countList['#flaggedCookies']
           }
         } else if (domainData[cookieDomain][cookieKey] === false) {
-          addCookieToList('cookie-list-permitted', cookieKey, '', cookieDomain, true)
-          ++countList['#permittedCookies']
+          if (!isDomainCookieInList('#cookie-list-permitted', cookieKey, cookieDomain)) {
+            addCookieToList('cookie-list-permitted', cookieKey, '', cookieDomain, true)
+            ++countList['#permittedCookies']
+          }
         }
       }
     }
@@ -1172,7 +1174,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
     for (let child of searchTarget) {
       let contentChild = child.children[0]
       if (!contentChild.classList.contains('checkmark')) continue
-
+      else if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
       contentChild.className = 'checkmark auto-flagged'
       contentChild.title = getMsg('CookieIsAutoFlaggedHelpText')
     }
@@ -1183,6 +1185,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
       if (!contentChild.classList.contains('checkmark') && !contentChild.classList.contains('auto-flagged')) continue
 
       if (data['flagCookies_flagGlobal'] === undefined || data['flagCookies_flagGlobal'][contextName] === undefined || data['flagCookies_flagGlobal'][contextName] !== true) {
+        if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
         contentChild.className = 'checkmark'
         contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
       }
@@ -1215,6 +1218,8 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
       let cookieKey = contentChild.dataset['name']
       let cookieDomain = contentChild.dataset['domain']
 
+      if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
+
       if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieKey] === undefined || (data[contextName][domainURL][cookieDomain][cookieKey] !== true && data[contextName][domainURL][cookieDomain][cookieKey] !== false)) {
         contentChild.className = 'checkmark auto-flagged'
         contentChild.title = getMsg('CookieIsGlobalFlaggedHelpText')
@@ -1225,6 +1230,8 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
       let contentChild = child.firstChild
       let cookieKey = contentChild.dataset['name']
       let cookieDomain = contentChild.dataset['domain']
+
+      if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
 
       if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieKey] === undefined || (data[contextName][domainURL][cookieDomain][cookieKey] !== true && data[contextName][domainURL][cookieDomain][cookieKey] !== false)) {
         contentChild.className = 'checkmark'
