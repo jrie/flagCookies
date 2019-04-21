@@ -498,17 +498,26 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
           addToLogData(currentTab, msg, timeString, timestamp)
           cookie['fgAllowed'] = true
           cookie['fgHandled'] = true
+          if (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookie.domain] !== undefined && data[contextName][accountDomain][cookie.domain][cookie.name] === false) {
+            cookie['fgDomain'] = accountDomain
+          }
+          continue
         } else if (hasLogged && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][rootDomain] !== undefined && data['flagCookies_logged'][contextName][rootDomain][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][rootDomain][cookie.domain][cookie.name] !== undefined) {
           let msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, rootDomain])
           addToLogData(currentTab, msg, timeString, timestamp)
           cookie['fgAllowed'] = true
           cookie['fgHandled'] = true
+          if (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookie.domain] !== undefined && data[contextName][accountDomain][cookie.domain][cookie.name] === false) {
+            cookie['fgDomain'] = accountDomain
+          }
+          continue
         } else if (!isManagedCookie && accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookie.domain] !== undefined && data[contextName][accountDomain][cookie.domain][cookie.name] === false) {
           let msg = getMsg('PermittedCookieMsg', [action, cookie.name, accountDomain])
           addToLogData(currentTab, msg, timeString, timestamp)
           cookie['fgAllowed'] = true
           cookie['fgHandled'] = true
           cookie['fgDomain'] = accountDomain
+          continue
         }
 
         if (cookie['fgHandled'] === true && cookie['fgDomain'] !== undefined) continue
@@ -673,7 +682,6 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
               addToLogData(currentTab, msg, timeString, timestamp)
               cookie['fgAllowed'] = true
               cookie['fgHandled'] = true
-
               continue
             }
           }
