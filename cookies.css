@@ -690,7 +690,7 @@ button#global-flag.active {
   border-radius: 8px;
   border: 1px solid #ccc;
   margin: 0px;
-  padding: 4px 5px 7px 4%;
+  padding: 4px 12px 7px 4%;
   font-weight: bold;
   width: 40%;
   position: absolute;
