@@ -193,7 +193,7 @@ span.domainurl,
 #header-title {
   display: block;
   max-width: 85%;
-  margin-bottom: 8px;
+  margin: 0px;
 }
 
 #header-title span.intro {
@@ -223,17 +223,29 @@ hr {
 
 ul {
   clear: both;
-  padding: 5px 8px;
-  margin: 0px;
   list-style: none;
+  margin: 0px;
+  padding: 5px 1px;
+}
+
+#content > ul {
+  margin: 0px 10px;
+  padding: 0px;
+  margin-top: 14px;
+  margin-bottom: 0px;
+}
+
+#content > ul {
+  margin-bottom: 16px;
 }
 
 li.cookieEntry,
 li.cookieEntrySublist {
   position: relative;
-  border-radius: 8px;
+  border-radius: 4px;
   background-color: #fff;
-  margin-bottom: 5px;
+  margin: 0px;
+  margin-bottom: 2px;
   display: block;
   border-top: 1px solid #eef;
   border-right: 1px solid #ccc;
@@ -242,6 +254,8 @@ li.cookieEntrySublist {
   transition-duration: 150ms;
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.35);
 }
+
+
 
 li.cookieEntry:nth-child(2n+1),
 li.cookieEntrySublist:nth-child(2n+1) {
@@ -308,7 +322,7 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
 }
 
 .cookieKey {
-  font-size: 1.15em;
+  font-size: 1em;
   font-weight: bold;
   display: block;
 }
@@ -343,10 +357,11 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
   margin: 0px;
   padding: 11px 14px 11px 0px;
   border-radius: 8px;
-  margin-bottom: 8px;
   font-size: 1em;
-  box-shadow: 2px 3px 2px rgba(0, 0, 0, 0.12);
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.12);
   position: relative;
+  font-weight: bold;
+  margin-top: 2px;
 }
 
 .domainNameMenu {
@@ -636,7 +651,6 @@ button#help {
   background-repeat: no-repeat;
   background-position: 8px center;
   margin-right: 0px;
-  padding: 7px 20px 8px 34px;
 }
 
 body.dark button#help {
@@ -690,7 +704,7 @@ button#global-flag.active {
   border-radius: 8px;
   border: 1px solid #ccc;
   margin: 0px;
-  padding: 4px 12px 7px 4%;
+  padding: 8px 15px 9px 34px;
   font-weight: bold;
   width: 40%;
   position: absolute;
@@ -701,7 +715,6 @@ button#global-flag.active {
 .chrome #searchBar {
   width: 40%;
   margin-left: 1px;
-  padding: 7px 12px 6px 4%;
 }
 
 #clearAutoFlagged {
@@ -833,6 +846,10 @@ textarea#log {
   position: relative;
   top: 0.65em;
   font-weight: bold;
+}
+
+#settings-action-all-import span {
+  font-size: 0.75em;
 }
 
 #help-view {
