@@ -427,7 +427,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   if (data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && urlInFlag) {
     for (let domainKey of Object.keys(cookieData[contextName][rootDomain])) {
       for (let cookie of cookieData[contextName][rootDomain][domainKey]) {
-        let cookieDomain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey
+        let cookieDomain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey.replace('www.', '')
         let startHttp = cookieDomain.startsWith('http')
         let isManagedCookieHttp = false
         let isManagedCookieHttps = false
@@ -446,7 +446,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         if (cookieDomain === rootDomain) cookie['fgRoot'] = true
         else if (cookie['fgRoot'] !== undefined) delete cookie['fgRoot']
 
-        if (accountDomain !== null && accountDomain.indexOf(cookieDomain) !== -1) {
+        if (accountDomain !== null && accountDomain.indexOf(cookieDomain.replace('www.', '')) !== -1) {
           cookie['fgProfile'] = true
           cookie['fgDomain'] = accountDomain
         }
@@ -527,7 +527,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         if (useChrome) {
           let cookieDomainTrim
 
-          if (cookie.domain.startsWith('.')) cookieDomainTrim = cookie.domain.replace('.', '')
+          if (cookie.domain.startsWith('.')) cookieDomainTrim = cookie.domain.replace('.', '').replace('www.', '')
           else cookieDomainTrim = cookie.domain.replace('www.', '').replace(/(http|https):\/\//, '')
 
           let details = { url: 'https://' + cookieDomain + cookie.path, name: cookie.name }
@@ -567,7 +567,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
         let cookieDomainTrim
 
-        if (cookie.domain.startsWith('.')) cookieDomainTrim = cookie.domain.replace('.', '')
+        if (cookie.domain.startsWith('.')) cookieDomainTrim = cookie.domain.replace('.', '').replace('www.', '')
         else cookieDomainTrim = cookie.domain.replace('www.', '').replace(/(http|https):\/\//, '')
 
         let details = { url: 'https://' + cookieDomainTrim + cookie.path, name: cookie.name, storeId: activeCookieStore }
@@ -623,7 +623,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
     for (let domainKey of Object.keys(cookieData[contextName][rootDomain])) {
       for (let cookie of cookieData[contextName][rootDomain][domainKey]) {
-        let cookieDomain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey
+        let cookieDomain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey.replace('www.', '')
         let startHttp = cookieDomain.startsWith('http')
         let isManagedCookieHttp = false
         let isManagedCookieHttps = false
@@ -819,7 +819,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   } else {
     for (let domainKey of Object.keys(cookieData[contextName][rootDomain])) {
       for (let cookie of cookieData[contextName][rootDomain][domainKey]) {
-        let cookieDomain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey
+        let cookieDomain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey.replace('www.', '')
         let startHttp = cookieDomain.startsWith('http')
         let isManagedCookieHttp = false
         let isManagedCookieHttps = false

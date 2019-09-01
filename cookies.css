@@ -288,21 +288,21 @@ li.cookieEntry.hidden {
 .dark li.cookieEntry:hover .cookieKey,
 .dark li.cookieEntry:hover .cookieValue,
 .dark li.cookieEntrySublist:hover .cookieKey,
-.dark li.cookieEntrySublist:hover .cookieValue {
+.dark li.cookieEntrySublist:hover .cookieValue,
+li.cookieEntry.inactive-cookie:hover,
+li.cookieEntrySublist.inactive-cookie:hover {
   color: #fff;
 }
 
 li.cookieEntry:hover .cookieValue,
-li.cookieEntrySublist:hover .cookieValue {
+li.cookieEntrySublist:hover .cookieValue,
+li.cookieEntry:hover .secure-cookie,
+li.cookieEntry:hover .cookie-domain
+li.cookieEntrySublist:hover .secure-cookie,
+li.cookieEntrySublist:hover .cookie-domain {
   color: #fff;
 }
 
-li.cookieEntry:hover .secure-cookie,
-li.cookieEntry:hover .cookie-domain,
-li.cookieEntrySublist:hover .secure-cookie,
-li.cookieEntrySublist:hover .cookie-domain {
-  color: #af2000;
-}
 
 .dark li.cookieEntry:hover .secure-cookie,
 .dark li.cookieEntry:hover .cookie-domain,
@@ -514,7 +514,7 @@ button#permittedCookies {
   background-color: #45a;
   color: #fff;
   font-size: 0.95em;
-  padding: 0px 7px 2px 7px;
+  padding: 4px 8px;
   position: absolute;
   top: 23px;
   right: -8px;
