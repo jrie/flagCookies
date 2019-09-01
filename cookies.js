@@ -1080,6 +1080,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
 
     let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::'
 
+    let count = 0
     if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
       let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('PermittedState'), getMsg('AllowedState'), getMsg('DeletedStateMsg')]
       let hasTitleChange = false
@@ -1120,7 +1121,6 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
         setBrowserActionIconFirefox(contextName, tabDomain, currentTab.id)
       }
 
-      let count = 0
       for (let msg of logData[contextName][currentTab.windowId][currentTab.id]) {
         if (msg.toLowerCase().indexOf(getMsg('DeletedStateMsg').toLowerCase()) !== -1) ++count
       }
