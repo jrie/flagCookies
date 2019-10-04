@@ -1080,6 +1080,13 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
 
     let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::'
 
+    let cookieCountTab = 0
+    for (let key of Object.keys(cookieData[contextName][tabDomain])) {
+      cookieCountTab += cookieData[contextName][tabDomain][key].length
+    }
+
+    titleString += '\n' + getMsg('cookieCountDisplayIconHover', cookieCountTab)
+
     let count = 0
     if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
       let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('PermittedState'), getMsg('AllowedState'), getMsg('DeletedStateMsg')]
@@ -1140,6 +1147,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
       getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
       return
     }
+
     browser.browserAction.setTitle({ 'title': titleString, 'tabId': currentTab.id })
     setBrowserActionIconFirefox(contextName, tabDomain, currentTab.id)
     let data = await browser.storage.local.get()

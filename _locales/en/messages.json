@@ -305,6 +305,14 @@
     "message": "Flag Cookies :: Action log",
     "description": "Info message when hovering the mouse over the browser icon"
   },
+  "cookieCountDisplayIconHover": {
+    "message": "Found cookies for tab: $foundCookieCount$\n\n",
+    "description": "Count of tab cookies when hovering the mouse over the browser icon",
+    "placeholders": {
+      "foundCookieCount": { "content": "$1", "example": "0" }
+    }
+  },
+
   "NoActionOnPage": {
     "message": "No actions taken on this website",
     "description": "Info message when hovering the mouse over the browser icon and no actions have taken place"
