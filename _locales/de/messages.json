@@ -227,7 +227,7 @@
     "description": "Status auto-flag, also used as filter for Msg Count in logging and overview display"
   },
   "AllowedGlobalProfileCookieMsg": {
-    "message": "Erlaubter Cookie bei '$action$', Cookie: '$cookieName' für '$domainName$'",
+    "message": "Erlaubter Cookie bei '$action$', Cookie: '$cookieName$' für '$domainName$'",
     "description": "Log Message for allowed global profile cookie, word for allowed should be equal to 'AllowedState'",
     "placeholders": {
       "action": { "content": "$1", "example": "reload, javascript request, document load" },
@@ -245,7 +245,7 @@
     }
   },
   "PermittedCookieMsg": {
-    "message": "Erlaubter Cookie bei '$action$', Cookie: '$cookieName' für '$domainName$'",
+    "message": "Erlaubter Cookie bei '$action$', Cookie: '$cookieName$' für '$domainName$'",
     "description": "Log Message for permitted cookies, word for permitted should be equal to 'AllowedState'",
     "placeholders": {
       "action": { "content": "$1", "example": "reload, javascript request, document load" },
