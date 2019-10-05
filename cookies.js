@@ -1004,6 +1004,15 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
   if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
     let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::'
+
+    let cookieCountTab = 0
+    let tabDomain = currentTab.url.replace(/\/www./, '')
+    for (let key of Object.keys(cookieData[contextName][tabDomain])) {
+      cookieCountTab += cookieData[contextName][tabDomain][key].length
+    }
+
+    titleString += '\n' + getMsg('cookieCountDisplayIconHover', cookieCountTab)
+
     let statuses = [getMsg('GlobalFlagState'), getMsg('AutoFlagState'), getMsg('PermittedState'), getMsg('AllowedState'), getMsg('DeletedStateMsg')]
     let hasTitleChange = false
 
