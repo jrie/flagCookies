@@ -1357,8 +1357,14 @@ async function onCookieChanged (changeInfo) {
 
     if (!foundCookie) {
       cookieDetails['fgHandled'] = false
-      cookieData[contextName][rootDomain][cookieDetails.domain].push(cookieDetails)
-      addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
+
+      for (let domain of Object.keys(cookieData[contextName][rootDomain])) {
+        if (domain === cookieDetails.domain || cookieDetails.domain.indexOf(domain) !== -1) {
+          cookieData[contextName][rootDomain][cookieDetails.domain].push(cookieDetails)
+          addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
+          break
+        }
+      }
     }
 
     clearCookiesWrapper('cookie change')
