@@ -360,27 +360,70 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
   for (let cookie of cookies) {
     if (cookieData[contextName][rootDomain][cookie.domain] === undefined) cookieData[contextName][rootDomain][cookie.domain] = []
-    cookie['fgHandled'] = false
-    cookie['fgRemoved'] = false
-    cookie['fgAllowed'] = true
+
+    let domainKey = cookie.domain
+    let domain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey.replace('www.', '')
+
+    let hasHttpProfile = data['flagCookies_accountMode'][contextName]['http://' + domain] !== undefined
+    let hasHttpsProfile = data['flagCookies_accountMode'][contextName]['https://' + domain] !== undefined
 
     let foundCookie = false
-    for (let x = 0, y = cookieData[contextName][rootDomain][cookie.domain].length; x < y; ++x) {
-      let cookieEntry = cookieData[contextName][rootDomain][cookie.domain][x]
-      if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
-        if (cookie['fgProfile'] !== undefined) delete cookie['fgProfile']
-        if (cookie['fgProtected'] !== undefined) delete cookie['fgProtected']
-        if (cookie['fgDomain'] !== undefined) delete cookie['fgDomain']
-        if (cookie['fgLogged'] !== undefined) delete cookie['fgLogged']
-        foundCookie = true
-        cookieData[contextName][rootDomain][cookie.domain][x] = cookie
-        break
+
+    if (hasHttpProfile || hasHttpsProfile) {
+
+      let cookieDomain
+      if (hasHttpProfile) cookieDomain = 'http://' + domain
+      else if (hasHttpsProfile) cookieDomain = 'https://' + domain
+
+      cookie['fgHandled'] = true
+      cookie['fgProfile'] = true
+      cookie['fgHandled'] = true
+      cookie['fgAllowed'] = true
+      cookie['fgDomain'] = cookieDomain
+
+      if (cookieData[contextName][cookieDomain] !== undefined) {
+        for (let x = 0, y = cookieData[contextName][cookieDomain][cookie.domain].length; x < y; ++x) {
+          let cookieEntry = cookieData[contextName][cookieDomain][cookie.domain][x]
+          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+            foundCookie = true
+            cookieData[contextName][cookieDomain][cookie.domain][x] = cookie
+            cookie['fgDomain'] = cookieDomain
+            break
+          }
+        }
+      }
+
+      if (cookieData[contextName][rootDomain] !== undefined) {
+        for (let x = 0, y = cookieData[contextName][rootDomain][cookie.domain].length; x < y; ++x) {
+          let cookieEntry = cookieData[contextName][rootDomain][cookie.domain][x]
+          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+            foundCookie = true
+            cookie['fgDomain'] = cookieDomain
+            cookieData[contextName][rootDomain][cookie.domain][x] = cookie
+            break
+          }
+        }
+      }
+    } else {
+      cookie['fgHandled'] = false
+      cookie['fgRemoved'] = false
+      cookie['fgAllowed'] = true
+
+      for (let x = 0, y = cookieData[contextName][rootDomain][cookie.domain].length; x < y; ++x) {
+        let cookieEntry = cookieData[contextName][rootDomain][cookie.domain][x]
+        if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+          if (cookie['fgProfile'] !== undefined) delete cookie['fgProfile']
+          if (cookie['fgProtected'] !== undefined) delete cookie['fgProtected']
+          if (cookie['fgDomain'] !== undefined) delete cookie['fgDomain']
+          if (cookie['fgLogged'] !== undefined) delete cookie['fgLogged']
+          foundCookie = true
+          cookieData[contextName][rootDomain][cookie.domain][x] = cookie
+          break
+        }
       }
     }
 
-    if (!foundCookie) {
-      cookieData[contextName][rootDomain][cookie.domain].push(cookie)
-    }
+    if (!foundCookie) cookieData[contextName][rootDomain][cookie.domain].push(cookie)
   }
 
   let protectDomainCookies = false
@@ -427,6 +470,8 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   if (data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && urlInFlag) {
     for (let domainKey of Object.keys(cookieData[contextName][rootDomain])) {
       for (let cookie of cookieData[contextName][rootDomain][domainKey]) {
+        if (cookie['fgHandled'] === true) continue
+
         let cookieDomain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey.replace('www.', '')
         let startHttp = cookieDomain.startsWith('http')
         let isManagedCookieHttp = false
@@ -455,7 +500,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
         if (!isManagedCookie) {
           let isEmptyProfile = (protectDomainCookies || !hasLogged)
-          if (hasLogged && data['flagCookies_logged'][contextName][accountDomain] !== undefined && data['flagCookies_logged'][contextName][accountDomain][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][accountDomain][cookie.domain][cookie.name] !== undefined) {
+          if ((hasLogged && data['flagCookies_logged'][contextName][accountDomain] !== undefined && data['flagCookies_logged'][contextName][accountDomain][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][accountDomain][cookie.domain][cookie.name] !== undefined)) {
             let msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, accountDomain])
             addToLogData(currentTab, msg, timeString, timestamp)
             delete cookie['fgLogged']
@@ -623,6 +668,8 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
   } else if (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] !== undefined && data['flagCookies_flagGlobal'][contextName] === true) {
     for (let domainKey of Object.keys(cookieData[contextName][rootDomain])) {
       for (let cookie of cookieData[contextName][rootDomain][domainKey]) {
+        if (cookie['fgHandled'] === true) continue
+
         let cookieDomain = domainKey.startsWith('.') ? domainKey.replace('.', '') : domainKey.replace('www.', '')
         let startHttp = cookieDomain.startsWith('http')
         let isManagedCookieHttp = false
