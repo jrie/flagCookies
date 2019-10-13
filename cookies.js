@@ -379,16 +379,17 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     }
 
     let hasCookieDomain = false
-    console.log(cookie.domain)
-    let cookieDomain = cookie.domain.startsWith('.') ? cookie.domain.replace('.', '') : cookie.domain
-    for (let tabDomain of Object.values(openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)])) {
-      if (tabDomain['k'].indexOf(cookieDomain) !== -1) {
-        hasCookieDomain = true
-        break
+    let cookieDomain = cookie.domain.toString().startsWith('.') ? cookie.domain.toString().replace('.', '') : cookie.domain.toString()
+    if (openTabData !== undefined && openTabData[parseInt(currentTab.windowId)] !== undefined && openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)] !== undefined) {
+      for (let tabDomains of Object.values(openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)])) {
+        if (tabDomains['k'].indexOf(cookieDomain) !== -1) {
+          hasCookieDomain = true
+          break
+        }
       }
-    }
 
-    if (!hasCookieDomain) continue
+      if (!hasCookieDomain) continue
+    }
     if (cookieData[contextName][rootDomain][cookie.domain] === undefined) cookieData[contextName][rootDomain][cookie.domain] = []
 
     if (hasHttpProfile || hasHttpsProfile) {
@@ -1158,7 +1159,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
     let tabDomain
     let urlMatch = currentTab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
     if (urlMatch !== null) tabDomain = urlMatch[0]
-    else tabDomain = currentTab.url.replace(/\/www./, '')
+    else tabDomain = currentTab.url
 
     let domainSplit = tabDomain.split('.')
     let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
