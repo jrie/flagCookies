@@ -378,7 +378,17 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       hasHttpsProfile = data['flagCookies_accountMode'][contextName]['https://' + domain] !== undefined
     }
 
-    if (rootDomain.indexOf(domain) === -1) continue
+    let hasCookieDomain = false
+    console.log(cookie.domain)
+    let cookieDomain = cookie.domain.startsWith('.') ? cookie.domain.replace('.', '') : cookie.domain
+    for (let tabDomain of Object.values(openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)])) {
+      if (tabDomain['k'].indexOf(cookieDomain) !== -1) {
+        hasCookieDomain = true
+        break
+      }
+    }
+
+    if (!hasCookieDomain) continue
     if (cookieData[contextName][rootDomain][cookie.domain] === undefined) cookieData[contextName][rootDomain][cookie.domain] = []
 
     if (hasHttpProfile || hasHttpsProfile) {
