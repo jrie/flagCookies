@@ -1007,8 +1007,10 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
     let cookieCountTab = 0
     let tabDomain = currentTab.url.replace(/\/www./, '')
-    for (let key of Object.keys(cookieData[contextName][tabDomain])) {
-      cookieCountTab += cookieData[contextName][tabDomain][key].length
+    if (cookieData[contextName][tabDomain] !== undefined) {
+      for (let key of Object.keys(cookieData[contextName][tabDomain])) {
+        cookieCountTab += cookieData[contextName][tabDomain][key].length
+      }
     }
 
     titleString += '\n' + getMsg('cookieCountDisplayIconHover', cookieCountTab)
@@ -1362,6 +1364,7 @@ async function onCookieChanged (changeInfo) {
         if (domain === cookieDetails.domain || cookieDetails.domain.indexOf(domain) !== -1) {
           cookieData[contextName][rootDomain][cookieDetails.domain].push(cookieDetails)
           addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
+          foundCookie = true
           break
         }
       }
@@ -1401,7 +1404,15 @@ async function onCookieChanged (changeInfo) {
 
     if (!foundCookie) {
       cookieDetails['fgHandled'] = false
-      cookieData[contextName][rootDomain][cookieDetails.domain].push(cookieDetails)
+
+      for (let domain of Object.keys(cookieData[contextName][rootDomain])) {
+        if (domain === cookieDetails.domain || cookieDetails.domain.indexOf(domain) !== -1) {
+          cookieData[contextName][rootDomain][cookieDetails.domain].push(cookieDetails)
+          addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
+          foundCookie = true
+          break
+        }
+      }
     }
 
     addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
@@ -1588,18 +1599,20 @@ function clearCookiesOnRequestChrome (details) {
         else domainURL = sourceDomain.replace('www.', '')
       }
 
+      let domainSplit = domainURL.split('.')
+      let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
+
       if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
         if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined && openTabData[currentTab.windowId][currentTab.id][0] !== undefined) {
           openTabData[currentTab.windowId][currentTab.id].length = 0
+          cookieData[contextName][domain] = {}
+          cookieData[contextName][domainURL] = {}
         }
 
         if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
           clearDomainLog(currentTab, details)
         }
       }
-
-      let domainSplit = domainURL.split('.')
-      let domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
 
       addTabURLtoDataList(currentTab, details, domain, Date.now())
 
@@ -1667,6 +1680,8 @@ async function clearCookiesOnRequest (details) {
 
       if (openTabData[currentTab.windowId] !== undefined && openTabData[currentTab.windowId][currentTab.id] !== undefined && openTabData[currentTab.windowId][currentTab.id][0] !== undefined) {
         openTabData[currentTab.windowId][currentTab.id].length = 0
+        cookieData[contextName][domain] = {}
+        cookieData[contextName][domainURL] = {}
       }
 
       if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
