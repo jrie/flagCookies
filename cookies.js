@@ -83,7 +83,7 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, curr
             if (hasDataContext && data[contextName][domainURL][cookieEntry.domain] !== undefined && data[contextName][domainURL][cookieEntry.domain][cookieEntry.name] !== undefined) continue
 
             for (let cookie of cookies) {
-              if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+              if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain && cookieEntry.path === cookie.path) {
                 isLeftOverCookie = false
                 break
               }
@@ -122,7 +122,7 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, curr
             if (hasDataContext && data[contextName][domainURL][cookieEntry.domain] !== undefined && data[contextName][domainURL][cookieEntry.domain][cookieEntry.name] !== undefined) continue
 
             for (let cookie of cookies) {
-              if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+              if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain && cookieEntry.path === cookie.path) {
                 isLeftOverCookie = false
                 break
               }
@@ -274,7 +274,7 @@ async function clearCookiesWrapper (action) {
     for (let cookie of list) {
       hasCookie = false
       for (let cookieEntry of cookies) {
-        if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+        if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain && cookieEntry.path === cookie.path) {
           hasCookie = true
           break
         }
@@ -382,6 +382,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     let cookieDomain = cookie.domain.toString().startsWith('.') ? cookie.domain.toString().replace('.', '') : cookie.domain.toString()
     if (openTabData !== undefined && openTabData[parseInt(currentTab.windowId)] !== undefined && openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)] !== undefined) {
       for (let tabDomains of Object.values(openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)])) {
+        if (tabDomains === undefined) break
         if (tabDomains['k'].indexOf(cookieDomain) !== -1) {
           hasCookieDomain = true
           break
@@ -400,7 +401,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       if (cookieData[contextName][cookieDomain] !== undefined) {
         for (let x = 0, y = cookieData[contextName][cookieDomain][cookie.domain].length; x < y; ++x) {
           let cookieEntry = cookieData[contextName][cookieDomain][cookie.domain][x]
-          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain && cookieEntry.path === cookie.path) {
             foundCookie = true
 
             if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][cookieDomain] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain][cookie.name] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain][cookie.name] === true) {
@@ -419,7 +420,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       if (cookieData[contextName][rootDomain] !== undefined) {
         for (let x = 0, y = cookieData[contextName][rootDomain][cookie.domain].length; x < y; ++x) {
           let cookieEntry = cookieData[contextName][rootDomain][cookie.domain][x]
-          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain && cookieEntry.path === cookie.path) {
             foundCookie = true
 
             if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][cookieDomain] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain][cookie.name] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain][cookie.name] === true) {
@@ -445,7 +446,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 
       for (let x = 0, y = cookieData[contextName][rootDomain][cookie.domain].length; x < y; ++x) {
         let cookieEntry = cookieData[contextName][rootDomain][cookie.domain][x]
-        if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+        if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain && cookieEntry.path === cookie.path) {
           foundCookie = true
           cookieData[contextName][rootDomain][cookie.domain][x] = cookie
           break
@@ -915,7 +916,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
         if (cookieDomain === rootDomain) cookie['fgRoot'] = true
         else if (cookie['fgRoot'] !== undefined) delete cookie['fgRoot']
 
-        if ((data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][cookieDomain] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain][cookie.name] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain][cookie.name] === true) || data['flagCookies_accountMode'][contextName][rootDomain] !== undefined) {
+        if ((data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][cookieDomain] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain][cookie.name] !== undefined && data['flagCookies_logged'][contextName][cookieDomain][cookie.domain][cookie.name] === true) || (data['flagCookies_accountMode'] !== undefined && data['flagCookies_accountMode'][contextName] !== undefined && data['flagCookies_accountMode'][contextName][rootDomain] !== undefined)) {
           if (data['flagCookies_logged'] !== undefined && data['flagCookies_logged'][contextName] !== undefined && data['flagCookies_logged'][contextName][cookieDomain] !== undefined) {
             cookie['fgProfile'] = true
             cookie['fgDomain'] = accountDomain
@@ -1822,7 +1823,7 @@ async function clearCookiesOnRequest (details) {
       for (let cookie of list) {
         hasCookie = false
         for (let cookieEntry of cookies) {
-          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
+          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain && cookieEntry.path === cookie.path) {
             hasCookie = true
             break
           }
