@@ -154,15 +154,15 @@
     "description": "Success clearing storage and settings"
   },
   "ConfirmDomainSettingsClearingInfoMsg": {
-    "message": "Bitte bestäigen Sie das löschen der Domaineinstellungen.",
+    "message": "Bitte bestätigen Sie das Löschen der Domaineinstellungen.",
     "description": "Confirm domain settings clearing"
   },
   "DomainDataClearedInfoMsg": {
-    "message": "Bitte bestätigen Sie das löschen der Domaineinstellunge und Flag Cookies Daten.",
+    "message": "Die Domaineinstellungen wurden erfolgreich gelöscht.",
     "description": "Domain settings and data was cleared"
   },
   "ErrorDomainDataClearingInfoMsg": {
-    "message": "Es gab ein Fehler beim löschen der Domaineinstellungen.",
+    "message": "Es gab ein Fehler beim Löschen der Domaineinstellungen.",
     "description": "There was a error clearing domain data"
   },
 

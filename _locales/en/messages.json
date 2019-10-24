@@ -158,7 +158,7 @@
     "description": "Confirm domain settings clearing"
   },
   "DomainDataClearedInfoMsg": {
-    "message": "Please confirm domain clearing.",
+    "message": "The domain data was cleared successfully.",
     "description": "Domain settings and data was cleared"
   },
   "ErrorDomainDataClearingInfoMsg": {
