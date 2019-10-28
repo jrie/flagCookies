@@ -146,7 +146,7 @@
     "description": "Message in action log that clearing was not confirmed"
   },
   "ErrorClearingSettingsInfoMsg": {
-    "message": "Fehler beim löschen der Einstellungen.",
+    "message": "Fehler bei dem Löschen der Einstellungen.",
     "description": "There was a error clearing settings"
   },
   "SuccessClearingSettingsAndStorageInfoMsg": {
@@ -162,7 +162,7 @@
     "description": "Domain settings and data was cleared"
   },
   "ErrorDomainDataClearingInfoMsg": {
-    "message": "Es gab ein Fehler beim Löschen der Domaineinstellungen.",
+    "message": "Es gab einen Fehler bei dem Löschen der Domaineinstellungen.",
     "description": "There was a error clearing domain data"
   },
 
@@ -550,7 +550,7 @@
     "description": "Displayed help text for active cookies view tab"
   },
   "FlaggedCookiesViewHelpText": {
-    "message": "Zeige alle zum löschen markierten Cookies für diese Webseite.",
+    "message": "Zeigt alle zum Löschen markierten Cookies für diese Webseite.",
     "description": "Displayed help text for flagged cookie view tab"
   },
   "PermittedCookiesViewHelpText": {

@@ -383,7 +383,8 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     if (openTabData !== undefined && openTabData[parseInt(currentTab.windowId)] !== undefined && openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)] !== undefined) {
       for (let tabDomains of Object.values(openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)])) {
         if (tabDomains === undefined) break
-        if (tabDomains['k'] !== undefined && tabDomains['k'].indexOf(cookieDomain) !== -1) {
+        console.log(tabDomains)
+        if (tabDomains['d'] !== undefined && tabDomains['d'].indexOf(cookieDomain) !== -1) {
           hasCookieDomain = true
           break
         }
