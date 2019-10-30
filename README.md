@@ -31,13 +31,9 @@ domain.net and subdomain.domain.net have individual rights. Providing several mo
 ### Firefox
 Please use the addons.mozilla.org: [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/)
 
-### Opera
+### Opera and Chrome
 Please use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/) or download the **.nex** from the releases page.
 
-### Chrome
-The extension is not listed in the Chrome addon store, because of costs. You might use the extension **.crx** from the releases page.
-
-**Note:** The Opera and Chrome version might be slightly behind.
 
 ## Help, documentation and usage
 Please read along here: https://github.com/jrie/flagCookies/wiki/FlagCookies-help-and-documentation
