@@ -398,9 +398,9 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
       if (hasHttpProfile) cookieDomain = 'http://' + domain
       else if (hasHttpsProfile) cookieDomain = 'https://' + domain
 
-      if (cookieData[contextName][cookieDomain] !== undefined) {
-        for (let x = 0, y = cookieData[contextName][cookieDomain][cookie.domain].length; x < y; ++x) {
-          let cookieEntry = cookieData[contextName][cookieDomain][cookie.domain][x]
+      if (cookieData[contextName][rootDomain][cookieDomain] !== undefined) {
+        for (let x = 0, y = cookieData[contextName][rootDomain][cookie.domain].length; x < y; ++x) {
+          let cookieEntry = cookieData[contextName][rootDomain][cookie.domain][x]
           if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain && cookieEntry.path === cookie.path) {
             foundCookie = true
 
