@@ -22,6 +22,10 @@
     "message": "Keine Cookies gefunden, eventuell müssen Sie die Seite neu laden",
     "description": "Information that no cookies are active"
   },
+  "PriviligedDomainText": {
+    "message": "Diese Domain ist priviligiert und kann nicht verwaltet werden",
+    "description": "Information that the page is restricted and cookies cannot be managed"
+  },
   "CrossOriginInformationText": {
     "message": "[CROSS ORIGIN]",
     "description": "Display the cookies are from a cross origin source"

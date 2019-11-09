@@ -201,6 +201,16 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
     let infoDisplay = document.querySelector('#infoDisplay')
     let contentText = getMsg('NoActiveDomainCookiesText')
+    if (!useChrome) {
+      let priviligedPages = ['accounts-static.cdn.mozilla.net', 'accounts.firefox.com', 'addons.cdn.mozilla.net', 'addons.mozilla.org', 'api.accounts.firefox.com', 'content.cdn.mozilla.net', 'content.cdn.mozilla.net', 'discovery.addons.mozilla.org', 'input.mozilla.org', 'install.mozilla.org', 'oauth.accounts.firefox.com', 'profile.accounts.firefox.com', 'support.mozilla.org', 'sync.services.mozilla.com', 'testpilot.firefox.com']
+      for (let page of priviligedPages) {
+        if (cookies.rootDomain.indexOf(page) !== -1) {
+          contentText = getMsg('PriviligedDomainText')
+          break
+        }
+      }
+    }
+
     infoDisplay.children[0].textContent = contentText
     infoDisplay.removeAttribute('class')
   } else {
@@ -419,6 +429,17 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     if (!activeCookies) {
       let infoDisplay = document.querySelector('#infoDisplay')
       let contentText = getMsg('NoActiveDomainCookiesText')
+
+      if (!useChrome) {
+        let priviligedPages = ['accounts-static.cdn.mozilla.net', 'accounts.firefox.com', 'addons.cdn.mozilla.net', 'addons.mozilla.org', 'api.accounts.firefox.com', 'content.cdn.mozilla.net', 'content.cdn.mozilla.net', 'discovery.addons.mozilla.org', 'input.mozilla.org', 'install.mozilla.org', 'oauth.accounts.firefox.com', 'profile.accounts.firefox.com', 'support.mozilla.org', 'sync.services.mozilla.com', 'testpilot.firefox.com']
+        for (let page of priviligedPages) {
+          if (cookies.rootDomain.indexOf(page) !== -1) {
+            contentText = getMsg('PriviligedDomainText')
+            break
+          }
+        }
+      }
+
       infoDisplay.children[0].textContent = contentText
       infoDisplay.removeAttribute('class')
     }

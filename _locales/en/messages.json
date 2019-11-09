@@ -22,6 +22,11 @@
     "message": "No active cookies for domain, you might need to reload the tab.",
     "description": "Information that no cookies are active"
   },
+  "PriviligedDomainText": {
+    "message": "This domain is privilied and hence cannot manage cookies",
+    "description": "Information that the page is restricted and cookies cannot be managed"
+  },
+
   "CrossOriginInformationText": {
     "message": "[CROSS ORIGIN]",
     "description": "Display the cookies are from a cross origin source"
