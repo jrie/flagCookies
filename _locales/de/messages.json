@@ -460,6 +460,10 @@
     "message": "Einstellungen exportieren",
     "description": "Label for export settings button"
   },
+  "ExportDomainCookies": {
+    "message": "Domain Cookies exportieren",
+    "description": "Label for export domain cookies button"
+  },
   "ImportCookieSettingsHelp": {
     "message": "Klicken Sie um die Einstellungen aus einer ZIP Datei zu importieren.",
     "description": "Help message that settings can be exported"
@@ -584,6 +588,14 @@
   "DomainConfirmClearHelpText": {
     "message": "Bite bestätigen Sie das Löschen der Domain Einstellungen",
     "description": "Displayed help text for domain confirm clearing checkbox"
+  },
+  "ExportCookiesHelp": {
+    "message": "Cookie Informationen für diese Domain exportieren",
+    "description": "Displayed help text for tab cookie data export"
+  },
+  "ExportCookieText": {
+    "message": "Tab Cookies exportieren",
+    "description": "Button text for cookie data export"
   },
   "ProfileCookiesTabHelpText": {
     "message": "Eingeloggter Zustand, Profil Cookes",

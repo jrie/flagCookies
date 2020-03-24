@@ -462,6 +462,10 @@
     "message": "Export settings",
     "description": "Label for export settings button"
   },
+  "ExportDomainCookies": {
+    "message": "Export domain cookies",
+    "description": "Label for export domain cookies button"
+  },
   "ImportCookieSettingsHelp": {
     "message": "Click to import Flag Cookies settings from a exported ZIP file.",
     "description": "Help message that settings can be exported"
@@ -586,6 +590,14 @@
   "DomainConfirmClearHelpText": {
     "message": "Please check the box to confirm domain data clearing.",
     "description": "Displayed help text for domain confirm clearing checkbox"
+  },
+  "ExportCookiesHelp": {
+    "message": "Export cookie information and content for the current tab.",
+    "description": "Displayed help text for tab cookie data export"
+  },
+  "ExportCookieText": {
+    "message": "Export tab cookie data",
+    "description": "Button text for cookie data export"
   },
   "ProfileCookiesTabHelpText": {
     "message": "Logged in profile mode cookies, 'keyed' coookies.",
