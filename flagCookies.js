@@ -149,11 +149,9 @@ async function initDomainURLandProceed (tabs) {
     document.body.classList.add('dark')
   }
 
-  activeCookieStore = tab.cookieStoreId
-  cookieStoreId = activeCookieStore
   await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
-  let cookies = await browser.runtime.sendMessage({ 'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id })
+  let cookies = await browser.runtime.sendMessage({ 'getCookies': domainURL, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id })
   updateUIData(data, cookies, contextName, tab, activeCookieStore)
 }
 
@@ -565,11 +563,18 @@ function buildHelpIndex () {
 }
 
 function getTempContainerStatus (contextName) {
-  browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', { 'method': 'isTempContainer', 'cookieStoreId': cookieStoreId }).then(function (isTmp) {
-    if (isTmp === true) {
-      getMsg('CookieHelpTextSecureMightNotHandled', [document.querySelectorAll('.intro')[1].textContent])
-    }
-  })
+  try {
+    browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', { 'method': 'isTempContainer', 'cookieStoreId': cookieStoreId }).then(function (isTmp) {
+      void browser.runtime.lastError
+      if (isTmp === true) {
+        getMsg('CookieHelpTextSecureMightNotHandled', [document.querySelectorAll('.intro')[1].textContent])
+      }
+    })
+
+  } catch (error) {
+    void browser.runtime.lastError
+    console.log('passed')
+  }
 }
 
 function addCookieToProfileList (targetList, cookieName, cookieDomain, src) {
@@ -667,7 +672,7 @@ function addCookieToList (targetList, name, value, domain, inactiveCookie) {
   targetCookieList.appendChild(li)
 }
 
-async function getActiveTab () {
+function getActiveTab () {
   return browser.tabs.query({ currentWindow: true, active: true })
 }
 
@@ -1732,6 +1737,71 @@ function shadowInputChrome () {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
+
+function doExportCookiesFunc (cookies) {
+  if (cookies === null) return
+
+  if (cookies['rootDomain'] !== undefined) {
+    let jsonData = { 'userAgent': navigator.userAgent }
+
+    for (let cookieDomain of Object.keys(cookies['cookies'])) {
+      jsonData[cookieDomain] = {}
+
+      for (let cookieKey of Object.keys(cookies['cookies'][cookieDomain]['data'])) {
+        let cookie = cookies['cookies'][cookieDomain]['data'][cookieKey]
+        if (jsonData[cookieDomain][cookie.domain] === undefined) {
+          jsonData[cookieDomain][cookie.domain] = {}
+        }
+
+        jsonData[cookieDomain][cookie.domain][cookie['name']] = cookie
+      }
+    }
+
+    let dlLink = document.createElement('a')
+    let blob = new Blob([JSON.stringify(jsonData)], {type : 'application/json'});
+    dlLink.href = URL.createObjectURL(blob)
+
+    let dateObj = new Date()
+    dlLink.download = 'FlagCookieCookies_cookieDataExport_' + (cookies['rootDomain'].replace(/(http|https):\/\//i, '').replace('.', '_')) + dateObj.getFullYear().toString() + '-' + (dateObj.getMonth() + 1).toString() + '-' + dateObj.getDate().toString() + '.json'
+    document.body.appendChild(dlLink)
+    dlLink.click()
+    dlLink.parentNode.removeChild(dlLink)
+    URL.revokeObjectURL(dlLink.href)
+  }
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+
+async function doExportCookiesTabFunc (tabs) {
+  let tab = tabs.pop()
+  let domain = null
+  let domainMatch = tab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
+  if (domainMatch !== null) domain = domainMatch[0]
+  else domain = 'No domain'
+
+  if (useChrome) {
+    chrome.runtime.sendMessage({ 'getCookies': domain, 'windowId': tab.windowId, 'tabId': tab.id, 'storeId': 'default' }, function (response) {
+      checkChromeHadNoErrors()
+      doExportCookiesFunc(response)
+    })
+
+    return
+  }
+
+  await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
+
+  let cookies = await browser.runtime.sendMessage({ 'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id })
+  doExportCookiesFunc(cookies)
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+
+function exportCookies () {
+  if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, doExportCookiesTabFunc)
+  else getActiveTab().then(doExportCookiesTabFunc)
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
 try {
   useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
@@ -1755,6 +1825,7 @@ document.querySelector('#confirmDarkTheme').addEventListener('click', toggleDark
 document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
 document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
 document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
+document.querySelector('#cookies-action-all-export').addEventListener('click', exportCookies)
 if (useChrome) document.querySelector('label[for="importFile"]').addEventListener('click', shadowInputChrome)
 else document.querySelector('#importFile').addEventListener('click', triggerImport)
 document.querySelector('#confirmImportOverwrite').addEventListener('click', toggleImportOverwrite)
