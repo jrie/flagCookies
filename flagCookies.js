@@ -1788,6 +1788,7 @@ async function doExportCookiesTabFunc (tabs) {
     return
   }
 
+  let activeCookieStore = 'default'
   await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
   let cookies = await browser.runtime.sendMessage({ 'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id })
