@@ -23,7 +23,7 @@
     "description": "Information that no cookies are active"
   },
   "PriviligedDomainText": {
-    "message": "Diese Domain ist priviligiert und kann nicht verwaltet werden",
+    "message": "Diese Domain ist priviligiert und Cookies können nicht verwaltet werden.",
     "description": "Information that the page is restricted and cookies cannot be managed"
   },
   "CrossOriginInformationText": {
