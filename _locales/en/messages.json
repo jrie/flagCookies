@@ -592,12 +592,24 @@
     "description": "Displayed help text for domain confirm clearing checkbox"
   },
   "ExportCookiesHelp": {
-    "message": "Export cookie information and content for the current tab.",
+    "message": "Export cookie information for the current tab.",
     "description": "Displayed help text for tab cookie data export"
   },
   "ExportCookieText": {
-    "message": "Export tab cookie data",
+    "message": "Export tab cookie data to JSON",
     "description": "Button text for cookie data export"
+  },
+  "ExportCookiesClipboardHelp": {
+    "message": "Export cookie information for the current tab into the clipboard.",
+    "description": "Displayed help text for tab cookie data export to clipboard"
+  },
+  "ExportCookieClipboardText": {
+    "message": "Export cookie data to clipboard",
+    "description": "Button text for cookie data export to clipboard"
+  },
+  "ExportCookieClipboardMessage": {
+    "message": "Succesfully exported cookie data to clipboard",
+    "description": "Information that cookie data was succesfully copied to the clipboard"
   },
   "ProfileCookiesTabHelpText": {
     "message": "Logged in profile mode cookies, 'keyed' coookies.",

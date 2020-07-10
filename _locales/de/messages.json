@@ -590,12 +590,24 @@
     "description": "Displayed help text for domain confirm clearing checkbox"
   },
   "ExportCookiesHelp": {
-    "message": "Cookie Informationen für diese Domain exportieren",
+    "message": "Cookie Informationen für diesen Tab im JSON-Format exportieren",
     "description": "Displayed help text for tab cookie data export"
   },
   "ExportCookieText": {
-    "message": "Tab Cookies exportieren",
+    "message": "Tab Cookies in JSON exportieren",
     "description": "Button text for cookie data export"
+  },
+  "ExportCookiesClipboardHelp": {
+    "message": "Cookie Informationen für diesen Tab in die Zwischenablage kopieren.",
+    "description": "Displayed help text for tab cookie data export to clipboard"
+  },
+  "ExportCookieClipboardText": {
+    "message": "Tab Cookies in Zwischenablage",
+    "description": "Button text for cookie data export to clipboard"
+  },
+  "ExportCookieClipboardMessage": {
+    "message": "Cookie informationen in die Zwischenablage exportiert",
+    "description": "Information that cookie data was succesfully copied to the clipboard"
   },
   "ProfileCookiesTabHelpText": {
     "message": "Eingeloggter Zustand, Profil Cookes",

@@ -1772,6 +1772,58 @@ function doExportCookiesFunc (cookies) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
+function doExportCookiesClipFunc (cookies) {
+  if (cookies === null) return
+
+  if (cookies['rootDomain'] !== undefined) {
+    let jsonData = { 'userAgent': navigator.userAgent }
+
+    for (let cookieDomain of Object.keys(cookies['cookies'])) {
+      jsonData[cookieDomain] = {}
+
+      for (let cookieKey of Object.keys(cookies['cookies'][cookieDomain]['data'])) {
+        let cookie = cookies['cookies'][cookieDomain]['data'][cookieKey]
+        if (jsonData[cookieDomain][cookie.domain] === undefined) {
+          jsonData[cookieDomain][cookie.domain] = {}
+        }
+
+        jsonData[cookieDomain][cookie.domain][cookie['name']] = cookie
+      }
+    }
+
+    navigator.clipboard.writeText(JSON.stringify(jsonData)).then(
+      function() { alert(getMsg('ExportCookieClipboardMessage')) }
+    )
+  }
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+
+async function doExportCookiesClipboardFunc (tabs) {
+  let tab = tabs.pop()
+  let domain = null
+  let domainMatch = tab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
+  if (domainMatch !== null) domain = domainMatch[0]
+  else domain = 'No domain'
+
+  if (useChrome) {
+    chrome.runtime.sendMessage({ 'getCookies': domain, 'windowId': tab.windowId, 'tabId': tab.id, 'storeId': 'default' }, function (response) {
+      checkChromeHadNoErrors()
+      doExportCookiesClipFunc(response)
+    })
+
+    return
+  }
+
+  let activeCookieStore = 'default'
+  await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
+
+  let cookies = await browser.runtime.sendMessage({ 'getCookies': domain, 'storeId': contextName, 'windowId': tab.windowId, 'tabId': tab.id })
+  doExportCookiesClipFunc(cookies)
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
+
 async function doExportCookiesTabFunc (tabs) {
   let tab = tabs.pop()
   let domain = null
@@ -1803,6 +1855,13 @@ function exportCookies () {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
+
+function exportCookiesClipboard () {
+  if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, doExportCookiesClipboardFunc)
+  else getActiveTab().then(doExportCookiesClipboardFunc)
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
 try {
   useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
@@ -1827,6 +1886,7 @@ document.querySelector('#settings-action-clear').addEventListener('click', clear
 document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
 document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
 document.querySelector('#cookies-action-all-export').addEventListener('click', exportCookies)
+document.querySelector('#cookies-action-all-export-clipboard').addEventListener('click', exportCookiesClipboard)
 if (useChrome) document.querySelector('label[for="importFile"]').addEventListener('click', shadowInputChrome)
 else document.querySelector('#importFile').addEventListener('click', triggerImport)
 document.querySelector('#confirmImportOverwrite').addEventListener('click', toggleImportOverwrite)

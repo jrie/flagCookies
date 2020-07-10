@@ -823,6 +823,13 @@ textarea#log {
   word-wrap: break-word;
 }
 
+#cookies-action-all-export-clipboard {
+  margin-left: 35px;
+  margin-bottom: 35px;
+  min-width: 210px;
+  max-width: 210px;
+}
+
 #settings-confirm-clear,
 #domain-confirm-clear,
 #settings-all-export,
