@@ -1579,6 +1579,7 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
   if (removeInfo === undefined) return
   if (openTabData[removeInfo.windowId] !== undefined && openTabData[removeInfo.windowId][tabId] !== undefined) {
     let domainData = openTabData[removeInfo.windowId][tabId]
+    if (domainData[0] === undefined) return
     let rootDomain = domainData[0].u
     let activeCookieStore = domainData[0].s
 
@@ -1964,3 +1965,4 @@ if (useChrome) {
   browser.windows.onRemoved.addListener(removeTabIdfromDataList)
   browser.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, { urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest'] })
 }
+
