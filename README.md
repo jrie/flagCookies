@@ -40,11 +40,13 @@ This add-on is aimed at power users. By default it does nothing on its own. In o
 ## Installation
 
 ### Firefox
-Please use the addons.mozilla.org: [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/)
+Use addons.mozilla.org: [Flag Cookies on Add-ons Mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/flag-cookies/)
 
-### Opera and Chrome
-Please use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/) or download the **.nex** from the releases page.
+### Opera
+Use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/) 
 
+###Chrome
+Use the Chrome web store: [Flag Cookies on the web store @ chrome.google.com](https://chrome.google.com/webstore/detail/flag-cookies/phcaemipbgodliopfijmcmlbdhpkbndb) 
 
 ## Help, documentation and usage
 Please read along here: https://github.com/jrie/flagCookies/wiki/FlagCookies-help-and-documentation
