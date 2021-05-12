@@ -45,7 +45,7 @@ Use addons.mozilla.org: [Flag Cookies on Add-ons Mozilla.org](https://addons.moz
 ### Opera
 Use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.com/en/extensions/details/flag-cookies/) 
 
-###Chrome
+### Chrome
 Use the Chrome web store: [Flag Cookies on the web store @ chrome.google.com](https://chrome.google.com/webstore/detail/flag-cookies/phcaemipbgodliopfijmcmlbdhpkbndb) 
 
 ## Help, documentation and usage
