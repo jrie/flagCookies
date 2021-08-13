@@ -4,7 +4,7 @@ A cookie manager allowing to flag and set rules explicitly for cookies, also thi
 domain.net and subdomain.domain.net have individual rights. Providing several modes to set rules onto cookies and keeping a cookie profile, while being logged in in a website or service.
 
 ### Note
-This add-on is aimed at power users. By default it does nothing on its own. In order to get the most out of it, you have to define your own rules for websites or at least make some decisions in order to get the most out of the add-on. Also, in case you use payment services, be advised to disable the `Global flag` feature temporarily. For example when using Paypal.com or similar shopping or payment providers websites.
+This add-on is aimed at power users. By default it does nothing on its own. In order to get the most out of it, you have to define your own rules for websites or at least make some decisions. Also, in case you use payment services, be advised to disable the `Global flag` feature temporarily. For example when using Paypal.com or similar shopping or payment providers websites.
 
 ### *Long story made short*
 1) Use `Global mode` if you are surfing, this will remove all kind of cookies while you browsing the web if not protected by `profile` mode.
