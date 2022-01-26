@@ -5,7 +5,7 @@
     }
   },
   "developer": {
-    "name": "JanRie",
+    "name": "Jan Riechers",
     "url": "https://github.com/jrie"
   },
   "default_locale": "en",
@@ -38,7 +38,7 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "permissions": ["cookies", "tabs", "webRequest", "<all_urls>", "storage", "unlimitedStorage", "clipboardWrite", "notifications", "contextualIdentities"],
   "background": {
     "scripts": [
