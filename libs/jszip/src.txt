@@ -1,0 +1,1 @@
+https://github.com/Stuk/jszip/releases/tag/v3.7.1

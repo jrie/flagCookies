@@ -1,0 +1,2 @@
+https://github.com/eligrey/l10n.js
+http://purl.eligrey.com/github/l10n.js/raw/master/l10n.js
