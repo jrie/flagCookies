@@ -638,11 +638,11 @@
     "description": "Displayed text for expired cookie export"
   },
   "ExpiredCookieMsg": {
-    "message": "(abgelaufener Cookie)",
+    "message": "(abgelaufen)",
     "description": "Information that the cookie is expired"
   },
   "SecureCookieMsg": {
-    "message": "(gesicherter Cookie)",
+    "message": "(gesichert)",
     "description": "Information that the cookie is secured"
   }
 }
