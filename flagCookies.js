@@ -1774,10 +1774,17 @@ function shadowInputChrome () {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-function doExportCookiesFunc (cookies) {
+function doExportCookiesFunc (cookies, exportExpired) {
   if (cookies === null) return
+  else if (cookies.cookies === undefined) return
+
+  if (cookies.cookies === null) {
+    alert(getMsg('NoCookieDataExportMsg'))
+    return
+  }
 
   if (cookies.rootDomain !== undefined) {
+    const timestampNow = Date.now()
     const jsonData = { userAgent: navigator.userAgent }
 
     for (const cookieDomain of Object.keys(cookies.cookies)) {
@@ -1785,6 +1792,10 @@ function doExportCookiesFunc (cookies) {
 
       for (const cookieKey of Object.keys(cookies.cookies[cookieDomain].data)) {
         const cookie = cookies.cookies[cookieDomain].data[cookieKey]
+        if (!exportExpired && cookie.expirationDate !== undefined && cookie.expirationDate < timestampNow) {
+          continue
+        }
+
         if (jsonData[cookieDomain][cookie.domain] === undefined) {
           jsonData[cookieDomain][cookie.domain] = {}
         }
@@ -1798,7 +1809,7 @@ function doExportCookiesFunc (cookies) {
     dlLink.href = URL.createObjectURL(blob)
 
     const dateObj = new Date()
-    dlLink.download = 'FlagCookieCookies_cookieDataExport_' + (cookies.rootDomain.replace(/(http|https):\/\//i, '').replace('.', '_')) + dateObj.getFullYear().toString() + '-' + (dateObj.getMonth() + 1).toString() + '-' + dateObj.getDate().toString() + '.json'
+    dlLink.download = 'FlagCookies_cookieExport_' + (cookies.rootDomain.replace(/(http|https):\/\//i, '').replace('.', '_')) + '_' + dateObj.getFullYear().toString() + '-' + (dateObj.getMonth() + 1).toString() + '-' + dateObj.getDate().toString() + '.json'
     document.body.appendChild(dlLink)
     dlLink.click()
     dlLink.parentNode.removeChild(dlLink)
@@ -1808,17 +1819,29 @@ function doExportCookiesFunc (cookies) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-function doExportCookiesClipFunc (cookies) {
+function doExportCookiesClipFunc (cookies, exportExpired) {
   if (cookies === null) return
+  else if (cookies.cookies === undefined) return
+
+  if (cookies.cookies === null) {
+    alert(getMsg('NoCookieDataExportMsg'))
+    return
+  }
+
+  const jsonData = { userAgent: navigator.userAgent }
 
   if (cookies.rootDomain !== undefined) {
-    const jsonData = { userAgent: navigator.userAgent }
+    const timestampNow = Date.now()
 
     for (const cookieDomain of Object.keys(cookies.cookies)) {
       jsonData[cookieDomain] = {}
 
       for (const cookieKey of Object.keys(cookies.cookies[cookieDomain].data)) {
         const cookie = cookies.cookies[cookieDomain].data[cookieKey]
+        if (!exportExpired && cookie.expirationDate !== undefined && cookie.expirationDate < timestampNow) {
+          continue
+        }
+
         if (jsonData[cookieDomain][cookie.domain] === undefined) {
           jsonData[cookieDomain][cookie.domain] = {}
         }
@@ -1834,6 +1857,15 @@ function doExportCookiesClipFunc (cookies) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
+function exportCookiesClipboardChromeFunc (data, response) {
+  let exportExpired = false
+  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+    exportExpired = true
+  }
+
+  doExportCookiesClipFunc(response, exportExpired)
+}
 
 async function doExportCookiesClipboardFunc (tabs) {
   const tab = tabs.pop()
@@ -1845,7 +1877,7 @@ async function doExportCookiesClipboardFunc (tabs) {
   if (useChrome) {
     chrome.runtime.sendMessage({ getCookies: domain, windowId: tab.windowId, tabId: tab.id, storeId: 'default' }, function (response) {
       checkChromeHadNoErrors()
-      doExportCookiesClipFunc(response)
+      getChromeStorageForFunc1(exportCookiesClipboardChromeFunc, response)
     })
 
     return
@@ -1854,11 +1886,26 @@ async function doExportCookiesClipboardFunc (tabs) {
   const activeCookieStore = 'default'
   await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
+  let exportExpired = false
+  const data = await browser.storage.local.get()
+
+  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+    exportExpired = true
+  }
+
   const cookies = await browser.runtime.sendMessage({ getCookies: domain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
-  doExportCookiesClipFunc(cookies)
+  doExportCookiesClipFunc(cookies, exportExpired)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
+function exportCookiesChromeFunc (data, response) {
+  let exportExpired = false
+  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+    exportExpired = true
+  }
+
+  doExportCookiesFunc(response, exportExpired)
+}
 
 async function doExportCookiesTabFunc (tabs) {
   const tab = tabs.pop()
@@ -1870,7 +1917,7 @@ async function doExportCookiesTabFunc (tabs) {
   if (useChrome) {
     chrome.runtime.sendMessage({ getCookies: domain, windowId: tab.windowId, tabId: tab.id, storeId: 'default' }, function (response) {
       checkChromeHadNoErrors()
-      doExportCookiesFunc(response)
+      getChromeStorageForFunc1(exportCookiesChromeFunc, response)
     })
 
     return
@@ -1879,8 +1926,14 @@ async function doExportCookiesTabFunc (tabs) {
   const activeCookieStore = 'default'
   await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
 
+  let exportExpired = false
+  const data = await browser.storage.local.get()
+  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+    exportExpired = true
+  }
+
   const cookies = await browser.runtime.sendMessage({ getCookies: domain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
-  doExportCookiesFunc(cookies)
+  doExportCookiesFunc(cookies, exportExpired)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------

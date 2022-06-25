@@ -650,5 +650,9 @@
   "SecureCookieMsg": {
     "message": "(secure cookie)",
     "description": "Information that the cookie is secured"
+  },
+  "NoCookieDataExportMsg": {
+    "message": "No cookie data to export",
+    "description": "Information that no cookies for export are present"
   }
 }
