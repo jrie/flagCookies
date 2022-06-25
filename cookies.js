@@ -1135,14 +1135,14 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
     }
 
     if (useChrome) {
-      chrome.browserAction.setTitle({ title: titleString, tabId: currentTab.id })
+      chrome.action.setTitle({ title: titleString, tabId: currentTab.id })
     } else {
       browser.browserAction.setTitle({ title: titleString, tabId: currentTab.id })
     }
 
     if (useChrome) {
-      if (count !== 0) chrome.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
-      else chrome.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
+      if (count !== 0) chrome.action.setBadgeText({ text: count.toString(), tabId: currentTab.id })
+      else chrome.action.setBadgeText({ text: '', tabId: currentTab.id })
     } else {
       if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
       else browser.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
@@ -1153,7 +1153,7 @@ async function clearCookiesAction (action, data, cookies, domainURL, currentTab,
 // --------------------------------------------------------------------------------------------------------------------------------
 async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
   if (changeInfo.status && changeInfo.status === 'loading') {
-    if (useChrome) chrome.browserAction.disable(currentTab.id)
+    if (useChrome) chrome.action.disable(currentTab.id)
     else browser.browserAction.disable(currentTab.id)
     clearCookiesWrapper(getMsg('ActionDocumentLoad'))
   } else if (changeInfo.status !== undefined && changeInfo.status === 'complete') {
@@ -1166,7 +1166,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
     const domain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
     addTabURLtoDataList(currentTab, { url: tabDomain, frameId: 0, parentFrameId: -1, type: 'main_frame' }, domain, true, Date.now())
 
-    if (useChrome) chrome.browserAction.enable(currentTab.id)
+    if (useChrome) chrome.action.enable(currentTab.id)
     else browser.browserAction.enable(currentTab.id)
 
     if (!useChrome) browser.contextualIdentities.get(currentTab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
@@ -1215,7 +1215,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
       if (!hasTitleChange) titleString += '\n' + getMsg('NoActionOnPage')
 
       if (useChrome) {
-        chrome.browserAction.setTitle({ title: titleString, tabId: currentTab.id })
+        chrome.action.setTitle({ title: titleString, tabId: currentTab.id })
         getChromeStorageForFunc3(setBrowserActionIconChrome, contextName, tabDomain, currentTab.id)
       } else {
         browser.browserAction.setTitle({ title: titleString, tabId: currentTab.id })
@@ -1227,8 +1227,8 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
       }
 
       if (useChrome) {
-        if (count !== 0) chrome.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
-        else chrome.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
+        if (count !== 0) chrome.action.setBadgeText({ text: count.toString(), tabId: currentTab.id })
+        else chrome.action.setBadgeText({ text: '', tabId: currentTab.id })
       } else {
         if (count !== 0) browser.browserAction.setBadgeText({ text: count.toString(), tabId: currentTab.id })
         else browser.browserAction.setBadgeText({ text: '', tabId: currentTab.id })
@@ -1236,7 +1236,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, currentTab) {
     }
 
     if (useChrome) {
-      chrome.browserAction.setTitle({ title: titleString, tabId: currentTab.id })
+      chrome.action.setTitle({ title: titleString, tabId: currentTab.id })
       getChromeStorageForFunc3(setBrowserActionIconChrome, contextName, tabDomain, currentTab.id)
       getChromeStorageForFunc3(displayCookieDeleteChrome, count, tabDomain, contextName)
       return
@@ -1266,7 +1266,7 @@ function clearCookiesOnLeave (tabId, moveInfo) {
 function setBrowserActionIconChrome (data, contextName, tabDomain, tabId) {
   const inAccountMode = data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][tabDomain] !== undefined
   if (inAccountMode) {
-    chrome.browserAction.setIcon({
+    chrome.action.setIcon({
       tabId: tabId,
       path: {
         16: 'icons/fc16p.png',
@@ -1275,7 +1275,7 @@ function setBrowserActionIconChrome (data, contextName, tabDomain, tabId) {
       }
     })
   } else {
-    chrome.browserAction.setIcon({
+    chrome.action.setIcon({
       tabId: tabId,
       path: {
         16: 'icons/fc16.png',
@@ -1854,11 +1854,6 @@ async function clearCookiesOnRequest (details) {
 // --------------------------------------------------------------------------------------------------------------------------------
 // Import settings
 const doImportOverwrite = false
-const jszipScript = document.createElement('script')
-jszipScript.type = 'text/javascript'
-jszipScript.src = 'libs/jszip/jszip.js'
-
-document.body.appendChild(jszipScript)
 
 // Called in frontend/UI
 function importSettings (evt) {
