@@ -640,7 +640,7 @@
     "description": "Displayed help text for expired cookie export"
   },
   "ExportExpired": {
-    "message": "Also export expired cookies",
+    "message": "Export expired cookies",
     "description": "Displayed text for expired cookie export"
   },
   "ExpiredCookieMsg": {
