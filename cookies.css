@@ -844,6 +844,7 @@ textarea#log {
   margin-bottom: 25px;
 }
 
+#cookies-action-export-expired span,
 #settings-confirm-clear span,
 #domain-confirm-clear span,
 #settings-notification span,
