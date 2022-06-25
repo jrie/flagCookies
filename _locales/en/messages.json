@@ -626,5 +626,13 @@
   "SettingsConfirmClearCheckboxHelpText": {
     "message": "Please check the box to confirm storage clearing.",
     "description": "Displayed help text for action log"
+  },
+  "SettingsConfirmExpiredCheckboxHelpText": {
+    "message": "Also add expired cookies into export",
+    "description": "Displayed help text for expired cookie export"
+  },
+  "ExportExpired": {
+    "message": "Also export expired cookies",
+    "description": "Displayed text for expired cookie export"
   }
 }
