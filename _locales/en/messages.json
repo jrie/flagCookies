@@ -147,7 +147,7 @@
     "description": "Notifications that notifications have been disabled."
   },
   "ConfirmStorageClearingInfoMsg": {
-    "message": "Please confirm storage clearing.",
+    "message": "Please confirm clearing.",
     "description": "Message in action log that clearing was not confirmed"
   },
   "ErrorClearingSettingsInfoMsg": {
@@ -426,6 +426,10 @@
     "message": "Delete domain settings",
     "description": "Permitted button label text"
   },
+  "DeleteDomainSettingsHelpText": {
+    "message": "This will delete all domain related data from Flag Cookies.",
+    "description": "Remove domain settings help title text"
+  },
   "LoggedInProfileTabText": {
     "message": "Logged in profile",
     "description": "Logged in profile tab button label text"
@@ -453,6 +457,10 @@
   "DeleteStoredSettingsText": {
     "message": "Delete all stored settings",
     "description": "Shown in settings, delete all stored settings button"
+  },
+  "DeleteStoredSettingsHelpText": {
+    "message": "This will delete all and every domain and cookie settings of Flag Cookies.",
+    "description": "Shown in settings, delete all stored settings help title text"
   },
   "ExportCookieSettingsHelp": {
     "message": "Click to export and save all Flag Cookies settings to a ZIP file.",

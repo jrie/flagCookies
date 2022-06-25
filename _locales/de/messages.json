@@ -424,6 +424,10 @@
     "message": "Website Einstellungen löschen",
     "description": "Permitted button label text"
   },
+  "DeleteDomainSettingsHelpText": {
+    "message": "Dies löscht alle Domaineinstelungen der aktuellen Domain",
+    "description": "Remove domain settings help title text"
+  },
   "LoggedInProfileTabText": {
     "message": "Eingeloggtes Profil",
     "description": "Logged in profile tab button label text"
@@ -451,6 +455,10 @@
   "DeleteStoredSettingsText": {
     "message": "Lösche alle Einstellungen",
     "description": "Shown in settings, delete all stored settings button"
+  },
+  "DeleteStoredSettingsHelpText": {
+    "message": "Diese Aktion löscht alle Browserdaten und Cookie Einstellungen von Flag Cookies.",
+    "description": "Shown in settings, delete all stored settings help title text"
   },
   "ExportCookieSettingsHelp": {
     "message": "Klicken Sie um die Einstellung aus Flag Cookies in einer ZIP Datei zu exportieren.",
