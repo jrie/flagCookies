@@ -347,7 +347,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
           if (cookie.secure) {
             const pCookieKeySecMessageElm = document.createElement('span')
-            const pCookieKeySecMessage = document.createTextNode('(secure cookie)')
+            const pCookieKeySecMessage = document.createTextNode(getMsg('SecureCookieMsg'))
             pCookieKeySecMessageElm.className = 'secure-cookie'
             pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
 
