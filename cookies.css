@@ -816,6 +816,9 @@ textarea#log {
 #settings-action-clear,
 #domain-action-clear,
 #settings-action-all-export,
+#settings-action-all-import,
+#cookies-action-all-export,
+#cookies-action-all-export-clipboard,
 #settings-action-all-import {
   margin-left: 35px;
   margin-bottom: 35px;
@@ -825,17 +828,19 @@ textarea#log {
   word-wrap: break-word;
 }
 
+#cookies-action-all-export {
+  margin-bottom: 12px;
+}
+
 #cookies-action-all-export-clipboard {
-  margin-left: 35px;
-  margin-bottom: 35px;
-  min-width: 210px;
-  max-width: 210px;
+  clear: both;
 }
 
 #settings-confirm-clear,
 #domain-confirm-clear,
 #settings-all-export,
-#settings-all-import {
+#settings-all-import,
+#cookies-action-export-expired {
   float: left;
   min-width: 300px;
   max-width: 300px;
@@ -856,10 +861,6 @@ textarea#log {
   position: relative;
   top: 0.65em;
   font-weight: bold;
-}
-
-#settings-action-all-import span {
-  font-size: 0.75em;
 }
 
 #help-view {
@@ -1026,7 +1027,11 @@ textarea#log {
 }
 
 .chrome #settings-confirm-clear span,
-.chrome #domain-confirm-clear span {
+.chrome #domain-confirm-clear span,
+.chrome #cookies-action-export-expired span,
+.chrome #settings-use-dark span,
+.chrome #settings-notification span,
+.chrome #settings-all-import span {
   top: 0.25em;
 }
 
