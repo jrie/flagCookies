@@ -634,10 +634,6 @@
     "description": "Displayed help text for action log"
   },
   "SettingsConfirmExpiredCheckboxHelpText": {
-    "message": "Abgelaufene Cookies ebenfalls exportieren",
-    "description": "Displayed help text for expired cookie export"
-  },
-  "SettingsConfirmExpiredCheckboxHelpText": {
     "message": "Abgelaufene Cookies mit in den Export aufnehmen",
     "description": "Displayed help text for expired cookie export"
   },
