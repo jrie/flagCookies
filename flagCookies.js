@@ -513,6 +513,10 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     document.querySelector('#confirmNotifications').classList.add('active')
   }
 
+  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+    document.querySelector('#confirmExportExpired').classList.add('active')
+  }
+
   for (const key of Object.keys(countList)) {
     const bubble = document.createElement('span')
     bubble.className = 'cookieCount'
@@ -1375,9 +1379,15 @@ function switchNotificationsChrome (data, doSwitchOn) {
   setChromeStorage(data)
 }
 
+function switchExportExpiredChrome (data, doSwitchOn) {
+  data.flagCookies_expiredExport = doSwitchOn
+  setChromeStorage(data)
+}
+
 // Chrome + Firefox
 async function clearSettings (evt) {
   const log = document.querySelector('#log')
+
   if (!document.querySelector('#confirmSettingsClearing').classList.contains('active')) {
     document.querySelector('#log').textContent = getMsg('ConfirmStorageClearingInfoMsg')
     return
@@ -1395,8 +1405,7 @@ async function clearSettings (evt) {
 
     return
   }
-
-  if (await browser.storage.local.clear() === null) {
+  if (await browser.storage.local.clear() === undefined) {
     log.textContent = getMsg('SuccessClearingSettingsAndStorageInfoMsg')
     resetUI()
   } else {
@@ -1430,6 +1439,24 @@ async function clearDomain (evt) {
   else log.textContent = getMsg('ErrorDomainDataClearingInfoMsg')
 }
 
+async function toggleExportExpired (evt) {
+  evt.target.classList.toggle('active')
+  let doSwitchOn = false
+
+  if (evt.target.classList.contains('active')) {
+    doSwitchOn = true
+  }
+
+  if (useChrome) {
+    getChromeStorageForFunc1(switchExportExpiredChrome, doSwitchOn)
+    return
+  }
+
+  const data = await browser.storage.local.get(null)
+  data.flagCookies_expiredExport = doSwitchOn
+  await browser.storage.local.set(data)
+}
+
 function resetUI () {
   document.querySelector('#auto-flag').removeAttribute('class')
   document.querySelector('#global-flag').removeAttribute('class')
@@ -1458,6 +1485,7 @@ function resetUI () {
   }
 
   document.querySelector('#confirmSettingsClearing').classList.remove('active')
+  document.querySelector('#confirmExportExpired').classList.remove('active')
 }
 
 async function resetUIDomain (data) {
@@ -1892,6 +1920,7 @@ document.querySelector('#confirmNotifications').addEventListener('click', toggle
 document.querySelector('#confirmDarkTheme').addEventListener('click', toggleDarkTheme)
 document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
 document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
+document.querySelector('#confirmExportExpired').addEventListener('click', toggleExportExpired)
 document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
 document.querySelector('#cookies-action-all-export').addEventListener('click', exportCookies)
 document.querySelector('#cookies-action-all-export-clipboard').addEventListener('click', exportCookiesClipboard)
