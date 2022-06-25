@@ -636,5 +636,9 @@
   "ExportExpired": {
     "message": "Abgelaufene Cookies ebenfalls exportieren",
     "description": "Displayed text for expired cookie export"
+  },
+  "ExpiredCookieMsg": {
+    "message": "(abgelaufen)",
+    "description": "Information that the cookie is expired"
   }
 }
