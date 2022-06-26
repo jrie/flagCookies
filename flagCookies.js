@@ -414,7 +414,8 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
             p.appendChild(pCookieValueElm)
           }
 
-          if (cookie.expirationDate !== undefined && cookie.expirationDate < Date.now()) {
+          const timestampNow = Math.floor(Date.now() * 0.001)
+          if (cookie.expirationDate !== undefined && cookie.expirationDate < timestampNow) {
             const pCookieKeyExpiredMessageElm = document.createElement('span')
             const pCookieKeyExpiredMessage = document.createTextNode(getMsg('ExpiredCookieMsg'))
             pCookieKeyExpiredMessageElm.className = 'expired-cookie'
@@ -1784,7 +1785,7 @@ function doExportCookiesFunc (cookies, exportExpired) {
   }
 
   if (cookies.rootDomain !== undefined) {
-    const timestampNow = Date.now()
+    const timestampNow = Math.floor(Date.now() * 0.001)
     const jsonData = { userAgent: navigator.userAgent }
 
     for (const cookieDomain of Object.keys(cookies.cookies)) {
@@ -1828,10 +1829,9 @@ function doExportCookiesClipFunc (cookies, exportExpired) {
     return
   }
 
-  const jsonData = { userAgent: navigator.userAgent }
-
   if (cookies.rootDomain !== undefined) {
-    const timestampNow = Date.now()
+    const timestampNow = Math.floor(Date.now() * 0.001)
+    const jsonData = { userAgent: navigator.userAgent }
 
     for (const cookieDomain of Object.keys(cookies.cookies)) {
       jsonData[cookieDomain] = {}
