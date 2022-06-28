@@ -1650,11 +1650,12 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
 function clearCookiesOnRequestChrome (details) {
   if ((details.method === 'GET' || details.method === 'POST') && details.tabId !== -1) {
     chrome.tabs.query({}, function (activeTabs) {
-      let currentTab
+      let currentTab = null
       let sourceDomain = null
 
       switch (details.type) {
         case 'xmlhttprequest':
+        case 'outermost_frame':
           sourceDomain = details.initiator
           break
         case 'sub_frame':
@@ -1662,6 +1663,7 @@ function clearCookiesOnRequestChrome (details) {
           break
         case 'main_frame':
         default:
+          sourceDomain = details.url
           break
       }
 
@@ -1672,9 +1674,9 @@ function clearCookiesOnRequestChrome (details) {
         }
       }
 
-      if (currentTab === undefined) return
+      if (currentTab === null) return
 
-      let domainURL
+      let domainURL = ''
       if (sourceDomain === null) {
         const urlMatch = details.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
         if (urlMatch !== null) domainURL = urlMatch[0]
