@@ -179,10 +179,10 @@ async function getActiveTabFirefox () {
 }
 
 function getChromeActiveTabForClearing (action) {
-  chrome.tabs.query({ active: true }, function (activeTabs) {
+  chrome.tabs.query({ currentWindow: true, active: true }, function (activeTabs) {
     if (!checkChromeHadNoErrors()) return
     if (activeTabs.length !== 0) {
-      const tab = activeTabs.pop()
+      const tab = activeTabs[0]
       if (tab.url !== undefined) {
         const urlMatch = tab.url.match(/(http|https):\/\/.[^/]*/)
         if (urlMatch !== null) {
@@ -335,7 +335,7 @@ function handleMessage (request, sender, sendResponse) {
 
 // Clear the cookies which are enabled for the domain in browser storage
 async function clearCookiesAction (action, data, cookies, domainURL, currentTab, activeCookieStore) {
-  if (openTabData[parseInt(currentTab.windowId)] === undefined || openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)] === undefined) return
+  if (openTabData[parseInt(currentTab.windowId)] === undefined || openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)] === undefined || openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)][0] === undefined) return
 
   const rootDomain = openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)][0] === undefined ? currentTab.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)[0] : openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)][0].u
 
@@ -1351,67 +1351,12 @@ function addToLogData (currentTab, msg, timeString, timestamp, domain) {
   }
 }
 
-// Account mode switch key command
-async function toggleAccountMode (data, contextName, url, tabid) {
-  if (data.flagCookies_accountMode === undefined) data.flagCookies_accountMode = {}
-  if (data.flagCookies_accountMode[contextName] === undefined) data.flagCookies_accountMode[contextName] = {}
-
-  const useNotifications = data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true
-
-  if (data.flagCookies_accountMode[contextName][url] === undefined) {
-    data.flagCookies_accountMode[contextName][url] = true
-
-    if (useNotifications) {
-      if (useChrome) chrome.notifications.create('profile_activated', { type: 'basic', message: getMsg('NotificationProfileModeEnabled', [url, contextName]), title: getMsg('NotificationProfileModeTitleEnabled'), iconUrl: 'icons/cookie_128_profil.png' })
-      else browser.notifications.create('profile_activated', { type: 'basic', message: getMsg('NotificationProfileModeEnabled', [url, contextName]), title: getMsg('NotificationProfileModeTitleEnabled'), iconUrl: 'icons/cookie_128_profil.png' })
-    }
-  } else {
-    delete data.flagCookies_accountMode[contextName][url]
-
-    if (useNotifications) {
-      if (useChrome) chrome.notifications.create('profile_deactivated', { type: 'basic', message: getMsg('NotificationProfileModeDisabled', [url, contextName]), title: getMsg('NotificationProfileModeTitleDisabled'), iconUrl: 'icons/cookie_128.png' })
-      else browser.notifications.create('profile_deactivated', { type: 'basic', message: getMsg('NotificationProfileModeDisabled', [url, contextName]), title: getMsg('NotificationProfileModeTitleDisabled'), iconUrl: 'icons/cookie_128.png' })
-    }
-  }
-
-  if (useChrome) {
-    setChromeStorage(data)
-    setBrowserActionIconChrome(data, contextName, url, tabid)
-  } else {
-    await browser.storage.local.set(data)
-    setBrowserActionIconFirefox(contextName, url, tabid)
-  }
-}
-
-async function getCommand (command) {
-  if (command === 'toggle-profile') {
-    if (useChrome) {
-      chrome.tabs.query({ currentWindow: true, active: true }, function (activeTabs) {
-        if (!checkChromeHadNoErrors()) return
-        if (activeTabs.length !== 0) {
-          const activeTab = activeTabs.pop()
-          if (activeTab.url !== undefined) {
-            const urlMatch = activeTab.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
-            if (urlMatch !== null) getChromeStorageForFunc3(toggleAccountMode, contextName, urlMatch[0], activeTab.id)
-          }
-        }
-      })
-    } else {
-      const activeTab = await getActiveTabFirefox()
-
-      if (activeTab.url !== undefined) {
-        const urlMatch = activeTab.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)
-        if (urlMatch !== null) {
-          const data = await browser.storage.local.get(null)
-          toggleAccountMode(data, contextName, urlMatch[0], activeTab.id)
-        }
-      }
-    }
-  }
-}
-
 async function onCookieChanged (changeInfo) {
   const cookieDetails = changeInfo.cookie
+  let currentTab
+
+  const domainSplit = cookieDetails.domain.split('.')
+  const cookieDomain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
 
   if (!useChrome) {
     const currentTab = await browser.tabs.getCurrent()
@@ -1457,8 +1402,42 @@ async function onCookieChanged (changeInfo) {
     return
   }
 
-  chrome.tabs.query({ active: true, currentWindow: true }, function (currentTabs) {
-    const currentTab = currentTabs[0]
+  if (cookieData[contextName] === undefined) cookieData[contextName] = {}
+  const domainKeys = Object.keys(cookieData[contextName])
+  chrome.tabs.query({}, function (activeTabList) {
+    for (const tab of activeTabList) {
+      for (const domainKey of domainKeys) {
+        if (domainKey.indexOf(cookieDomain) !== -1) {
+          currentTab = tab
+          break
+        }
+      }
+
+      if (currentTab !== undefined) {
+        break
+      }
+
+      for (const windowId of Object.keys(openTabData)) {
+        for (const tabId of Object.keys(openTabData[windowId])) {
+          for (const cookieItem of Object.keys(openTabData[windowId][tabId])) {
+            const cookieData = openTabData[windowId][tabId][cookieItem]
+            if (cookieData.u === undefined) continue
+            if (cookieData.u.indexOf(cookieDomain) !== -1) {
+              for (const tab of activeTabList) {
+                if (tab.url.indexOf(cookieDomain.u) !== -1) {
+                  currentTab = tab
+                  break
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (currentTab !== undefined) {
+        break
+      }
+    }
 
     if (currentTab === undefined) {
       clearCookiesWrapper('cookie change')
@@ -1467,7 +1446,7 @@ async function onCookieChanged (changeInfo) {
 
     const details = { url: currentTab.url }
 
-    if (openTabData === undefined || openTabData[parseInt(currentTab.windowId)] === undefined || openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)] === undefined || openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)][0] === undefined) return
+    if (openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)] === undefined) return
 
     const rootDomain = openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)][0] === undefined ? currentTab.url.replace('www.', '').match(/(http|https):\/\/.[^/]*/)[0] : openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)][0].u
 
@@ -1495,7 +1474,6 @@ async function onCookieChanged (changeInfo) {
           cookieData[contextName][rootDomain][cookieDetails.domain].push(cookieDetails)
           addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
           foundCookie = true
-          break
         }
       }
     }
@@ -1693,6 +1671,8 @@ function clearCookiesOnRequestChrome (details) {
       if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
         if (openTabData[parseInt(currentTab.windowId)] !== undefined && openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)] !== undefined && openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)][0] !== undefined) {
           openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)].length = 0
+
+          if (cookieData[contextName] === undefined) cookieData[contextName] = {}
           cookieData[contextName][domain] = {}
           cookieData[contextName][domainURL] = {}
         }
@@ -1947,16 +1927,13 @@ if (useChrome) {
   chrome.tabs.onRemoved.addListener(clearCookiesOnLeave)
   chrome.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   chrome.runtime.onMessage.addListener(handleMessage)
-  chrome.commands.onCommand.addListener(getCommand)
   chrome.cookies.onChanged.addListener(onCookieChanged)
-
   chrome.windows.onRemoved.addListener(removeTabIdfromDataList)
   chrome.webRequest.onBeforeRequest.addListener(clearCookiesOnRequestChrome, { urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest'] })
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave)
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate)
   browser.runtime.onMessage.addListener(handleMessage)
-  browser.commands.onCommand.addListener(getCommand)
   browser.cookies.onChanged.addListener(onCookieChanged)
   browser.contextualIdentities.onRemoved.addListener(onContextRemoved)
   browser.windows.onRemoved.addListener(removeTabIdfromDataList)
