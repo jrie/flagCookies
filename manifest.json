@@ -20,14 +20,6 @@
       "128": "icons/flagcookies_icon.svg"
     }
   },
-  "commands": {
-    "toggle-profile": {
-      "suggested_key": {
-        "default": "Alt+Shift+A"
-      },
-      "description": "__MSG_ProfileShortcut__"
-    }
-  },
   "description": "__MSG_AddonDescription__",
   "icons": {
     "48": "icons/flagcookies_icon.svg",
@@ -38,8 +30,19 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "3.1.8",
-  "permissions": ["cookies", "tabs", "webRequest", "<all_urls>", "storage", "unlimitedStorage", "clipboardWrite", "notifications", "contextualIdentities"],
+  "version": "3.1.9",
+  "permissions": [
+    "cookies",
+    "tabs",
+    "webRequest",
+    "<all_urls>",
+    "storage",
+    "unlimitedStorage",
+    "clipboardWrite",
+    "notifications",
+    "contextualIdentities",
+    "webNavigation"
+  ],
   "background": {
     "scripts": [
       "cookies.js"
