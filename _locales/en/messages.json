@@ -2,12 +2,6 @@
   "AddonDescription": {
     "message": "A cookie manager on steroids to mark, 'flag', and manage cookies for one or all domains using rulesets."
   },
-  "ProfileShortcut": {
-    "message": "Activate/deactivate profile mode for current url",
-    "description": "Text for keyboard shortcut to active or deactivate the profile"
-  },
-
-
 
 
   "CookiesForDomainText": {
@@ -51,9 +45,6 @@
     "message": "This cookie is set locked as profile-mode cookie for this domain.",
     "description": "Help for cookie being locked as profile key cookie"
   },
-
-
-
 
 
 
