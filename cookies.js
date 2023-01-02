@@ -33,8 +33,6 @@ function checkChromeHadNoErrors () {
       }
     }
 
-    void chrome.runtime.lastError
-
     return false
   }
 
@@ -1353,8 +1351,6 @@ function addToLogData (currentTab, msg, timeString, timestamp, domain) {
 
 async function onCookieChanged (changeInfo) {
   const cookieDetails = changeInfo.cookie
-  let currentTab
-
   const domainSplit = cookieDetails.domain.split('.')
   const cookieDomain = domainSplit.splice(domainSplit.length - 2, 2).join('.')
 
@@ -1373,6 +1369,7 @@ async function onCookieChanged (changeInfo) {
     if (cookieData[contextName] === undefined) cookieData[contextName] = {}
     if (cookieData[contextName][rootDomain] === undefined) cookieData[contextName][rootDomain] = {}
     if (cookieData[contextName][rootDomain][cookieDetails.domain] === undefined) cookieData[contextName][rootDomain][cookieDetails.domain] = []
+
     let foundCookie = false
     for (let cookie of cookieData[contextName][rootDomain][cookieDetails.domain]) {
       if (cookieDetails.name === cookie.name) {
@@ -1398,6 +1395,10 @@ async function onCookieChanged (changeInfo) {
       }
     }
 
+    if (!foundCookie) {
+      addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
+    }
+
     clearCookiesWrapper('cookie change')
     return
   }
@@ -1405,7 +1406,19 @@ async function onCookieChanged (changeInfo) {
   if (cookieData[contextName] === undefined) cookieData[contextName] = {}
   const domainKeys = Object.keys(cookieData[contextName])
   chrome.tabs.query({}, function (activeTabList) {
+    let currentTab
     for (const tab of activeTabList) {
+      for (const domainKey of domainKeys) {
+        if (domainKey === cookieDomain) {
+          currentTab = tab
+          break
+        }
+      }
+
+      if (currentTab !== undefined) {
+        break
+      }
+
       for (const domainKey of domainKeys) {
         if (domainKey.indexOf(cookieDomain) !== -1) {
           currentTab = tab
@@ -1453,7 +1466,6 @@ async function onCookieChanged (changeInfo) {
     if (cookieData[contextName] === undefined) cookieData[contextName] = {}
     if (cookieData[contextName][rootDomain] === undefined) cookieData[contextName][rootDomain] = {}
     if (cookieData[contextName][rootDomain][cookieDetails.domain] === undefined) cookieData[contextName][rootDomain][cookieDetails.domain] = []
-
     let foundCookie = false
     for (let cookie of cookieData[contextName][rootDomain][cookieDetails.domain]) {
       if (cookieDetails.name === cookie.name) {
@@ -1470,7 +1482,9 @@ async function onCookieChanged (changeInfo) {
       cookieDetails.fgHandled = false
 
       for (const domain of Object.keys(cookieData[contextName][rootDomain])) {
-        if (domain === cookieDetails.domain || cookieDetails.domain.indexOf(domain) !== -1) {
+        // TODO: Check for duplication
+        // if (domain === cookieDetails.domain || cookieDetails.domain.indexOf(domain) !== -1) {
+        if (domain === cookieDetails.domain) {
           cookieData[contextName][rootDomain][cookieDetails.domain].push(cookieDetails)
           addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
           foundCookie = true
@@ -1478,7 +1492,10 @@ async function onCookieChanged (changeInfo) {
       }
     }
 
-    addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
+    if (!foundCookie) {
+      addTabURLtoDataList(currentTab, details, cookieDetails.domain, Date.now())
+    }
+
     clearCookiesWrapper('cookie change')
   })
 }
