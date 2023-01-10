@@ -136,7 +136,7 @@
     "description": "Notifications that notifications have been enabled."
   },
   "NotificationsDisabledNotifications": {
-    "message": "Flag Cookies Benachrichtigungen ausgeschatet.",
+    "message": "Flag Cookies Benachrichtigungen ausgeschaltet.",
     "description": "Notifications that notifications have been disabled."
   },
   "ConfirmStorageClearingInfoMsg": {
