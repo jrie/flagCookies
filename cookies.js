@@ -1855,7 +1855,7 @@ async function clearCookiesOnRequest (details) {
 const doImportOverwrite = false
 
 // Called in frontend/UI
-function importSettings (evt) {
+function importSettings () {
   if (evt.target.files[0] === undefined) return
 
   const file = evt.target.files[0]
@@ -1932,7 +1932,7 @@ function mergeData (existingData, data) {
             if (existingData[key][domain] === undefined) existingData[key][domain] = data[key][domain]
           }
         }
-      } else if ((key === 'flagCookies_flagGlobal' || key === 'flagCookies_notifications' || key === 'flagCookies_darkTheme') && existingData[key] === undefined) existingData[key] = data[key]
+      } else if ((key === 'flagCookies_flagGlobal' || key === 'flagCookies_notifications' || key === 'flagCookies_darkTheme')) existingData[key] = data[key]
     }
   }
 

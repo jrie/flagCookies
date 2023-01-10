@@ -1727,10 +1727,12 @@ function loadHelp (currentLocal) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
+/*
 function toggleImportOverwrite (evt) {
   if (!evt.target.classList.contains('active')) evt.target.classList.add('active')
   else evt.target.classList.remove('active')
 }
+*/
 
 function generateZip (rawData) {
   const data = JSON.stringify(rawData)
@@ -1758,19 +1760,29 @@ async function exportSettings () {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-async function triggerImport () {
-  const bgPage = await browser.runtime.getBackgroundPage()
+function triggerImport () {
+  /*
+  // Left for historical reasons, this might work again later?
+  const bgPage = browser.runtime.getBackgroundPage()
   bgPage.doImportOverwrite = document.querySelector('#confirmImportOverwrite').classList.contains('active')
   bgPage.document.adoptNode(document.querySelector('#importFile')).addEventListener('change', bgPage.importSettings)
+  */
+
+  browser.windows.create({ type: 'panel', url: 'importer.html', width: 800, height: 150 })
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
 function shadowInputChrome () {
+  /*
+  // Left for historical reasons, this might work again later?
   chrome.runtime.getBackgroundPage(function (bgPage) {
     window.alert('Settings will be imported.') // Dirty hack(?) to keep the popup window open
     bgPage.doImportOverwrite = document.querySelector('#confirmImportOverwrite').classList.contains('active')
     bgPage.document.adoptNode(document.querySelector('#importFile')).addEventListener('change', bgPage.importSettings)
   })
+  */
+
+  chrome.windows.create({ type: 'panel', url: 'importer.html', width: 800, height: 150 })
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -1977,9 +1989,13 @@ document.querySelector('#confirmExportExpired').addEventListener('click', toggle
 document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
 document.querySelector('#cookies-action-all-export').addEventListener('click', exportCookies)
 document.querySelector('#cookies-action-all-export-clipboard').addEventListener('click', exportCookiesClipboard)
+/*
 if (useChrome) document.querySelector('label[for="importFile"]').addEventListener('click', shadowInputChrome)
 else document.querySelector('#importFile').addEventListener('click', triggerImport)
-document.querySelector('#confirmImportOverwrite').addEventListener('click', toggleImportOverwrite)
+*/
+if (useChrome) document.querySelector('#settings-action-all-import').addEventListener('click', shadowInputChrome)
+else document.querySelector('#settings-action-all-import').addEventListener('click', triggerImport)
 
+// document.querySelector('#confirmImportOverwrite').addEventListener('click', toggleImportOverwrite)
 if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed)
 else getActiveTab().then(initDomainURLandProceed)

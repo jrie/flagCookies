@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Flag Cookies Settings</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="cookies.css" />
+</head>
+
+<body>
+  <div class="panel">
+    <div id="content">
+      <hr>
+      <div id="settings-general">
+        <div class="settings-title setting-info" title="__MSG_GneralAndGlobalSettingsHelpText__">
+          <p>__MSG_AddonSettingsLabelText__</p>
+        </div>
+        <div class="inline-block">
+          <hr>
+          <div id="settings-all-import"><button id="confirmImportOverwrite" class="checkmark-confirm"></button><span>__MSG_ImportSettingsDescription__</span></div><label id="settings-action-all-import" for="importFile" title="__MSG_ImportCookieSettingsHelp__"><span>
+              __MSG_ImportSettingsText__</span><input type="file" accept=".zip" name="importFile" id="importFile" hidden="true" /></label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="libs/l10n/l10n.js"></script>
+  <script type="text/javascript" src="libs/jszip/jszip.js"></script>
+  <script type="text/javascript" src="importer.js"></script>
+</body>
+
+</html>
