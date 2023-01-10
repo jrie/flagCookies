@@ -1888,8 +1888,7 @@ function importSettings (evt) {
 // --------------------------------------------------------------------------------------------------------------------------------
 
 function mergeData (existingData, data) {
-  const flagCookieSettings = ['flagCookies_logged', 'flagCookies_flagGlobal', 'flagCookies_autoflag', 'flagCookies_notifications']
-
+  const flagCookieSettings = ['flagCookies_logged', 'flagCookies_flagGlobal', 'flagCookies_autoflag', 'flagCookies_notifications', 'flagCookies_darkTheme']
   for (const key of Object.keys(data)) {
     if (flagCookieSettings.indexOf(key) === -1) {
       if (existingData[key] === undefined) existingData[key] = data[key]
@@ -1933,7 +1932,7 @@ function mergeData (existingData, data) {
             if (existingData[key][domain] === undefined) existingData[key][domain] = data[key][domain]
           }
         }
-      } else if ((key === 'flagCookies_flagGlobal' || key === 'flagCookies_notifications') && existingData[key] === undefined) existingData[key] = data[key]
+      } else if ((key === 'flagCookies_flagGlobal' || key === 'flagCookies_notifications' || key === 'flagCookies_darkTheme') && existingData[key] === undefined) existingData[key] = data[key]
     }
   }
 
