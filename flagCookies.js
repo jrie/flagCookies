@@ -1076,6 +1076,12 @@ function switchView (evt) {
   else if (help.classList.contains('active')) helpActive = true
   evt.target.className = 'active'
 
+  const donate = document.querySelector('#donate')
+  const donateActive = false
+  if (donate !== evt.target) donate.removeAttribute('class')
+  // else if (donate.classList.contains('active')) donateActive = true
+  evt.target.className = 'active'
+
   if (list.children.length === 0) {
     const infoDisplay = document.querySelector('#infoDisplay')
 
@@ -1092,7 +1098,7 @@ function switchView (evt) {
     list.removeAttribute('class')
   }
 
-  if (prefsActive || helpActive) document.querySelector('#activeCookies').click()
+  if (prefsActive || helpActive || donateActive) document.querySelector('#activeCookies').click()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -1462,6 +1468,7 @@ function resetUI () {
   document.querySelector('#auto-flag').removeAttribute('class')
   document.querySelector('#global-flag').removeAttribute('class')
   document.querySelector('#account-mode').removeAttribute('class')
+  document.querySelector('#donate').removeAttribute('class')
 
   document.body.classList.remove('dark')
   document.querySelector('#confirmDarkTheme').classList.remove('active')
@@ -1725,6 +1732,23 @@ function loadHelp (currentLocal) {
   helpLoader.send()
 }
 
+function loadDonate (currentLocal) {
+  const donateLoader = new XMLHttpRequest()
+  donateLoader.addEventListener('readystatechange', function (evt) {
+    if (evt.target.status === 200 && evt.target.readyState === 4) {
+      document.querySelector('#donate-view').innerHTML = evt.target.responseText
+    }
+
+    if (evt.target.status !== 200 && evt.target.readyState === 4) {
+      donateLoader.open('GET', './_locales/en/donate.html')
+      donateLoader.send()
+    }
+  })
+
+  donateLoader.open('GET', './_locales/' + currentLocal + '/donate.html')
+  donateLoader.send()
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------
 
 /*
@@ -1966,6 +1990,7 @@ function exportCookiesClipboard () {
 // Startup code
 try {
   useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
+  useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage())
 } catch (e) {
   console.log(e)
 }
@@ -1976,6 +2001,7 @@ document.querySelector('#permittedCookies').addEventListener('click', switchView
 document.querySelector('#help').addEventListener('click', switchView)
 document.querySelector('#prefs').addEventListener('click', switchView)
 document.querySelector('#auto-flag').addEventListener('click', flagAutoSwitch)
+document.querySelector('#donate').addEventListener('click', switchView)
 document.querySelector('#global-flag').addEventListener('click', flagGlobalAuto)
 document.querySelector('#account-mode').addEventListener('click', accountModeSwitch)
 document.querySelector('#searchBar').addEventListener('keyup', searchContent)

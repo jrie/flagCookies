@@ -368,8 +368,10 @@
 
 
 
-
-
+  "DonateButtonText": {
+    "message": "Spenden",
+    "description": "Donate button label text, note this is in UI and might require some styling changes."
+  },
   "GlobalButtonText": {
     "message": "Global",
     "description": "Global button label text, note this is in UI and might require some styling changes."
@@ -538,7 +540,10 @@
 
 
 
-
+  "DonateButtonHelpText": {
+    "message": "Spenden Sie um die Entwicklung von FlagCookies zu unterstützen.",
+    "description": "Displayed help text for Donate button"
+  },
   "GlobalButtonHelpText": {
     "message": "Löschen Sie alle Cookies automatisch für alle Domain, wenn nicht explizit erlaubt oder als Profil Cookies geschützt.",
     "description": "Displayed help text for Global button"

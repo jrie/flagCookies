@@ -867,7 +867,8 @@ textarea#log {
   font-weight: bold;
 }
 
-#help-view {
+#help-view,
+#donate-view {
   padding: 5px 10px;
   margin-bottom: 18px;
   position: relative;
