@@ -1537,10 +1537,9 @@ async function onContextRemoved (changeInfo) {
 const openTabData = {}
 
 function addTabURLtoDataList (tab, details, domain, timestamp) {
-  if (!details.url.startsWith('chrome:') && !details.url.startsWith('about:')) {
+  if (!details.url.startsWith('chrome:') && !details.url.startsWith('about:') && !details.url.startsWith('edge:')) {
     if (openTabData[tab.windowId] === undefined) openTabData[tab.windowId] = {}
     if (openTabData[tab.windowId][tab.id] === undefined) openTabData[tab.windowId][tab.id] = {}
-
     const targetURL = domain.replace(/(http|https):\/\//, '')
     if (details.frameId === 0 && details.parentFrameId === -1 && details.type === 'main_frame') {
       if (openTabData[tab.windowId][tab.id][details.frameId] !== undefined) {
