@@ -34,7 +34,7 @@ This add-on is aimed at power users. By default it does nothing on its own. In o
 
 ## Requirements
 
-**Firefox 58.0a1+** or a recent version of **Chrome** or **Opera** browser(s).
+**Firefox 58.0a1+** or a recent version of **Chrome** or **Opera** or **Edge** browser(s).
 
 
 ## Installation
@@ -47,6 +47,9 @@ Use addons.opera.com: [Flag Cookies on Add-ons Opera.com](https://addons.opera.c
 
 ### Chrome
 Use the Chrome web store: [Flag Cookies on the web store @ chrome.google.com](https://chrome.google.com/webstore/detail/flag-cookies/phcaemipbgodliopfijmcmlbdhpkbndb) 
+
+### Edge
+Use Edge addon store: [Flag Cookies @ Microsoft for Edge](https://microsoftedge.microsoft.com/addons/detail/flag-cookies/jonbmefahinfgmdoedhahcohlbmonhkb)
 
 ## Help, documentation and usage
 Please read along here: https://github.com/jrie/flagCookies/wiki/FlagCookies-help-and-documentation
