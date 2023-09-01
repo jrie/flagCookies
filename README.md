@@ -15,7 +15,7 @@ This add-on is aimed at power users. By default it does nothing on its own. In o
 
 
 ## Screenshot
-![Flag Cookies main user interface](https://dwrox.net/flagCookies.png "Flag Cookies main interface")
+![Flag Cookies main user interface](https://dwrox.net/flagCookies.webp "Flag Cookies main interface")
 
 ## Features
 
