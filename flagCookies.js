@@ -492,7 +492,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   }
 
   document.querySelector('#activeCookies').className = 'active'
-  if (cookies.logData !== null) {
+  if (cookies.logData !== null && (data.flagCookies_logEnabled === undefined || data.flagCookies_logEnabled === true)) {
     const log = document.querySelector('#log')
     for (const entry of cookies.logData) log.textContent += entry + '\n'
   }
@@ -508,6 +508,10 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
 
   if (data.flagCookies_darkTheme !== undefined && data.flagCookies_darkTheme === true) {
     document.querySelector('#confirmDarkTheme').classList.add('active')
+  }
+
+  if (data.flagCookies_logEnabled === undefined || (data.flagCookies_logEnabled !== undefined && data.flagCookies_logEnabled === true)) {
+    document.querySelector('#confirmLoggingEnable').classList.add('active')
   }
 
   if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
@@ -1326,6 +1330,27 @@ function toggleClearing (evt) {
   else evt.target.classList.remove('active')
 }
 
+async function toggleLogging(evt) {
+  let doSwitchOn = false
+
+  if (!evt.target.classList.contains('active')) {
+    evt.target.classList.add('active')
+    doSwitchOn = true
+  } else {
+    evt.target.classList.remove('active')
+    doSwitchOn = false
+  }
+
+  if (useChrome) {
+    getChromeStorageForFunc1(switchLoggingChrome, doSwitchOn)
+    return
+  }
+
+  const data = await browser.storage.local.get(null)
+  data.flagCookies_logEnabled = doSwitchOn
+  await browser.storage.local.set(data)
+}
+
 async function toggleDarkTheme (evt) {
   let doSwitchOn = false
 
@@ -1356,7 +1381,7 @@ function switchDarkThemeChrome (data, doSwitchOn) {
 
 async function toggleNotifications (evt) {
   let doSwitchOn = false
-
+  
   if (!evt.target.classList.contains('active')) {
     evt.target.classList.add('active')
     doSwitchOn = true
@@ -1383,6 +1408,11 @@ async function toggleNotifications (evt) {
 
 function switchNotificationsChrome (data, doSwitchOn) {
   data.flagCookies_notifications = doSwitchOn
+  setChromeStorage(data)
+}
+
+function switchLoggingChrome(data, doSwitchOn) {
+  data.flagCookies_logEnabled = doSwitchOn
   setChromeStorage(data)
 }
 
@@ -1472,6 +1502,7 @@ function resetUI () {
 
   document.body.classList.remove('dark')
   document.querySelector('#confirmDarkTheme').classList.remove('active')
+  document.querySelector('#confirmLoggingEnable').classList.add('active')
 
   // Reset cookie list
   const cookieList = document.querySelector('#cookie-list')
@@ -2006,6 +2037,7 @@ document.querySelector('#global-flag').addEventListener('click', flagGlobalAuto)
 document.querySelector('#account-mode').addEventListener('click', accountModeSwitch)
 document.querySelector('#searchBar').addEventListener('keyup', searchContent)
 document.querySelector('#confirmSettingsClearing').addEventListener('click', toggleClearing)
+document.querySelector('#confirmLoggingEnable').addEventListener('click', toggleLogging)
 document.querySelector('#confirmDomainClearing').addEventListener('click', toggleClearing)
 document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
 document.querySelector('#confirmDarkTheme').addEventListener('click', toggleDarkTheme)

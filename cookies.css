@@ -801,15 +801,11 @@ textarea#log {
   margin-top: 12px;
   padding: 6px 12px;
   font-weight: bold;
-  width: 78%;
+  width: calc(100% - 12px);
   min-height: 18em;
   max-height: 18em;
   resize:none;
   font-size: 0.85em;
-}
-
-.chrome textarea#log {
-  width: 75.5%;
 }
 
 #settings-general hr {
@@ -844,7 +840,8 @@ textarea#log {
 #domain-confirm-clear,
 #settings-all-export,
 #settings-all-import,
-#cookies-action-export-expired {
+#cookies-action-export-expired,
+#logging-enable {
   float: left;
   min-width: 300px;
   max-width: 300px;
@@ -857,6 +854,7 @@ textarea#log {
 
 #cookies-action-export-expired span,
 #settings-confirm-clear span,
+#logging-enable span,
 #domain-confirm-clear span,
 #settings-notification span,
 #settings-all-export span,
@@ -957,15 +955,18 @@ textarea#log {
   border-bottom: 0px;
 }
 
-#domainDetails {
+#domainDetails,
+#logDetails {
   float: left;
-  width: 605px;
-  margin-top: 20px;
+  max-width: 605px;
+  width: 100%;
   margin-bottom: 12px;
 }
 
-.chrome #domainDetails {
-  width: 604px;
+.chrome #domainDetails,
+.chrome #logDetails {
+  max-width: 604px;
+  width: 100%;
 }
 
 #profilePane {

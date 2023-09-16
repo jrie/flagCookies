@@ -35,9 +35,16 @@
       <ul class="hidden" id="cookie-list-permitted"></ul>
       <div class="hidden" id="settings-view">
         <div id="settings-log">
-          <div class="settings-title setting-info inline-block" title="__MSG_ActionLogHelpText__">
+          <div class="settings-title setting-info" title="__MSG_ActionLogHelpText__">
             <p>__MSG_ActionLogLabel__</p>
-          </div><textarea id="log" title="__MSG_ActionLogAreaHelpText__" disabled="disabled" placeholder="__MSG_ActionLogPlaceholderText__"></textarea>
+          </div>
+          <div id="logDetails" class="inline-block">
+          <textarea id="log" title="__MSG_ActionLogAreaHelpText__" disabled="disabled" placeholder="__MSG_ActionLogPlaceholderText__"></textarea>
+            <div id="logging-enable" title="__MSG_LoggingEnableHelpText__">
+              <button id="confirmLoggingEnable" class="checkmark-confirm"></button>
+              <span>__MSG_ConfirmLoggingEnableText__</span>
+            </div>
+          </div>
         </div>
         <hr>
         <div id="settings-domains">

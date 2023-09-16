@@ -65,7 +65,27 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, curr
       const targetURL = openTabData[parseInt(currentTab.windowId)][parseInt(currentTab.id)][count].d.replace(/(http|https):\/\//, '').replace('www.', '')
       chrome.cookies.getAll({ domain: targetURL }, function (cookiesSub) {
         ++count
+
         for (const cookie of cookiesSub) {
+          for (const key of Object.keys(cookie)) {
+            if (key.startsWith('fg')) {
+              continue
+            }
+
+            switch (key) {
+              case 'name':
+              case 'value':
+              case 'domain':
+              case 'path':
+              case 'storeId':
+              case 'secure':
+                continue
+              default:
+                delete cookie[key]
+                continue
+            }
+          }
+
           cookies.push(cookie)
         }
 
@@ -105,6 +125,25 @@ function chromeGetStorageAndClearCookies (action, data, cookies, domainURL, curr
         ++count
 
         for (const cookie of cookiesSub) {
+          for (const key of Object.keys(cookie)) {
+            if (key.startsWith('fg')) {
+              continue
+            }
+
+            switch (key) {
+              case 'name':
+              case 'value':
+              case 'domain':
+              case 'path':
+              case 'storeId':
+              case 'secure':
+                continue
+              default:
+                delete cookie[key]
+                continue
+            }
+          }
+
           cookies.push(cookie)
         }
 
@@ -281,6 +320,27 @@ async function clearCookiesWrapper (action) {
       if (!hasCookie) {
         const details = { url: currentTab.url }
         addTabURLtoDataList(currentTab, details, cookie.domain, Date.now())
+
+        for (const key of Object.keys(cookie)) {
+          if (key.startsWith('fg')) {
+            continue
+          }
+
+          switch (key) {
+            case 'name':
+            case 'value':
+            case 'domain':
+            case 'path':
+            case 'storeId':
+            case 'secure':
+            case 'expirationDate':
+              continue
+            default:
+              delete cookie[key]
+              continue
+          }
+        }
+
         cookies.push(cookie)
       }
     }
@@ -1828,6 +1888,25 @@ async function clearCookiesOnRequest (details) {
           }
         }
 
+        for (const key of Object.keys(cookie)) {
+          if (key.startsWith('fg')) {
+            continue
+          }
+
+          switch (key) {
+            case 'name':
+            case 'value':
+            case 'domain':
+            case 'path':
+            case 'storeId':
+            case 'secure':
+              continue
+            default:
+              delete cookie[key]
+              continue
+          }
+        }
+
         if (!hasCookie) cookies.push(cookie)
       }
     }
@@ -1854,7 +1933,7 @@ async function clearCookiesOnRequest (details) {
 const doImportOverwrite = false
 
 // Called in frontend/UI
-function importSettings () {
+function importSettings (evt) {
   if (evt.target.files[0] === undefined) return
 
   const file = evt.target.files[0]
