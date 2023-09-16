@@ -541,7 +541,7 @@
 
 
   "DonateButtonHelpText": {
-    "message": "Donate, to support the development of FlagCookies.",
+    "message": "Donate to support the development of FlagCookies.",
     "description": "Displayed help text for Donate button"
   },
   "GlobalButtonHelpText": {

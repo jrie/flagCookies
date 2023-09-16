@@ -588,6 +588,14 @@
     "message": "Flag Cookies Aktionen.",
     "description": "Displayed help text for action log"
   },
+  "LoggingEnableHelpText": {
+    "message": "Wenn aktiviert, Aktions Logging ist aktiv",
+    "description": "Displayed help text for log status"
+  },
+  "ConfirmLoggingEnableText": {
+    "message": "Aktiviere Aktions-Log",
+    "description": "Displayed text for log checkmark"
+  },
   "DomainSettingsHelpText": {
     "message": "Domain Einstellungen",
     "description": "Displayed help text for domain settings"
