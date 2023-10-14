@@ -43,7 +43,7 @@ var l10n = {
     );
     for (let i = 0, maxi = attributes.snapshotLength; i < maxi; i++) {
       const attribute = attributes.snapshotItem(i);
-      this.$log('apply', attribute);
+      //this.$log('apply', attribute);
       attribute.value = this.updateString(attribute.value);
     }
   }

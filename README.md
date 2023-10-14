@@ -28,6 +28,7 @@ This add-on is aimed at power users. By default it does nothing on its own. In o
 * Support for *Firefox Multi-Account-Containers*
 * **Preferences** allowing to import and export settings to a ZIP file. Import does not work in private windows!
 * **Preferences** allows to manage *logged in profile* cookiee, delete all domain settings and add-on settings and provides a **Action log** to display what FlagCookies is doing
+* Option to enable or disable **action log** information
 * **Displays count** of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon
 * *Keyboard Shortcut* **Alt + Shift + A** to enable/disable **profile mode** for a (sub)domain
 * Optional **notifications**, disabled by default for: **profile mode** shortcut activation/deactivation, ***cookies removed display*** and ***notifications enabled/disabled message***
