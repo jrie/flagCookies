@@ -216,6 +216,29 @@
     "message": "Entfernte",
     "description": "Status deleted, used as filter for Msg Count in logging"
   },
+
+
+  "DeletedCookiesMsg": {
+    "message": "Entfernte Cookies: $count$",
+    "description": "Icon title for deleted cookies in tab",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "0"
+      }
+    }
+  },
+  "PermittedCookiesMsg": {
+    "message": "Erlaubte Cookies: $count$",
+    "description": "Icon title for allowed cookies in tab",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "0"
+      }
+    }
+  },
+
   "GlobalFlagState": {
     "message": "Globaler Modus",
     "description": "Status global-flag, also used as filter for Msg Count in logging and overview display"
@@ -313,6 +336,10 @@
   "NoActionOnPage": {
     "message": "Keine Aktionen auf dieser Webseite.",
     "description": "Info message when hovering the mouse over the browser icon and no actions have taken place"
+  },
+  "ActionCookieChange": {
+    "message": "Cookie Veränderung",
+    "description": "Displayed log action when a cookie change took place"
   },
   "ActionDocumentLoad": {
     "message": "Dokument laden/neuladen",
@@ -553,7 +580,7 @@
     "description": "Displayed help text for AutoFlag button"
   },
   "ProfileButtonHelpText": {
-    "message": "Profil Modus - Ausgewählte Profil Cookies (Schlüssel) werden nicht durch den globalen Modus und Auto Modus entfernt.&#10;Dies kann wichtig sein um Cookies für einen Account zu behalten.&#10;Dies ist der 'eingeloggte' Zustand. Sie können diese in den Einstellungen verwalten.",
+    "message": "Profil Modus - Ausgewählte Profil Cookies (Schlüssel) werden nicht durch den globalen Modus und Auto Modus entfernt. Dies kann wichtig sein um Cookies für einen Account zu behalten. Dies ist der 'eingeloggte' Zustand. Sie können diese in den Einstellungen verwalten.",
     "description": "Displayed help text for AutoFlag button"
   },
   "HelpButtonHelpText": {
@@ -589,7 +616,7 @@
     "description": "Displayed help text for action log"
   },
   "LoggingEnableHelpText": {
-    "message": "Wenn aktiviert, Aktions Logging ist aktiv",
+    "message": "Wenn aktiviert, Aktions-Log ist aktiv",
     "description": "Displayed help text for log status"
   },
   "ConfirmLoggingEnableText": {

@@ -128,7 +128,7 @@ async function initDomainURLandProceed (tabs) {
   const tab = tabs.pop()
   tabId = tab.id
   const domain = null
-  const domainMatch = tab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
+  const domainMatch = tab.url.match(/^(http|https):\/\/.[^/]*/i)
   if (domainMatch !== null) domainURL = domainMatch[0]
   else domainURL = 'No domain'
 
@@ -143,13 +143,17 @@ async function initDomainURLandProceed (tabs) {
 
   // Get storage and cookies Firefox
   const data = await browser.storage.local.get()
-  const activeCookieStore = 'default'
+  // let activeCookieStore = 'default'
 
   if (data.flagCookies_darkTheme !== undefined && data.flagCookies_darkTheme === true) {
     document.body.classList.add('dark')
   }
 
-  await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
+  // await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
+  if (tab.cookieStoreId !== undefined) {
+    activeCookieStore = tab.cookieStoreId
+    contextName = activeCookieStore
+  }
 
   const cookies = await browser.runtime.sendMessage({ getCookies: domainURL, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
   updateUIData(data, cookies, contextName, tab, activeCookieStore)
@@ -492,7 +496,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   }
 
   document.querySelector('#activeCookies').className = 'active'
-  if (cookies.logData !== null && (data.flagCookies_logEnabled === undefined || data.flagCookies_logEnabled === true)) {
+  if (cookies.logData !== null && data.flagCookies_logEnabled !== undefined && data.flagCookies_logEnabled === true) {
     const log = document.querySelector('#log')
     for (const entry of cookies.logData) log.textContent += entry + '\n'
   }
@@ -510,7 +514,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     document.querySelector('#confirmDarkTheme').classList.add('active')
   }
 
-  if (data.flagCookies_logEnabled === undefined || (data.flagCookies_logEnabled !== undefined && data.flagCookies_logEnabled === true)) {
+  if (data.flagCookies_logEnabled !== undefined && data.flagCookies_logEnabled === true) {
     document.querySelector('#confirmLoggingEnable').classList.add('active')
   }
 
@@ -1330,7 +1334,7 @@ function toggleClearing (evt) {
   else evt.target.classList.remove('active')
 }
 
-async function toggleLogging(evt) {
+async function toggleLogging (evt) {
   let doSwitchOn = false
 
   if (!evt.target.classList.contains('active')) {
@@ -1381,7 +1385,7 @@ function switchDarkThemeChrome (data, doSwitchOn) {
 
 async function toggleNotifications (evt) {
   let doSwitchOn = false
-  
+
   if (!evt.target.classList.contains('active')) {
     evt.target.classList.add('active')
     doSwitchOn = true
@@ -1411,7 +1415,7 @@ function switchNotificationsChrome (data, doSwitchOn) {
   setChromeStorage(data)
 }
 
-function switchLoggingChrome(data, doSwitchOn) {
+function switchLoggingChrome (data, doSwitchOn) {
   data.flagCookies_logEnabled = doSwitchOn
   setChromeStorage(data)
 }

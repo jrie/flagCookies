@@ -1,7 +1,19 @@
-@font-face{font-family:'Open Sans';src:url(fonts/Regular/OpenSans-Regular.woff2?v=1.101) format("woff2"),url(fonts/Regular/OpenSans-Regular.woff?v=1.101) format("woff");font-weight:400;font-style:normal}
-@font-face{font-family:'Open Sans';src:url(fonts/Bold/OpenSans-Bold.woff2?v=1.101) format("woff2"),url(fonts/Bold/OpenSans-Bold.woff?v=1.101) format("woff");font-weight:700;font-style:normal}
+@font-face {
+  font-family: 'Open Sans';
+  src: url(fonts/Regular/OpenSans-Regular.woff) format("woff");
+  font-weight: 400;
+  font-style: normal
+}
 
-html, body {
+@font-face {
+  font-family: 'Open Sans';
+  src: url(fonts/Bold/OpenSans-Bold.woff) format("woff");
+  font-weight: 700;
+  font-style: normal
+}
+
+html,
+body {
   width: 800px;
   max-height: 600px;
   color: #557;
@@ -9,12 +21,13 @@ html, body {
   font-size: 0.9em;
   font-family: 'Open Sans', Helvetica, Verdana, Geneva, Arial, sans-serif;
   font-weight: normal;
-  text-shadow: 1px 1px 0px rgba(255,255,255, 0.175);
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.175);
 }
 
-html .dark, body.dark {
+html .dark,
+body.dark {
   background-color: #ccc;
-  text-shadow: 1px 1px 0px rgba(255,255,255, 0.175);
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.175);
   color: #eef;
 }
 
@@ -33,14 +46,26 @@ body {
   margin: 0px;
 }
 
-span, p, h1, h2, h3, h4, h5 {
-  text-shadow: 1px 1px 0px rgba(0,0,0, 0.15);
+span,
+p,
+h1,
+h2,
+h3,
+h4,
+h5 {
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.15);
   cursor: default;
   user-select: none;
 }
 
-.dark span, .dark p, .dark h1, .dark h2, .dark h3, .dark h4, .dark h5 {
-  text-shadow: 1px 1px 0px rgba(255,255,255, 0.25);
+.dark span,
+.dark p,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5 {
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.25);
   color: #557;
 }
 
@@ -107,26 +132,26 @@ span, p, h1, h2, h3, h4, h5 {
   background-color: transparent;
   padding: 2px 12px 4px 28px;
   background-repeat: no-repeat;
-  background-clip:border-box;
+  background-clip: border-box;
   margin-right: 2px;
   font-size: 0.7em;
   margin-top: 0.95em;
   margin-bottom: 12px;
   display: inline-block;
   border-right: 1px solid #aaa;
-  text-shadow: 1px 1px 0px rgba(0,0,0, 0.65);
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.65);
 }
 
 .legend span,
 .legend p.intro {
   color: #446;
-  text-shadow: 1px 1px 0px rgba(255,255,255,0.28);
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.28);
 }
 
 .dark .legend span,
 .dark .legend p.intro {
   color: #eef;
-  text-shadow: 1px 1px 0px rgba(0,0,0, 0.58);
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.58);
 }
 
 .chrome .legend span {
@@ -162,7 +187,7 @@ span.domainurl,
   color: #888;
   font-size: 0.65em;
   margin-top: 0px;
-  text-shadow: 1px 1px 0px rgba(255,255,255, 0.4);
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.4);
 }
 
 .dark .intro,
@@ -228,14 +253,14 @@ ul {
   padding: 5px 1px;
 }
 
-#content > ul {
+#content>ul {
   margin: 0px 10px;
   padding: 0px;
   margin-top: 14px;
   margin-bottom: 0px;
 }
 
-#content > ul {
+#content>ul {
   margin-bottom: 16px;
 }
 
@@ -250,7 +275,7 @@ li.cookieEntrySublist {
   border-top: 1px solid #eef;
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
-  transition-property: background-color,border-color;
+  transition-property: background-color, border-color;
   transition-duration: 150ms;
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.35);
 }
@@ -297,8 +322,7 @@ li.cookieEntrySublist.inactive-cookie:hover {
 li.cookieEntry:hover .cookieValue,
 li.cookieEntrySublist:hover .cookieValue,
 li.cookieEntry:hover .secure-cookie,
-li.cookieEntry:hover .cookie-domain
-li.cookieEntrySublist:hover .secure-cookie,
+li.cookieEntry:hover .cookie-domain li.cookieEntrySublist:hover .secure-cookie,
 li.cookieEntrySublist:hover .cookie-domain {
   color: #fff;
 }
@@ -316,7 +340,9 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
   border: 1px solid #e00;
 }
 
-.cookieKey, .cookieValue, .secure-cookie {
+.cookieKey,
+.cookieValue,
+.secure-cookie {
   transition-property: color;
   transition-duration: 170ms;
 }
@@ -439,8 +465,8 @@ button,
 
 .chrome button,
 #settings-action-all-import {
-    padding: 8px 12px 7px 12px;
-    outline: none;
+  padding: 8px 12px 7px 12px;
+  outline: none;
 }
 
 input,
@@ -479,7 +505,7 @@ button::-moz-focus-inner {
   margin-left: 0px;
   padding: 7px 20px 8px 34px;
   border-radius: 12px 12px 0px 0px;
-  transition: background-color,color;
+  transition: background-color, color;
   transition-duration: 120ms;
   position: relative;
   margin-right: 8px;
@@ -561,7 +587,7 @@ button.setKeyCookie {
   background-color: #fff;
   background-image: url('icons/unhandled.png');
   background-repeat: no-repeat;
-  background-clip:border-box;
+  background-clip: border-box;
   background-position: center;
 }
 
@@ -626,9 +652,9 @@ button#help {
   border-color: #ddd;
   color: #557;
   display: inline;
-  margin-right:  7px;
+  margin-right: 7px;
   border: 1px solid #99a;
-  transition: background-color,color;
+  transition: background-color, color;
   transition-duration: 120ms;
   background-size: 24px;
 }
@@ -787,7 +813,7 @@ button#global-flag.active {
   color: #446;
 }
 
-body.dark .legend .intro  {
+body.dark .legend .intro {
   background-image: url('icons/help_16w.png');
 }
 
@@ -804,8 +830,9 @@ textarea#log {
   width: calc(100% - 12px);
   min-height: 18em;
   max-height: 18em;
-  resize:none;
+  resize: none;
   font-size: 0.85em;
+  margin-bottom: 20px;
 }
 
 #settings-general hr {
@@ -878,7 +905,7 @@ textarea#log {
   margin-bottom: 4px;
   display: block;
   border: none;
-  transition-property: background-color,border-color;
+  transition-property: background-color, border-color;
   transition-duration: 150ms;
   padding-top: 4px;
   padding-bottom: 3px;
@@ -901,7 +928,7 @@ textarea#log {
   cursor: pointer;
 }
 
-#help-view a > span.help-highlight {
+#help-view a>span.help-highlight {
   cursor: pointer;
 }
 
@@ -965,7 +992,8 @@ textarea#log {
 
 .chrome #domainDetails,
 .chrome #logDetails {
-  max-width: 604px;
+  float: none;
+  max-width: 586px;
   width: 100%;
 }
 

@@ -141,6 +141,14 @@
     "message": "Please confirm clearing.",
     "description": "Message in action log that clearing was not confirmed"
   },
+  "LoggingEnableHelpText": {
+    "message": "If checked action-log is enabled",
+    "description": "Displayed help text for log status"
+  },
+  "ConfirmLoggingEnableText": {
+    "message": "Activate action-log",
+    "description": "Displayed text for log checkmark"
+  },
   "ErrorClearingSettingsInfoMsg": {
     "message": "Error clearing settings.",
     "description": "There was a error clearing settings"
@@ -214,6 +222,28 @@
     "message": "Deleted on",
     "description": "Status deleted, used as filter for Msg Count in logging"
   },
+
+  "DeletedCookiesMsg": {
+    "message": "Deleted cookies: $count$",
+    "description": "Icon title for deleted cookies in tab",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "0"
+      }
+    }
+  },
+  "PermittedCookiesMsg": {
+    "message": "Permitted cookies: $count$",
+    "description": "Icon title for allowed cookies in tab",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "0"
+      }
+    }
+  },
+
   "GlobalFlagState": {
     "message": "Global-flag",
     "description": "Status global-flag, also used as filter for Msg Count in logging and overview display"
@@ -312,6 +342,10 @@
   "NoActionOnPage": {
     "message": "No actions taken on this website",
     "description": "Info message when hovering the mouse over the browser icon and no actions have taken place"
+  },
+  "ActionCookieChange": {
+    "message": "cookie change",
+    "description": "Displayed log action when a cookie change took place"
   },
   "ActionDocumentLoad": {
     "message": "document load",
@@ -553,7 +587,7 @@
     "description": "Displayed help text for AutoFlag button"
   },
   "ProfileButtonHelpText": {
-    "message": "Profile mode - Selected 'key icon' cookies wont be deleted by global, auto-flag or by regular flagging modes on page load/reload/navigation.&#10;If no cookies are keyed, profile mode will allow all domain cookies.&#10;This is the 'logged in account' state. You can also manage the profile cookies list in 'preferences'.",
+    "message": "Profile mode - Selected 'key icon' cookies wont be deleted by global, auto-flag or by regular flagging modes on page load/reload/navigation. If no cookies are keyed, profile mode will allow all domain cookies. This is the 'logged in account' state. You can also manage the profile cookies list in 'preferences'.",
     "description": "Displayed help text for AutoFlag button"
   },
   "HelpButtonHelpText": {
