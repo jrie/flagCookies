@@ -391,9 +391,25 @@
     }
   },
 
-
-
-
+  "UpdatedInstallationString": {
+    "message": "aktualisiert",
+    "description": "Message title for updated installation"
+  },
+  "NewInstallationString": {
+    "message": "installiert",
+    "description": "Message title for new installation"
+  },
+  "InstalledAddonMessageTitle": {
+    "message": "FlagCookies erfolgreich $installationType$",
+    "description": "Displayed notification title for FlagCookies installation or update",
+    "placeholders": {
+      "installationType": { "content": "$1", "example": "aktualisiert/installiert"}
+    }
+  },
+  "InstalledAddonMessage": {
+    "message": "Vielen Dank. Bitte betrachte auch 'Spenden'.",
+    "description": "Displayed notification body for FlagCookies installation/update"
+  },
 
   "DonateButtonText": {
     "message": "Spenden",
