@@ -1,15 +1,14 @@
 // Chrome
 const useChrome = typeof (browser) === 'undefined'
-const hasConsole = typeof (console) !== 'undefined'
-let contextName = 'default'
-const cookieStoreId = null
-let domainURL = ''
-let tabId = -1
 const countList = {
   '#activeCookies': 0,
   '#permittedCookies': 0,
   '#flaggedCookies': 0
 }
+
+let tabId = 0
+let rootDomain = ''
+let contextName = 'default'
 
 // Localization
 const getMsg = useChrome ? getChromeMessage : getFirefoxMessage
@@ -24,139 +23,49 @@ function getFirefoxMessage (messageName, params) {
   return browser.i18n.getMessage(messageName)
 }
 
-// Chrome helpers
-function checkChromeHadNoErrors () {
-  if (chrome.runtime.lastError !== undefined) {
-    if (hasConsole) {
-      if (chrome.runtime.lastError.message !== undefined) {
-        console.log(chrome.runtime.lastError)
-        console.log(getMsg('BrowserErrorChromeDetail', chrome.runtime.lastError.message))
-      } else {
-        console.log(getMsg('BrowserErrorNeutral'))
-      }
-    }
-
-    void chrome.runtime.lastError
-
-    return false
-  }
-
-  return true
-}
-
-function getChromeStorageForFunc (func) {
-  chrome.storage.local.get(null, function (data) {
-    if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log(getMsg('BrowserRetriveStorageData'))
-
-      func(data)
-    } else if (hasConsole) {
-      console.log(getMsg('BrowserRetrieveStorageDataError'))
-    }
-  })
-}
-
-function getChromeStorageForFunc1 (func, par1) {
-  chrome.storage.local.get(null, function (data) {
-    if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log(getMsg('BrowserRetriveStorageData'))
-
-      func(data, par1)
-    } else if (hasConsole) {
-      console.log(getMsg('BrowserRetrieveStorageDataError'))
-    }
-  })
-}
-
-function getChromeStorageForFunc2 (func, par1, par2) {
-  chrome.storage.local.get(null, function (data) {
-    if (checkChromeHadNoErrors()) {
-      if (hasConsole) console.log(getMsg('BrowserRetriveStorageData'))
-
-      func(data, par1, par2)
-    } else if (hasConsole) {
-      console.log(getMsg('BrowserRetrieveStorageDataError'))
-    }
-  })
-}
-
-function setChromeStorage (data) {
-  chrome.storage.local.set(data, function () {
-    if (checkChromeHadNoErrors()) {
-      if (hasConsole) {
-        console.log(getMsg('BrowserUpdateStorageData'))
-      }
-    } else if (hasConsole) {
-      console.log(getMsg('BrowserUpdateStorageDataError'))
-    }
-  })
-}
-
-function chromeGetStorageAndCookiesForFunc (data, cookies, func, tab) {
-  if (!checkChromeHadNoErrors()) return
-
-  if (data === null) {
-    chrome.storage.local.get(null, function (data) { chromeGetStorageAndCookiesForFunc(data, null, func, tab) })
-    return
-  } else if (cookies === null) {
-    if (data.flagCookies_darkTheme !== undefined && data.flagCookies_darkTheme === true) {
-      document.body.classList.add('dark')
-    }
-
-    chrome.runtime.sendMessage({ getCookies: domainURL, windowId: tab.windowId, tabId: tab.id, storeId: 'default' }, function (response) { checkChromeHadNoErrors(); chromeGetStorageAndCookiesForFunc(data, response, func, tab) })
-    return
-  }
-
-  func(data, cookies, 'default', tab, null)
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------
-function firefoxOnGetContextSuccess (context) {
-  contextName = context.name
-}
-
-function firefoxOnGetContextError (e) {
-  if (hasConsole) {
-    // console.log('Firefox getContext profile error: ')
-    // console.log(e)
-  }
-}
-
 // --------------------------------------------------------------------------------------------------------------------------------
 
 async function initDomainURLandProceed (tabs) {
   const tab = tabs.pop()
-  tabId = tab.id
-  const domain = null
+
   const domainMatch = tab.url.match(/^(http|https):\/\/.[^/]*/i)
-  if (domainMatch !== null) domainURL = domainMatch[0]
-  else domainURL = 'No domain'
+
+  if (domainMatch !== null) rootDomain = domainMatch[0]
+  else rootDomain = 'No domain'
+
+  tabId = tab.tabId
 
   if (useChrome) {
     document.body.className = 'chrome'
     if (navigator.appVersion.toLowerCase().indexOf('opr/') !== -1) {
       document.body.classList.add('opera')
     }
-    chromeGetStorageAndCookiesForFunc(null, null, updateUIData, tab, null)
-    return
   }
 
   // Get storage and cookies Firefox
-  const data = await browser.storage.local.get()
-  // let activeCookieStore = 'default'
+  let data = null
+  if (useChrome) {
+    data = await chrome.storage.local.get()
+  } else {
+    data = await browser.storage.local.get()
+  }
 
   if (data.flagCookies_darkTheme !== undefined && data.flagCookies_darkTheme === true) {
     document.body.classList.add('dark')
   }
 
-  // await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-  if (tab.cookieStoreId !== undefined) {
-    activeCookieStore = tab.cookieStoreId
-    contextName = activeCookieStore
+  if (!useChrome && tab.cookieStoreId !== undefined) {
+    contextName = tab.cookieStoreId
   }
 
-  const cookies = await browser.runtime.sendMessage({ getCookies: domainURL, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
-  updateUIData(data, cookies, contextName, tab, activeCookieStore)
+  let cookies = []
+  if (useChrome) {
+    cookies = await chrome.runtime.sendMessage({ getCookies: rootDomain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+  } else {
+    cookies = await browser.runtime.sendMessage({ getCookies: rootDomain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+  }
+
+  updateUIData(data, cookies, contextName, rootDomain)
 }
 
 function sortObjectByKey (ObjectElements, keyName, doReverse) {
@@ -168,14 +77,11 @@ function sortObjectByKey (ObjectElements, keyName, doReverse) {
   return Object.values(ObjectElements).sort(sortByKey)
 }
 
-function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieStore) {
+function updateUIData (data, cookies, contextName, rootDomain) {
   // set the header of the panel
   const activeTabUrl = document.querySelector('#header-title')
   const introSpan = document.createElement('span')
   introSpan.className = 'intro'
-
-  if (!useChrome) browser.contextualIdentities.get(tab.cookieStoreId).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-  else contextName = 'default'
 
   const intro = document.createTextNode(getMsg('CookiesForDomainText'))
   introSpan.appendChild(intro)
@@ -190,15 +96,12 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   const introSpanStore = document.createElement('span')
   introSpanStore.className = 'intro'
 
-  const introStore = document.createTextNode(getMsg('ActiveContainerGroupText') + ' ' + activeCookieStoreName)
+  const introStore = document.createTextNode(getMsg('ActiveContainerGroupText') + ' ' + contextName)
   introSpanStore.appendChild(introStore)
   activeTabUrl.appendChild(introSpanStore)
 
   const cookieList = document.querySelector('#cookie-list')
   const loggedInCookieList = document.querySelector('#loggedInCookies')
-
-  // let hasAutoFlag = (data['flagCookies_autoFlag'] !== undefined && data['flagCookies_autoFlag'][contextName] !== undefined && data['flagCookies_autoFlag'][contextName][domainURL] !== undefined)
-  // let hasGlobalFlag = (data['flagCookies_flagGlobal'] !== undefined && data['flagCookies_flagGlobal'][contextName] === true)
 
   if (cookies.cookies === null || Object.keys(cookies.cookies).length === 0) {
     const infoDisplay = document.querySelector('#infoDisplay')
@@ -219,7 +122,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     let previousCookieDomain = cookies.rootDomain
     let activeCookies = false
 
-    const cookieBase = cookies.rootDomain.replace(/(http|https):\/\//, '').split('.')
+    const cookieBase = cookies.rootDomain.replace(/^(http:|https:)\/\//, '').split('.')
     const cookieJoinRoot = cookieBase.splice(cookieBase.length - 2, 2).join('.')
 
     const cookieDataLists = [Object.keys(cookies.cookies), Object.keys(cookies.cookies).sort()]
@@ -255,11 +158,6 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           subCollapse.textContent = '+'
           subCollapse.className = 'collapseToogle active'
           menuItemsDiv.appendChild(subCollapse)
-
-          /* let subFlag = document.createElement('button')
-          subFlag.className = 'flagToggle'
-          menuItemsDiv.appendChild(subFlag) */
-
           cookieSub.appendChild(menuItemsDiv)
 
           if (cookieJoin === null) {
@@ -310,15 +208,15 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
           lockSwitch.addEventListener('click', cookieLockSwitch)
 
           let isHandledCookie = false
-          if (data[contextName] !== undefined && data[contextName][domainURL] !== undefined) {
-            if (data[contextName][domainURL][cookie.domain] !== undefined && data[contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
-              if (data[contextName][domainURL][cookie.domain][cookie.name] === true) {
+          if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined) {
+            if (data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined) {
+              if (data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
                 checkMark.className = 'checkmark flagged'
                 checkMark.title = getMsg('CookieIsFlaggedHelpText')
                 addCookieToList('cookie-list-flagged', cookie.name, cookie.value, cookie.domain, false)
                 ++countList['#flaggedCookies']
                 isHandledCookie = true
-              } else if (data[contextName][domainURL][cookie.domain][cookie.name] === false) {
+              } else if (data[contextName][rootDomain][cookie.domain][cookie.name] === false) {
                 checkMark.className = 'checkmark permit'
                 checkMark.title = getMsg('CookieIsPermittedHelpText')
                 addCookieToList('cookie-list-permitted', cookie.name, cookie.value, cookie.domain, false)
@@ -328,7 +226,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
             }
           }
 
-          if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][domainURL] !== undefined && data.flagCookies_logged[contextName][domainURL][cookie.domain] !== undefined && data.flagCookies_logged[contextName][domainURL][cookie.domain][cookie.name] !== undefined) {
+          if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] !== undefined) {
             lockSwitch.classList.add('locked')
 
             lockSwitch.title = getMsg('CookieIsLockedProfileCookieHelpText')
@@ -459,8 +357,8 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     cookieList.removeAttribute('class')
   }
 
-  if (data[contextName] !== undefined && data[contextName][domainURL] !== undefined) {
-    const domainData = data[contextName][domainURL]
+  if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined) {
+    const domainData = data[contextName][rootDomain]
     for (const cookieDomain of Object.keys(domainData)) {
       if (cookieDomain === cookies.rootDomain) continue
       for (const cookieKey of Object.keys(domainData[cookieDomain])) {
@@ -479,8 +377,8 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     }
   }
 
-  if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][domainURL] !== undefined) {
-    const domainData = data.flagCookies_logged[contextName][domainURL]
+  if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined) {
+    const domainData = data.flagCookies_logged[contextName][rootDomain]
     for (const cookieDomain of Object.keys(domainData)) {
       for (const cookieKey of Object.keys(domainData[cookieDomain])) {
         addCookieToProfileList(loggedInCookieList, cookieKey, cookieDomain, 'flagCookies_logged')
@@ -492,7 +390,7 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
   else document.querySelector('#profileNoData').removeAttribute('class')
 
   if (data.flagCookies_flagGlobal && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true) {
-    flagGlobalAutoNonEvent()
+    flagGlobalAuto()
   }
 
   document.querySelector('#activeCookies').className = 'active'
@@ -501,12 +399,12 @@ function updateUIData (data, cookies, activeCookieStoreName, tab, activeCookieSt
     for (const entry of cookies.logData) log.textContent += entry + '\n'
   }
 
-  if (data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][domainURL]) {
+  if (data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain]) {
     document.querySelector('#auto-flag').classList.add('active')
     switchAutoFlag(true, '#cookie-list')
   }
 
-  if (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][domainURL] !== undefined) {
+  if (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined) {
     document.querySelector('#account-mode').classList.add('active')
   }
 
@@ -586,15 +484,12 @@ function buildHelpIndex () {
 
 function getTempContainerStatus (contextName) {
   try {
-    browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', { method: 'isTempContainer', cookieStoreId: cookieStoreId }).then(function (isTmp) {
-      void browser.runtime.lastError
+    browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', { method: 'isTempContainer', cookieStoreId: contextName }).then(function (isTmp) {
       if (isTmp === true) {
         getMsg('CookieHelpTextSecureMightNotHandled', [document.querySelectorAll('.intro')[1].textContent])
       }
     })
   } catch (error) {
-    void browser.runtime.lastError
-    console.log('passed')
   }
 }
 
@@ -693,22 +588,17 @@ function addCookieToList (targetList, name, value, domain, inactiveCookie) {
   targetCookieList.appendChild(li)
 }
 
-function getActiveTab () {
-  return browser.tabs.query({ currentWindow: true, active: true })
-}
-
 // --------------------------------------------------------------------------------------------------------------------------------
 // Button switch function and store delete cookie name in browser storage
 
 // Chrome + Firefox
 async function flaggedCookieSwitch (evt) {
   if (useChrome) {
-    getChromeStorageForFunc1(flaggedCookieSwitchNeutral, evt)
+    flaggedCookieSwitchNeutral(await chrome.storage.local.get(), evt)
     return
   }
 
-  const data = await browser.storage.local.get()
-  flaggedCookieSwitchNeutral(data, evt)
+  flaggedCookieSwitchNeutral(await browser.storage.local.get(), evt)
 }
 
 // Kinda neutral
@@ -718,7 +608,7 @@ async function flaggedCookieSwitchNeutral (data, evt) {
 
   // Uncheck from flagged in active cookies, if present
   const domainCookieList = document.querySelectorAll('#cookie-list .cookieEntry')
-  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][domainURL] !== undefined
+  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined
   const hasGlobal = data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true
 
   for (const child of domainCookieList) {
@@ -738,22 +628,22 @@ async function flaggedCookieSwitchNeutral (data, evt) {
     }
   }
 
-  delete data[contextName][domainURL][cookieDomain][cookieName]
-  if (Object.keys(data[contextName][domainURL][cookieDomain]).length === 0) {
-    delete data[contextName][domainURL][cookieDomain]
+  delete data[contextName][rootDomain][cookieDomain][cookieName]
+  if (Object.keys(data[contextName][rootDomain][cookieDomain]).length === 0) {
+    delete data[contextName][rootDomain][cookieDomain]
 
-    if (Object.keys(data[contextName][domainURL]).length === 0) {
-      delete data[contextName][domainURL]
+    if (Object.keys(data[contextName][rootDomain]).length === 0) {
+      delete data[contextName][rootDomain]
 
       if (Object.keys(data[contextName]).length === 0) {
-        if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+        if (useChrome) await chrome.storage.local.remove(contextName)
         else await browser.storage.local.remove(contextName)
         delete data[contextName]
       }
     }
   }
 
-  if (useChrome) setChromeStorage(data)
+  if (useChrome) chrome.storage.local.set(data)
   else await browser.storage.local.set(data)
 
   const parent = evt.target.parentNode.parentNode
@@ -775,12 +665,11 @@ async function flaggedCookieSwitchNeutral (data, evt) {
 // Chrome + Firefox
 async function permittedCookieSwitch (evt) {
   if (useChrome) {
-    getChromeStorageForFunc1(permittedCookieSwitchNeutral, evt)
+    permittedCookieSwitchNeutral(await chrome.storage.local.get(), evt)
     return
   }
 
-  const data = await browser.storage.local.get()
-  permittedCookieSwitchNeutral(data, evt)
+  permittedCookieSwitchNeutral(await browser.storage.local.get(), evt)
 }
 
 // Kinda neutral
@@ -790,7 +679,7 @@ async function permittedCookieSwitchNeutral (data, evt) {
 
   // Uncheck from permitted in active cookies, if present
   const domainCookieList = document.querySelectorAll('#cookie-list .cookieEntry')
-  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][domainURL] !== undefined
+  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined
   const hasGlobal = data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true
 
   for (const child of domainCookieList) {
@@ -810,22 +699,22 @@ async function permittedCookieSwitchNeutral (data, evt) {
     }
   }
 
-  delete data[contextName][domainURL][cookieDomain][cookieName]
-  if (Object.keys(data[contextName][domainURL][cookieDomain]).length === 0) {
-    delete data[contextName][domainURL][cookieDomain]
+  delete data[contextName][rootDomain][cookieDomain][cookieName]
+  if (Object.keys(data[contextName][rootDomain][cookieDomain]).length === 0) {
+    delete data[contextName][rootDomain][cookieDomain]
 
-    if (Object.keys(data[contextName][domainURL]).length === 0) {
-      delete data[contextName][domainURL]
+    if (Object.keys(data[contextName][rootDomain]).length === 0) {
+      delete data[contextName][rootDomain]
 
       if (Object.keys(data[contextName]).length === 0) {
-        if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+        if (useChrome) await chrome.storage.local.remove(contextName)
         else await browser.storage.local.remove(contextName)
         delete data[contextName]
       }
     }
   }
 
-  if (useChrome) setChromeStorage(data)
+  if (useChrome) await chrome.storage.local(data)
   else await browser.storage.local.set(data)
 
   const parent = evt.target.parentNode.parentNode
@@ -848,12 +737,11 @@ async function permittedCookieSwitchNeutral (data, evt) {
 // Chrome + Firefox
 async function cookieFlagSwitch (evt) {
   if (useChrome) {
-    getChromeStorageForFunc1(cookieFlagSwitchNeutral, evt)
+    cookieFlagSwitchNeutral(await chrome.storage.local.get(), evt)
     return
   }
 
-  const data = await browser.storage.local.get()
-  cookieFlagSwitchNeutral(data, evt)
+  cookieFlagSwitchNeutral(await browser.storage.local.get(), evt)
 }
 
 // Kinda neutral
@@ -863,20 +751,20 @@ async function cookieFlagSwitchNeutral (data, evt) {
   const cookieValue = evt.target.dataset.value
 
   if (data[contextName] === undefined) data[contextName] = {}
-  if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
-  if (data[contextName][domainURL][cookieDomain] === undefined) data[contextName][domainURL][cookieDomain] = {}
+  if (data[contextName][rootDomain] === undefined) data[contextName][rootDomain] = {}
+  if (data[contextName][rootDomain][cookieDomain] === undefined) data[contextName][rootDomain][cookieDomain] = {}
 
-  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][domainURL] !== undefined
-  const hasCookie = data[contextName][domainURL][cookieDomain][cookieName] !== undefined
+  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined
+  const hasCookie = data[contextName][rootDomain][cookieDomain][cookieName] !== undefined
 
-  if (!hasCookie || (hasAutoFlag && (hasCookie && data[contextName][domainURL][cookieDomain][cookieName] !== true && data[contextName][domainURL][cookieDomain][cookieName] !== false))) {
-    data[contextName][domainURL][cookieDomain][cookieName] = true
+  if (!hasCookie || (hasAutoFlag && (hasCookie && data[contextName][rootDomain][cookieDomain][cookieName] !== true && data[contextName][rootDomain][cookieDomain][cookieName] !== false))) {
+    data[contextName][rootDomain][cookieDomain][cookieName] = true
     evt.target.className = 'checkmark flagged'
     evt.target.title = getMsg('CookieIsFlaggedHelpText')
     addCookieToList('cookie-list-flagged', cookieName, cookieValue, cookieDomain, false)
     ++countList['#flaggedCookies']
-  } else if (data[contextName][domainURL][cookieDomain][cookieName] === true) {
-    data[contextName][domainURL][cookieDomain][cookieName] = false
+  } else if (data[contextName][rootDomain][cookieDomain][cookieName] === true) {
+    data[contextName][rootDomain][cookieDomain][cookieName] = false
     evt.target.className = 'checkmark permit'
     evt.target.title = getMsg('CookieIsPermittedHelpText')
     addCookieToList('cookie-list-permitted', cookieName, cookieValue, cookieDomain, false)
@@ -892,16 +780,16 @@ async function cookieFlagSwitchNeutral (data, evt) {
       }
     }
   } else if (hasAutoFlag) {
-    delete data[contextName][domainURL][cookieDomain][cookieName]
+    delete data[contextName][rootDomain][cookieDomain][cookieName]
 
-    if (Object.keys(data[contextName][domainURL][cookieDomain]).length === 0) {
-      delete data[contextName][domainURL][cookieDomain]
+    if (Object.keys(data[contextName][rootDomain][cookieDomain]).length === 0) {
+      delete data[contextName][rootDomain][cookieDomain]
 
-      if (Object.keys(data[contextName][domainURL]).length === 0) {
-        delete data[contextName][domainURL]
+      if (Object.keys(data[contextName][rootDomain]).length === 0) {
+        delete data[contextName][rootDomain]
 
         if (Object.keys(data[contextName]).length === 0) {
-          if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+          if (useChrome) await chrome.storage.local.remove(contextName)
           else await browser.storage.local.remove(contextName)
           delete data[contextName]
         }
@@ -911,16 +799,16 @@ async function cookieFlagSwitchNeutral (data, evt) {
     evt.target.className = 'checkmark auto-flagged'
     evt.target.title = getMsg('CookieIsAutoFlaggedHelpText')
   } else if (data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true) {
-    delete data[contextName][domainURL][cookieDomain][cookieName]
+    delete data[contextName][rootDomain][cookieDomain][cookieName]
 
-    if (Object.keys(data[contextName][domainURL][cookieDomain]).length === 0) {
-      delete data[contextName][domainURL][cookieDomain]
+    if (Object.keys(data[contextName][rootDomain][cookieDomain]).length === 0) {
+      delete data[contextName][rootDomain][cookieDomain]
 
-      if (Object.keys(data[contextName][domainURL]).length === 0) {
-        delete data[contextName][domainURL]
+      if (Object.keys(data[contextName][rootDomain]).length === 0) {
+        delete data[contextName][rootDomain]
 
         if (Object.keys(data[contextName]).length === 0) {
-          if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+          if (useChrome) await chrome.storage.local.remove(contextName)
           else await browser.storage.local.remove(contextName)
           delete data[contextName]
         }
@@ -930,16 +818,16 @@ async function cookieFlagSwitchNeutral (data, evt) {
     evt.target.className = 'checkmark auto-flagged'
     evt.target.title = getMsg('CookieIsGlobalFlaggedHelpText')
   } else {
-    delete data[contextName][domainURL][cookieDomain][cookieName]
+    delete data[contextName][rootDomain][cookieDomain][cookieName]
 
-    if (Object.keys(data[contextName][domainURL][cookieDomain]).length === 0) {
-      delete data[contextName][domainURL][cookieDomain]
+    if (Object.keys(data[contextName][rootDomain][cookieDomain]).length === 0) {
+      delete data[contextName][rootDomain][cookieDomain]
 
-      if (Object.keys(data[contextName][domainURL]).length === 0) {
-        delete data[contextName][domainURL]
+      if (Object.keys(data[contextName][rootDomain]).length === 0) {
+        delete data[contextName][rootDomain]
 
         if (Object.keys(data[contextName]).length === 0) {
-          if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+          if (useChrome) await chrome.storage.local.remove(contextName)
           else await browser.storage.local.remove(contextName)
           delete data[contextName]
         }
@@ -950,7 +838,7 @@ async function cookieFlagSwitchNeutral (data, evt) {
     evt.target.title = getMsg('CookieFlagButtonAllowedHelpText')
   }
 
-  if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieName] === undefined) {
+  if (data[contextName] === undefined || data[contextName][rootDomain] === undefined || data[contextName][rootDomain][cookieDomain] === undefined || data[contextName][rootDomain][cookieDomain][cookieName] === undefined) {
     // Remove from permitted list if present
     const permittedCookieList = document.querySelectorAll('#cookie-list-permitted .cookieEntry')
     for (const child of permittedCookieList) {
@@ -964,7 +852,7 @@ async function cookieFlagSwitchNeutral (data, evt) {
 
   updateCookieCount()
 
-  if (useChrome) setChromeStorage(data)
+  if (useChrome) chrome.storage.local.set(data)
   else await browser.storage.local.set(data)
 }
 
@@ -978,12 +866,11 @@ function updateCookieCount () {
 // Switch lockSwitch
 async function cookieLockSwitch (evt) {
   if (useChrome) {
-    getChromeStorageForFunc1(cookieLockSwitchNeutral, evt)
+    cookieLockSwitchNeutral(await chrome.storage.local.get(), evt)
     return
   }
 
-  const data = await browser.storage.local.get()
-  cookieLockSwitchNeutral(data, evt)
+  cookieLockSwitchNeutral(await browser.storage.local.get(), evt)
 }
 
 async function cookieLockSwitchNeutral (data, evt) {
@@ -992,24 +879,24 @@ async function cookieLockSwitchNeutral (data, evt) {
 
   if (data.flagCookies_logged === undefined) data.flagCookies_logged = {}
   if (data.flagCookies_logged[contextName] === undefined) data.flagCookies_logged[contextName] = {}
-  if (data.flagCookies_logged[contextName][domainURL] === undefined) data.flagCookies_logged[contextName][domainURL] = {}
-  if (data.flagCookies_logged[contextName][domainURL][cookieDomain] === undefined) data.flagCookies_logged[contextName][domainURL][cookieDomain] = {}
+  if (data.flagCookies_logged[contextName][rootDomain] === undefined) data.flagCookies_logged[contextName][rootDomain] = {}
+  if (data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined) data.flagCookies_logged[contextName][rootDomain][cookieDomain] = {}
 
   if (evt.target.classList.contains('locked')) {
-    if (data.flagCookies_logged[contextName][domainURL][cookieDomain][cookieName] !== undefined) {
-      delete data.flagCookies_logged[contextName][domainURL][cookieDomain][cookieName]
+    if (data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookieName] !== undefined) {
+      delete data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookieName]
 
-      if (Object.keys(data.flagCookies_logged[contextName][domainURL][cookieDomain]).length === 0) {
-        delete data.flagCookies_logged[contextName][domainURL][cookieDomain]
+      if (Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length === 0) {
+        delete data.flagCookies_logged[contextName][rootDomain][cookieDomain]
 
-        if (Object.keys(data.flagCookies_logged[contextName][domainURL]).length === 0) {
-          delete data.flagCookies_logged[contextName][domainURL]
+        if (Object.keys(data.flagCookies_logged[contextName][rootDomain]).length === 0) {
+          delete data.flagCookies_logged[contextName][rootDomain]
 
           if (Object.keys(data.flagCookies_logged[contextName]).length === 0) {
             delete data.flagCookies_logged[contextName]
 
             if (Object.keys(data.flagCookies_logged).length === 0) {
-              if (useChrome) chrome.storage.local.remove('flagCookies_logged', function () { checkChromeHadNoErrors() })
+              if (useChrome) await chrome.storage.local.remove('flagCookies_logged')
               else await browser.storage.local.remove('flagCookies_logged')
               delete data.flagCookies_logged
             }
@@ -1017,7 +904,7 @@ async function cookieLockSwitchNeutral (data, evt) {
         }
       }
 
-      if (useChrome) setChromeStorage(data)
+      if (useChrome) await chrome.storage.local.set(data)
       else await browser.storage.local.set(data)
 
       const loggedInCookieList = document.querySelector('#loggedInCookies')
@@ -1025,14 +912,14 @@ async function cookieLockSwitchNeutral (data, evt) {
       evt.target.classList.remove('locked')
       evt.target.title = getMsg('SetCookieProfileButtonHelpText')
 
-      if (data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][domainURL] === undefined) {
+      if (data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined) {
         document.querySelector('#profileNoData').removeAttribute('class')
       }
     }
   } else {
-    data.flagCookies_logged[contextName][domainURL][cookieDomain][cookieName] = true
+    data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookieName] = true
 
-    if (useChrome) setChromeStorage(data)
+    if (useChrome) await chrome.storage.local.set(data)
     else await browser.storage.local.set(data)
 
     const loggedInCookieList = document.querySelector('#loggedInCookies')
@@ -1114,12 +1001,11 @@ function switchView (evt) {
 // Chrome + Firefox
 async function flagAutoSwitch (evt) {
   if (useChrome) {
-    getChromeStorageForFunc1(flagAutoSwitchNeutral, evt)
+    flagAutoSwitchNeutral(await chrome.storage.local.get(), evt)
     return
   }
 
-  const data = await browser.storage.local.get()
-  flagAutoSwitchNeutral(data, evt)
+  flagAutoSwitchNeutral(await browser.storage.local.get(), evt)
 }
 
 // Kinda neutral
@@ -1127,56 +1013,30 @@ async function flagAutoSwitchNeutral (data, evt) {
   if (data.flagCookies_autoFlag === undefined) data.flagCookies_autoFlag = {}
   if (data.flagCookies_autoFlag[contextName] === undefined) data.flagCookies_autoFlag[contextName] = {}
   if (!evt.target.classList.contains('active')) {
-    data.flagCookies_autoFlag[contextName][domainURL] = true
-    if (useChrome) setChromeStorage(data)
+    data.flagCookies_autoFlag[contextName][rootDomain] = true
+    if (useChrome) await chrome.storage.local.set(data)
     else await browser.storage.local.set(data)
 
     evt.target.classList.add('active')
     switchAutoFlag(true, '#cookie-list')
   } else {
-    delete data.flagCookies_autoFlag[contextName][domainURL]
+    delete data.flagCookies_autoFlag[contextName][rootDomain]
 
-    if (useChrome) setChromeStorage(data)
+    if (useChrome) await chrome.storage.local.set(data)
     else await browser.storage.local.set(data)
-    evt.target.classList.remove('active')
 
+    evt.target.classList.remove('active')
     switchAutoFlag(false, '#cookie-list')
   }
 }
 
-// Switch global auto flagging
-// Chrome
-function flagGlobalAutoNonEventWrapper (data) {
-  if (data.flagCookies_flagGlobal === undefined) data.flagCookies_flagGlobal = {}
-  if (data.flagCookies_flagGlobal[contextName] === undefined) data.flagCookies_flagGlobal[contextName] = false
-
-  const globalFlagButton = document.querySelector('#global-flag')
-
-  if (!globalFlagButton.classList.contains('active')) {
-    globalFlagButton.classList.add('active')
-    data.flagCookies_flagGlobal[contextName] = true
-    setChromeStorage(data)
-    switchAutoFlagGlobal(true, '#cookie-list')
-  } else {
-    globalFlagButton.classList.remove('active')
-    data.flagCookies_flagGlobal[contextName] = false
-    setChromeStorage(data)
-
-    const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][domainURL] !== undefined
-
-    if (hasAutoFlag) switchAutoFlagGlobal(true, '#cookie-list')
-    else switchAutoFlagGlobal(false, '#cookie-list')
-  }
-}
-
-// Firefox
-async function flagGlobalAutoNonEvent () {
+async function flagGlobalAuto () {
+  let data = null
   if (useChrome) {
-    getChromeStorageForFunc(flagGlobalAutoNonEventWrapper)
-    return
+    data = await chrome.storage.local.get()
+  } else {
+    data = await browser.storage.local.get()
   }
-
-  const data = await browser.storage.local.get()
 
   if (data.flagCookies_flagGlobal === undefined) data.flagCookies_flagGlobal = {}
   if (data.flagCookies_flagGlobal[contextName] === undefined) data.flagCookies_flagGlobal[contextName] = false
@@ -1186,41 +1046,46 @@ async function flagGlobalAutoNonEvent () {
   if (!globalFlagButton.classList.contains('active')) {
     globalFlagButton.classList.add('active')
     data.flagCookies_flagGlobal[contextName] = true
-    await browser.storage.local.set(data)
+
+    if (useChrome) {
+      data = await chrome.storage.local.set(data)
+    } else {
+      data = await browser.storage.local.set(data)
+    }
+
     switchAutoFlagGlobal(true, '#cookie-list')
   } else {
     globalFlagButton.classList.remove('active')
     data.flagCookies_flagGlobal[contextName] = false
-    await browser.storage.local.set(data)
 
-    const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][domainURL] !== undefined
+    if (useChrome) {
+     await chrome.storage.local.set(data)
+    } else {
+      await browser.storage.local.set(data)
+    }
+
+    const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined
 
     if (hasAutoFlag) switchAutoFlag(true, '#cookie-list')
     else switchAutoFlagGlobal(false, '#cookie-list')
   }
 }
 
-async function flagGlobalAuto (evt) {
-  flagGlobalAutoNonEvent()
-  evt.preventDefault()
-}
-
 // Switch auto flag status for cookies
 // Chrome + Firefox
 async function switchAutoFlag (doSwitchOn, targetList) {
   if (useChrome) {
-    getChromeStorageForFunc2(switchAutoFlagNeutral, doSwitchOn, targetList)
+    switchAutoFlagNeutral(await chrome.storage.local.get(), doSwitchOn, targetList)
     return
   }
 
-  const data = await browser.storage.local.get()
-  switchAutoFlagNeutral(data, doSwitchOn, targetList)
+  switchAutoFlagNeutral(await browser.storage.local.get(), doSwitchOn, targetList)
 }
 
 // Kinda neutral
 async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
   if (data[contextName] === undefined) data[contextName] = {}
-  if (data[contextName][domainURL] === undefined) data[contextName][domainURL] = {}
+  if (data[contextName][rootDomain] === undefined) data[contextName][rootDomain] = {}
 
   const searchTarget = document.querySelectorAll(targetList + ' .cookieEntry')
   if (doSwitchOn) {
@@ -1245,7 +1110,7 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
     }
   }
 
-  if (useChrome) setChromeStorage(data)
+  if (useChrome) await chrome.storage.local.set(data)
   else await browser.storage.local.set(data)
 }
 
@@ -1253,12 +1118,11 @@ async function switchAutoFlagNeutral (data, doSwitchOn, targetList) {
 // Chrome + Firefox
 async function switchAutoFlagGlobal (doSwitchOn, targetList) {
   if (useChrome) {
-    getChromeStorageForFunc2(switchAutoFlagGlobalNeutral, doSwitchOn, targetList)
+    switchAutoFlagGlobalNeutral(await chrome.storage.local.get(), doSwitchOn, targetList)
     return
   }
 
-  const data = await browser.storage.local.get()
-  switchAutoFlagGlobalNeutral(data, doSwitchOn, targetList)
+  switchAutoFlagGlobalNeutral(await browser.storage.local.get(), doSwitchOn, targetList)
 }
 
 // Neutral
@@ -1273,7 +1137,7 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 
       if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
 
-      if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieKey] === undefined || (data[contextName][domainURL][cookieDomain][cookieKey] !== true && data[contextName][domainURL][cookieDomain][cookieKey] !== false)) {
+      if (data[contextName] === undefined || data[contextName][rootDomain] === undefined || data[contextName][rootDomain][cookieDomain] === undefined || data[contextName][rootDomain][cookieDomain][cookieKey] === undefined || (data[contextName][rootDomain][cookieDomain][cookieKey] !== true && data[contextName][rootDomain][cookieDomain][cookieKey] !== false)) {
         contentChild.className = 'checkmark auto-flagged'
         contentChild.title = getMsg('CookieIsGlobalFlaggedHelpText')
       }
@@ -1286,7 +1150,7 @@ function switchAutoFlagGlobalNeutral (data, doSwitchOn, targetList) {
 
       if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
 
-      if (data[contextName] === undefined || data[contextName][domainURL] === undefined || data[contextName][domainURL][cookieDomain] === undefined || data[contextName][domainURL][cookieDomain][cookieKey] === undefined || (data[contextName][domainURL][cookieDomain][cookieKey] !== true && data[contextName][domainURL][cookieDomain][cookieKey] !== false)) {
+      if (data[contextName] === undefined || data[contextName][rootDomain] === undefined || data[contextName][rootDomain][cookieDomain] === undefined || data[contextName][rootDomain][cookieDomain][cookieKey] === undefined || (data[contextName][rootDomain][cookieDomain][cookieKey] !== true && data[contextName][rootDomain][cookieDomain][cookieKey] !== false)) {
         contentChild.className = 'checkmark'
         contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
       }
@@ -1346,11 +1210,13 @@ async function toggleLogging (evt) {
   }
 
   if (useChrome) {
-    getChromeStorageForFunc1(switchLoggingChrome, doSwitchOn)
+    const data = await chrome.storage.local.get()
+    data.flagCookies_logEnabled = doSwitchOn
+    await chrome.storage.local.set(data)
     return
   }
 
-  const data = await browser.storage.local.get(null)
+  const data = await browser.storage.local.get()
   data.flagCookies_logEnabled = doSwitchOn
   await browser.storage.local.set(data)
 }
@@ -1369,18 +1235,15 @@ async function toggleDarkTheme (evt) {
   }
 
   if (useChrome) {
-    getChromeStorageForFunc1(switchDarkThemeChrome, doSwitchOn)
+    const data = await chrome.storage.local.get(null)
+    data.flagCookies_darkTheme = doSwitchOn
+    await chrome.storage.local.set(data)
     return
   }
 
   const data = await browser.storage.local.get(null)
   data.flagCookies_darkTheme = doSwitchOn
   await browser.storage.local.set(data)
-}
-
-function switchDarkThemeChrome (data, doSwitchOn) {
-  data.flagCookies_darkTheme = doSwitchOn
-  setChromeStorage(data)
 }
 
 async function toggleNotifications (evt) {
@@ -1401,28 +1264,15 @@ async function toggleNotifications (evt) {
   }
 
   if (useChrome) {
-    getChromeStorageForFunc1(switchNotificationsChrome, doSwitchOn)
+    const data = await chrome.storage.local.get(null)
+    data.flagCookies_notifications = doSwitchOn
+    await chrome.storage.local.set(data)
     return
   }
 
   const data = await browser.storage.local.get(null)
   data.flagCookies_notifications = doSwitchOn
   await browser.storage.local.set(data)
-}
-
-function switchNotificationsChrome (data, doSwitchOn) {
-  data.flagCookies_notifications = doSwitchOn
-  setChromeStorage(data)
-}
-
-function switchLoggingChrome (data, doSwitchOn) {
-  data.flagCookies_logEnabled = doSwitchOn
-  setChromeStorage(data)
-}
-
-function switchExportExpiredChrome (data, doSwitchOn) {
-  data.flagCookies_expiredExport = doSwitchOn
-  setChromeStorage(data)
 }
 
 // Chrome + Firefox
@@ -1435,14 +1285,12 @@ async function clearSettings (evt) {
   }
 
   if (useChrome) {
-    chrome.storage.local.clear(function () {
-      if (!checkChromeHadNoErrors) {
-        log.textContent = getMsg('ErrorClearingSettingsInfoMsg')
-      } else {
-        log.textContent = getMsg('SuccessClearingSettingsAndStorageInfoMsg')
-        resetUI()
-      }
-    })
+    if (await chrome.storage.local.clear() === undefined) {
+      log.textContent = getMsg('SuccessClearingSettingsAndStorageInfoMsg')
+      resetUI()
+    } else {
+      log.textContent = getMsg('ErrorClearingSettingsInfoMsg')
+    }
 
     return
   }
@@ -1463,15 +1311,9 @@ async function clearDomain (evt) {
   }
 
   if (useChrome) {
-    chrome.storage.local.remove(domainURL, function () {
-      if (!checkChromeHadNoErrors) {
-        log.textContent = getMsg('ErrorDomainDataClearingInfoMsg')
-      } else {
-        getChromeStorageForFunc(resetUIDomain)
-        if (checkChromeHadNoErrors) log.textContent = getMsg('DomainDataClearedInfoMsg')
-      }
-    })
-
+    const data = await chrome.storage.local.get()
+    if (resetUIDomain(data)) log.textContent = getMsg('DomainDataClearedInfoMsg')
+    else log.textContent = getMsg('ErrorDomainDataClearingInfoMsg')
     return
   }
 
@@ -1489,11 +1331,13 @@ async function toggleExportExpired (evt) {
   }
 
   if (useChrome) {
-    getChromeStorageForFunc1(switchExportExpiredChrome, doSwitchOn)
+    const data = await chrome.storage.local.get()
+    data.flagCookies_expiredExport = doSwitchOn
+    await chrome.storage.local.set(data)
     return
   }
 
-  const data = await browser.storage.local.get(null)
+  const data = await browser.storage.local.get()
   data.flagCookies_expiredExport = doSwitchOn
   await browser.storage.local.set(data)
 }
@@ -1570,8 +1414,8 @@ async function resetUIDomain (data) {
 
   document.querySelector('#profileNoData').removeAttribute('class')
   if (data.flagCookies_autoFlag !== undefined) {
-    if (data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][domainURL] !== undefined) {
-      delete data.flagCookies_autoFlag[contextName][domainURL]
+    if (data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
+      delete data.flagCookies_autoFlag[contextName][rootDomain]
     }
 
     if (data.flagCookies_autoFlag[contextName] !== undefined && Object.keys(data.flagCookies_autoFlag[contextName]).length === 0) {
@@ -1581,14 +1425,14 @@ async function resetUIDomain (data) {
     if (Object.keys(data.flagCookies_autoFlag).length === 0) {
       delete data.flagCookies_autoFlag
 
-      if (useChrome) chrome.storage.local.remove('flagCookies_autoFlag', function () { checkChromeHadNoErrors() })
+      if (useChrome) await chrome.storage.local.remove('flagCookies_autoFlag')
       else await browser.storage.local.remove('flagCookies_autoFlag')
     }
   }
 
   if (data.flagCookies_logged !== undefined) {
-    if (data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][domainURL] !== undefined) {
-      delete data.flagCookies_logged[contextName][domainURL]
+    if (data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined) {
+      delete data.flagCookies_logged[contextName][rootDomain]
 
       if (Object.keys(data.flagCookies_logged[contextName]).length === 0) {
         delete data.flagCookies_logged[contextName]
@@ -1596,7 +1440,7 @@ async function resetUIDomain (data) {
         if (Object.keys(data.flagCookies_logged).length === 0) {
           delete data.flagCookies_logged
 
-          if (useChrome) chrome.storage.local.remove('flagCookies_logged', function () { checkChromeHadNoErrors() })
+          if (useChrome) await chrome.storage.local.remove('flagCookies_logged')
           else await browser.storage.local.remove('flagCookies_logged')
         }
       }
@@ -1604,8 +1448,8 @@ async function resetUIDomain (data) {
   }
 
   if (data.flagCookies_accountMode !== undefined) {
-    if (data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][domainURL] !== undefined) {
-      delete data.flagCookies_accountMode[contextName][domainURL]
+    if (data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined) {
+      delete data.flagCookies_accountMode[contextName][rootDomain]
 
       if (Object.keys(data.flagCookies_accountMode[contextName]).length === 0) {
         delete data.flagCookies_accountMode[contextName]
@@ -1613,7 +1457,7 @@ async function resetUIDomain (data) {
         if (Object.keys(data.flagCookies_accountMode).length === 0) {
           delete data.flagCookies_accountMode
 
-          if (useChrome) chrome.storage.local.remove('flagCookies_accountMode', function () { checkChromeHadNoErrors() })
+          if (useChrome) await chrome.storage.local.remove('flagCookies_accountMode')
           else await browser.storage.local.remove('flagCookies_accountMode')
         }
       }
@@ -1622,18 +1466,18 @@ async function resetUIDomain (data) {
     document.querySelector('#account-mode').removeAttribute('class')
   }
 
-  if (data[contextName] !== undefined && data[contextName][domainURL] !== undefined) {
-    delete data[contextName][domainURL]
+  if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined) {
+    delete data[contextName][rootDomain]
 
     if (Object.keys(data[contextName]).length === 0) {
       delete data[contextName]
 
-      if (useChrome) chrome.storage.local.remove(contextName, function () { checkChromeHadNoErrors() })
+      if (useChrome) await chrome.storage.local.remove(contextName)
       else await browser.storage.local.remove(contextName)
     }
   }
 
-  if (useChrome) setChromeStorage(data)
+  if (useChrome) await chrome.storage.local.set(data)
   else await browser.storage.local.set(data)
 
   const confirmClearing = document.querySelector('#confirmDomainClearing')
@@ -1644,12 +1488,11 @@ async function resetUIDomain (data) {
 // Chrome + Firefox: Dump cookie from profile
 async function dumpProfileCookie (evt) {
   if (useChrome) {
-    getChromeStorageForFunc1(dumpProfileCookieNeutral, evt)
+    dumpProfileCookieNeutral(await chrome.storage.local.get(), evt)
     return
   }
 
-  const data = await browser.storage.local.get()
-  dumpProfileCookieNeutral(data, evt)
+  dumpProfileCookieNeutral(await browser.storage.local.get(), evt)
 }
 
 async function dumpProfileCookieNeutral (data, evt) {
@@ -1657,21 +1500,21 @@ async function dumpProfileCookieNeutral (data, evt) {
   const cookieName = evt.target.dataset.name
   const cookieDomain = evt.target.dataset.domain
 
-  if (data[cookieSrc][contextName][domainURL] === undefined || data[cookieSrc][contextName][domainURL][cookieDomain] === undefined || data[cookieSrc][contextName][domainURL][cookieDomain][cookieName] === undefined) return
+  if (data[cookieSrc][contextName][rootDomain] === undefined || data[cookieSrc][contextName][rootDomain][cookieDomain] === undefined || data[cookieSrc][contextName][rootDomain][cookieDomain][cookieName] === undefined) return
 
-  delete data[cookieSrc][contextName][domainURL][cookieDomain][cookieName]
+  delete data[cookieSrc][contextName][rootDomain][cookieDomain][cookieName]
 
-  if (Object.keys(data[cookieSrc][contextName][domainURL][cookieDomain]).length === 0) {
-    delete data[cookieSrc][contextName][domainURL][cookieDomain]
+  if (Object.keys(data[cookieSrc][contextName][rootDomain][cookieDomain]).length === 0) {
+    delete data[cookieSrc][contextName][rootDomain][cookieDomain]
 
-    if (Object.keys(data[cookieSrc][contextName][domainURL]).length === 0) {
-      delete data[cookieSrc][contextName][domainURL]
+    if (Object.keys(data[cookieSrc][contextName][rootDomain]).length === 0) {
+      delete data[cookieSrc][contextName][rootDomain]
 
       if (Object.keys(data[cookieSrc][contextName]).length === 0) {
         delete data[cookieSrc][contextName]
 
         if (Object.keys(data[cookieSrc]).length === 0) {
-          if (useChrome) chrome.storage.local.remove(cookieSrc, function () { checkChromeHadNoErrors() })
+          if (useChrome) await chrome.storage.local.remove(cookieSrc)
           else await browser.storage.local.remove(cookieSrc)
           delete data[cookieSrc]
         }
@@ -1679,7 +1522,7 @@ async function dumpProfileCookieNeutral (data, evt) {
     }
   }
 
-  if (useChrome) setChromeStorage(data)
+  if (useChrome) await chrome.storage.local.set(data)
   else await browser.storage.local.set(data)
 
   const cookieList = document.querySelectorAll('#cookie-list .cookieEntry')
@@ -1703,30 +1546,29 @@ async function dumpProfileCookieNeutral (data, evt) {
 // Switch profile/account mode
 async function accountModeSwitch (evt) {
   if (useChrome) {
-    getChromeStorageForFunc1(accountModeSwitchNeutral, evt)
+    accountModeSwitchNeutral(await chrome.storage.local.get(), evt)
     return
   }
 
-  const data = await browser.storage.local.get()
-  accountModeSwitchNeutral(data, evt)
+  accountModeSwitchNeutral(await browser.storage.local.get(), evt)
 }
 
 async function accountModeSwitchNeutral (data, evt) {
   if (evt.target.classList.contains('active')) {
-    if (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][domainURL] !== undefined) {
-      delete data.flagCookies_accountMode[contextName][domainURL]
+    if (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined) {
+      delete data.flagCookies_accountMode[contextName][rootDomain]
 
       if (Object.keys(data.flagCookies_accountMode[contextName]).length === 0) {
         delete data.flagCookies_accountMode[contextName]
 
         if (Object.keys(data.flagCookies_accountMode).length === 0) {
-          if (useChrome) chrome.storage.local.remove('flagCookies_accountMode', function () { checkChromeHadNoErrors() })
+          if (useChrome) await chrome.storage.local.remove('flagCookies_accountMode')
           else await browser.storage.local.remove('flagCookies_accountMode')
         }
       }
     }
 
-    if (useChrome) setChromeStorage(data)
+    if (useChrome) await chrome.storage.local.set(data)
     else await browser.storage.local.set(data)
     evt.target.removeAttribute('class')
 
@@ -1738,10 +1580,10 @@ async function accountModeSwitchNeutral (data, evt) {
 
   if (data.flagCookies_accountMode === undefined) data.flagCookies_accountMode = {}
   if (data.flagCookies_accountMode[contextName] === undefined) data.flagCookies_accountMode[contextName] = {}
-  data.flagCookies_accountMode[contextName][domainURL] = true
+  data.flagCookies_accountMode[contextName][rootDomain] = true
   evt.target.className = 'active'
 
-  if (useChrome) setChromeStorage(data)
+  if (useChrome) await chrome.storage.local.set(data)
   else await browser.storage.local.set(data)
 
   // Account mode icon
@@ -1750,7 +1592,7 @@ async function accountModeSwitchNeutral (data, evt) {
 }
 
 function loadHelp (currentLocal) {
-  const helpLoader = new XMLHttpRequest()
+  const helpLoader = new window.XMLHttpRequest()
   helpLoader.addEventListener('readystatechange', function (evt) {
     if (evt.target.status === 200 && evt.target.readyState === 4) {
       document.querySelector('#help-view').innerHTML = evt.target.responseText
@@ -1768,7 +1610,7 @@ function loadHelp (currentLocal) {
 }
 
 function loadDonate (currentLocal) {
-  const donateLoader = new XMLHttpRequest()
+  const donateLoader = new window.XMLHttpRequest()
   donateLoader.addEventListener('readystatechange', function (evt) {
     if (evt.target.status === 200 && evt.target.readyState === 4) {
       document.querySelector('#donate-view').innerHTML = evt.target.responseText
@@ -1851,7 +1693,7 @@ function doExportCookiesFunc (cookies, exportExpired) {
   else if (cookies.cookies === undefined) return
 
   if (cookies.cookies === null) {
-    alert(getMsg('NoCookieDataExportMsg'))
+    window.alert(getMsg('NoCookieDataExportMsg'))
     return
   }
 
@@ -1881,7 +1723,7 @@ function doExportCookiesFunc (cookies, exportExpired) {
     dlLink.href = URL.createObjectURL(blob)
 
     const dateObj = new Date()
-    dlLink.download = 'FlagCookies_cookieExport_' + (cookies.rootDomain.replace(/(http|https):\/\//i, '').replace('.', '_')) + '_' + dateObj.getFullYear().toString() + '-' + (dateObj.getMonth() + 1).toString() + '-' + dateObj.getDate().toString() + '.json'
+    dlLink.download = 'FlagCookies_cookieExport_' + (cookies.rootDomain.replace(/^(http:|https:)\/\//i, '').replace('.', '_')) + '_' + dateObj.getFullYear().toString() + '-' + (dateObj.getMonth() + 1).toString() + '-' + dateObj.getDate().toString() + '.json'
     document.body.appendChild(dlLink)
     dlLink.click()
     dlLink.parentNode.removeChild(dlLink)
@@ -1896,7 +1738,7 @@ function doExportCookiesClipFunc (cookies, exportExpired) {
   else if (cookies.cookies === undefined) return
 
   if (cookies.cookies === null) {
-    alert(getMsg('NoCookieDataExportMsg'))
+    window.alert(getMsg('NoCookieDataExportMsg'))
     return
   }
 
@@ -1922,46 +1764,35 @@ function doExportCookiesClipFunc (cookies, exportExpired) {
     }
 
     navigator.clipboard.writeText(JSON.stringify(jsonData)).then(
-      function () { alert(getMsg('ExportCookieClipboardMessage')) }
+      function () { window.alert(getMsg('ExportCookieClipboardMessage')) }
     )
   }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------------------------------------------
-function exportCookiesClipboardChromeFunc (data, response) {
-  let exportExpired = false
-  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
-    exportExpired = true
-  }
-
-  doExportCookiesClipFunc(response, exportExpired)
-}
-
 async function doExportCookiesClipboardFunc (tabs) {
   const tab = tabs.pop()
   let domain = null
-  const domainMatch = tab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
+  const domainMatch = tab.url.replace(/www\./i, '').match(/^(http:|https:)\/\/.[^/]*/)
   if (domainMatch !== null) domain = domainMatch[0]
   else domain = 'No domain'
 
-  if (useChrome) {
-    chrome.runtime.sendMessage({ getCookies: domain, windowId: tab.windowId, tabId: tab.id, storeId: 'default' }, function (response) {
-      checkChromeHadNoErrors()
-      getChromeStorageForFunc1(exportCookiesClipboardChromeFunc, response)
-    })
-
-    return
-  }
-
-  const activeCookieStore = 'default'
-  await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-
+  let data = null
   let exportExpired = false
-  const data = await browser.storage.local.get()
+  if (useChrome) {
+    data = await chrome.storage.local.get()
+  } else {
+    data = await browser.storage.local.get()
+  }
 
   if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
     exportExpired = true
+  }
+
+  if (useChrome) {
+    const cookies = await chrome.runtime.sendMessage({ getCookies: domain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+    doExportCookiesClipFunc(cookies, exportExpired)
+    return
   }
 
   const cookies = await browser.runtime.sendMessage({ getCookies: domain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
@@ -1969,41 +1800,36 @@ async function doExportCookiesClipboardFunc (tabs) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-function exportCookiesChromeFunc (data, response) {
-  let exportExpired = false
-  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
-    exportExpired = true
-  }
-
-  doExportCookiesFunc(response, exportExpired)
-}
-
 async function doExportCookiesTabFunc (tabs) {
   const tab = tabs.pop()
   let domain = null
-  const domainMatch = tab.url.replace(/www./, '').match(/(http|https):\/\/.[^/]*/)
+
+  const domainMatch = tab.url.replace(/^www\./i, '').match(/^(http:|https:)\/\/.[^/]*/)
   if (domainMatch !== null) domain = domainMatch[0]
   else domain = 'No domain'
 
-  if (useChrome) {
-    chrome.runtime.sendMessage({ getCookies: domain, windowId: tab.windowId, tabId: tab.id, storeId: 'default' }, function (response) {
-      checkChromeHadNoErrors()
-      getChromeStorageForFunc1(exportCookiesChromeFunc, response)
-    })
+  let contextName = 'default'
 
-    return
+  if (!useChrome && tab.cookieStoreId !== undefined) {
+    contextName = tab.cookieStoreId
   }
 
-  const activeCookieStore = 'default'
-  await browser.contextualIdentities.get(activeCookieStore).then(firefoxOnGetContextSuccess, firefoxOnGetContextError)
-
+  let data = null
+  let cookies = []
   let exportExpired = false
-  const data = await browser.storage.local.get()
+
+  if (useChrome) {
+    data = await chrome.storage.local.get()
+    cookies = await chrome.runtime.sendMessage({ getCookies: domain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+  } else {
+    data = await browser.storage.local.get()
+    cookies = await browser.runtime.sendMessage({ getCookies: domain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+  }
+
   if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
     exportExpired = true
   }
 
-  const cookies = await browser.runtime.sendMessage({ getCookies: domain, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
   doExportCookiesFunc(cookies, exportExpired)
 }
 
@@ -2011,14 +1837,14 @@ async function doExportCookiesTabFunc (tabs) {
 
 function exportCookies () {
   if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, doExportCookiesTabFunc)
-  else getActiveTab().then(doExportCookiesTabFunc)
+  else browser.tabs.query({ currentWindow: true, active: true }, doExportCookiesTabFunc)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
 function exportCookiesClipboard () {
   if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, doExportCookiesClipboardFunc)
-  else getActiveTab().then(doExportCookiesClipboardFunc)
+  else browser.tabs.query({ currentWindow: true, active: true }, doExportCookiesClipboardFunc)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -2060,4 +1886,4 @@ else document.querySelector('#settings-action-all-import').addEventListener('cli
 
 // document.querySelector('#confirmImportOverwrite').addEventListener('click', toggleImportOverwrite)
 if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed)
-else getActiveTab().then(initDomainURLandProceed)
+else browser.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed)
