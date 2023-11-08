@@ -1,7 +1,7 @@
 {
   "applications": {
     "gecko": {
-      "strict_min_version": "58.0a1"
+      "strict_min_version": "58.0a0"
     }
   },
   "developer": {
@@ -30,7 +30,7 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 2,
   "name": "Flag Cookies",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "permissions": [
     "cookies",
     "tabs",
