@@ -103,7 +103,7 @@
   },
   "CookieIsInactiveText": {
     "message": "Inactive cookie",
-    "description": "Cooke is inactive display in UI"
+    "description": "Cookie is inactive display in UI"
   },
   "CookieIsAutoFlaggedHelpText": {
     "message": "This cookie is auto-flagged and will be removed.",
@@ -698,6 +698,10 @@
   "SecureCookieMsg": {
     "message": "(secure cookie)",
     "description": "Information that the cookie is secured"
+  },
+  "CookieNotPresentMsg": {
+    "message": "(removed by website)",
+    "description": "Information that the cookie is removed already by website and could not be cleared"
   },
   "NoCookieDataExportMsg": {
     "message": "No cookie data to export",
