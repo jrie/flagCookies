@@ -33,7 +33,7 @@ async function initDomainURLandProceed (tabs) {
   if (domainMatch !== null) rootDomain = domainMatch[0]
   else rootDomain = 'No domain'
 
-  tabId = tab.tabId
+  tabId = tab.id
 
   if (useChrome) {
     document.body.className = 'chrome'
@@ -324,6 +324,14 @@ function updateUIData (data, cookies, contextName, rootDomain) {
             pCookieKeyExpiredMessageElm.appendChild(pCookieKeyExpiredMessage)
 
             pCookieKeyElm.appendChild(pCookieKeyExpiredMessageElm)
+          }
+
+          if (cookie.fgNotPresent !== undefined && cookie.fgNotPresent === true) {
+            const pCookieKeySecMessageElm = document.createElement('span')
+            const pCookieKeySecMessage = document.createTextNode(getMsg('CookieNotPresentMsg'))
+            pCookieKeySecMessageElm.className = 'nonpresent-cookie'
+            pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
+            pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
           }
 
           li.appendChild(checkMark)
@@ -1059,7 +1067,7 @@ async function flagGlobalAuto () {
     data.flagCookies_flagGlobal[contextName] = false
 
     if (useChrome) {
-     await chrome.storage.local.set(data)
+      await chrome.storage.local.set(data)
     } else {
       await browser.storage.local.set(data)
     }
