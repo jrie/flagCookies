@@ -191,28 +191,38 @@ function handleMessage (request, sender, sendResponse) {
   sendResponse({ cookies: null, rootDomain: getMsg('UnknownDomain'), logData: null })
 }
 
-function resetCookieInformation (tab) {
+function resetCookieInformation(tab) {
   let contextName = 'default'
   if (!useChrome && tab.cookieStoreId !== undefined) {
     contextName = tab.cookieStoreId
   }
 
-  if (removedData[contextName][tab.windowId][tab.id] !== undefined) {
-    removedData[contextName][tab.windowId][tab.id] = 0
-  }
+  if (removedData === undefined) removedData = {}
+  if (removedData[contextName] === undefined) removedData[contextName] = {}
+  if (removedData[contextName][tab.windowId] === undefined) removedData[contextName][tab.windowId] = {}
+  if (removedData[contextName][tab.windowId][tab.id] === undefined) removedData[contextName][tab.windowId][tab.id] = 0
+  else removedData[contextName][tab.windowId][tab.id] = 0
 
-  if (permittedData[contextName][tab.windowId][tab.id] !== undefined) {
-    permittedData[contextName][tab.windowId][tab.id] = 0
-  }
+  if (permittedData === undefined) permittedData = {}
+  if (permittedData[contextName] === undefined) permittedData[contextName] = {}
+  if (permittedData[contextName][tab.windowId] === undefined) permittedData[contextName][tab.windowId] = {}
+  if (permittedData[contextName][tab.windowId][tab.id] === undefined) permittedData[contextName][tab.windowId][tab.id] = 0
+  else permittedData[contextName][tab.windowId][tab.id] = 0
 
-  if (cookieCount[contextName] !== undefined && cookieCount[contextName][tab.windowId] !== undefined && cookieCount[contextName][tab.windowId][tab.id] !== undefined) {
+  if (cookieCount === undefined) cookieCount = {}
+  if (cookieCount[contextName] === undefined) cookieCount[contextName] = {}
+  if (cookieCount[contextName][tab.windowId] === undefined) cookieCount[contextName][tab.windowId] = {}
+  if (cookieCount[contextName][tab.windowId][tab.id] === undefined) cookieCount[contextName][tab.windowId][tab.id] = { count: 0, domains: {} }
+  else {
     cookieCount[contextName][tab.windowId][tab.id].domains = {}
     cookieCount[contextName][tab.windowId][tab.id].count = 0
   }
 
-  if (cookieData[contextName] !== undefined && cookieData[contextName][tab.windowId] !== undefined && cookieData[contextName][tab.windowId][tab.id] !== undefined) {
-    cookieData[contextName][tab.windowId][tab.id] = {}
-  }
+  if (cookieData === undefined) cookieData = {}
+  if (cookieData[contextName] === undefined) cookieData[contextName] = {}
+  if (cookieData[contextName][tab.windowId] === undefined) cookieData[contextName][tab.windowId] = {}
+  if (cookieData[contextName][tab.windowId][tab.id] === undefined) cookieData[contextName][tab.windowId][tab.id] = {}
+  else cookieData[contextName][tab.windowId][tab.id] = {}
 }
 
 function increaseCount (contextName, tab, cookieName, domain) {
