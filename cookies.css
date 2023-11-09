@@ -380,7 +380,7 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
 
 .chrome .secure-cookie,
 .chrome .cookie-domain,
-.chrome .expired-cookie.
+.chrome .expired-cookie,
 .chrome .nonpresent-cookie {
   margin-left: 6px;
 }
