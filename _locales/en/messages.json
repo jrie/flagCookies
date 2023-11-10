@@ -484,8 +484,16 @@
     "description": "Shown in settings, if no profile cookies are set"
   },
   "AddonSettingsLabelText": {
-    "message": "Add-on settings",
+    "message": "FlagCookie settings",
     "description": "Shown in settings, add-on settings label"
+  },
+  "AddonSettingsImportTitle": {
+    "message": "FlagCookies Settings Import Dialog",
+    "description": "Setting, Import settings title"
+  },
+  "AddonSettingsImportLabelText": {
+    "message": "FlagCookies settings import",
+    "description": "Shown in import settings, add-on import label"
   },
   "UseDarkLabelText": {
     "message": "Dark color theme",
