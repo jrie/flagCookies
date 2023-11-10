@@ -74,12 +74,17 @@ h5 {
   padding: 0px;
 }
 
-.panel {
+.panel,
+.panel-import {
   max-height: 500px;
-  overflow-y: scroll;
-  overflow-x: hidden;
   padding: 0px;
   margin: 0px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.panel-import {
+  overflow: hidden;
 }
 
 .panel-section-header,
@@ -254,13 +259,9 @@ ul {
 }
 
 #content>ul {
-  margin: 0px 10px;
+  margin: 0px 0px;
   padding: 0px;
   margin-top: 14px;
-  margin-bottom: 0px;
-}
-
-#content>ul {
   margin-bottom: 16px;
 }
 
@@ -792,7 +793,6 @@ button#global-flag.active {
 
 #settings-view hr {
   margin: 15px 0px 12px 0px;
-  clear: both;
 }
 
 .settings-title {
@@ -847,7 +847,6 @@ textarea#log {
 }
 
 #settings-general hr {
-  clear: both;
   margin: 20px 0px;
 }
 
@@ -973,7 +972,6 @@ textarea#log {
 
 #help-view hr {
   margin: 15px 0px 12px 0px;
-  clear: both;
 }
 
 #help-view h1,

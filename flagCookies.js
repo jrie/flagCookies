@@ -1677,7 +1677,7 @@ function triggerImport () {
   bgPage.document.adoptNode(document.querySelector('#importFile')).addEventListener('change', bgPage.importSettings)
   */
 
-  browser.windows.create({ type: 'panel', url: 'importer.html', width: 800, height: 150 })
+  browser.windows.create({ type: 'panel', url: 'importer.html', width: 800, height: 250 })
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -1691,7 +1691,7 @@ function shadowInputChrome () {
   })
   */
 
-  chrome.windows.create({ type: 'panel', url: 'importer.html', width: 800, height: 150 })
+  chrome.windows.create({ type: 'panel', url: 'importer.html', width: 800, height: 250 })
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
