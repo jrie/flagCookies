@@ -722,7 +722,7 @@ async function permittedCookieSwitchNeutral (data, evt) {
     }
   }
 
-  if (useChrome) await chrome.storage.local(data)
+  if (useChrome) await chrome.storage.local.set(data)
   else await browser.storage.local.set(data)
 
   const parent = evt.target.parentNode.parentNode
