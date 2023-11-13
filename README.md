@@ -9,32 +9,33 @@ This add-on is mainly aimed at power users, this might sounds harsh, but it is n
 
 In order to get the most out of it, you have to define either own rules for websites, or use the "Global Flag", or "Auto flag" modes. Also, in case you use payment services, be advised to disable the "Global flag" feature temporarily. For example when using Paypal or other shopping/payment provider websites and such.
 
-### *Long story made short*
+### *Long story made short* - Basic usage
 1) Use `Global mode` if you are surfing, this will remove all kind of cookies while you browsing the web if not protected by `profile` mode.
 
 2) Use `Auto flag` settings which will remove all cookies for one website/domain - this can be useful if you only want to automatically remove these page cookies every time you are surfing on it.
 
 3) Use `Profile mode` either globally for a website, protecting all cookies of that domain if nothing no cookies are picked. Or protect single cookies even when `Global flag` or `Auto flag` modes are active.
 
+4) `Click / Flag` and set rules for each cookie individually
+
 ## Features
 
 **FlagCookies distinguishes between http(s)://domain.net and http(s)://subdomain.domain.net** for the following features:
 
-* Detects and displays stored browser cookies and be able to manage (flag) and delete those while browsing, either automatically through ***global*** or ***auto flag*** mode or by own decision
+* Detects and displays stored browser cookies and be able to manage (flag) and delete those while browsing, either automatically through ***global*** or ***auto flag*** mode or by explizit decision
 * **Flag cookies** either to be explicitly **deleted** even without *global* or *auto flag* mode or set them to be **permitted** and protected from removal by *global* or *auto flag* modes
 * **Profile** mode for a domain or cookies - to switch between *logged into a website/service* and *not logged in* modes in order to remove or keep cookies on demand
 * **Auto flag** mode only affecting this particular (sub)domain, removing every domain cookie which is not permitted or used as ***profile cookie***, this also includes third-party and cross origin cookies.
 * Support for *Firefox Multi-Account-Containers*
 * **Preferences** allowing to import and export settings to a ZIP file. Import does not work in private windows!
-* **Preferences** allows to manage *logged in profile* cookiee, delete all domain settings and add-on settings and provides a **Action log** to display what FlagCookies is doing
-* Option to enable or disable **action log** information
+* **Preferences** allows to manage *logged in profile* cookies, delete all domain settings and add-on settings
+* An **Action log** avaible in Preferences which provides output of what FlagCookies is doing. The **Action log** is disabled by defaul due to performance improvements and RAM usage - even so the log is cleared mostly on reload
 * **Displays count** of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon
-* *Keyboard Shortcut* **Alt + Shift + A** to enable/disable **profile mode** for a (sub)domain
 * Optional **notifications**, disabled by default for: **profile mode** shortcut activation/deactivation, ***cookies removed display*** and ***notifications enabled/disabled message***
 
 ## Requirements
 
-**Firefox 58.0a1+** or a recent version of **Chrome** or **Opera** or **Edge** browser(s).
+A recent version of **Chrome**, **Firefox** or **Opera** or **Edge** browser(s). Please note, there is no mobile version of FlagCookies.
 
 
 ## Installation
@@ -67,7 +68,7 @@ More information can be found here: https://developer.mozilla.org/en-US/docs/Moz
 ## Providing feedback/feature wishes/ideas
 Please file an issue on the ***issues*** page. I gladly try to respond to feedback and to improve FlagCookies. If you think a feature is missing or at worst, not working as expected, please also open an issue.
 
-There is also a discussion on Mozillas Discourse where you can provide feedback: https://discourse.mozilla.org/t/support-flag-cookies-flagcookies-a-new-not-yet-another-cookie-cleaner-manager/31220
+There is also a discussion on Mozillas Discourse where you can provide feedback: [Flag Cookies on Mozilla Discourse](https://discourse.mozilla.org/t/support-flag-cookies-flagcookies-a-new-not-yet-another-cookie-cleaner-manager/31220)
 
 ## Thanks and notes
 
