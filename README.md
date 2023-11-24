@@ -1,12 +1,19 @@
 # FlagCookies
 
-A cookie, and browser storage manager with cow powers.  Gives the ability to flag and set rules explicitly for cookies, also third-party cookies, cross origin, and secure cookies aswell as browser storage management.
+A cookie, and browser storage manager with cow powers.
+Gives the ability to flag and set rules explicitly for cookies, also third-party cookies, cross origin, and secure cookies aswell as browser storage management.
 Domain.net and subdomain.Domain.net can have individual rights. Providing several modes to set rules on cookies and keeping a cookie profile, while being logged in in a website or service.
+
+## Important privacy notice
+- No cookie information besides the name and domain name are stored inside FlagCookies to work, no values, no direct details.
+- No session data or details are stored or processed
+- No history of visited domains or any other tracking is used.
 
 ### Before you use this addon
 This add-on is mainly aimed at power users, this might sounds harsh, but it is not!
 
-In order to get the most out of it, you have to define either own rules for websites, or use the "Global Flag", or "Auto flag" modes. Also, in case you use payment services, be advised to disable the "Global flag" feature temporarily. For example when using Paypal or other shopping/payment provider websites and such.
+In order to get the most out of FlagCookies, you have to define either own rules for websites, or cookies explicity, or use the "Global Flag", or "Auto flag" modes.
+Also, in case you use payment services, be advised to disable the "Global flag" feature temporarily. For example when using Paypal or other shopping/payment provider websites and such.
 
 ### *Long story made short* - Basic usage
 1) Use `Global mode` if you are surfing, this will remove all kind of cookies while you browsing the web if not protected by `profile` mode.
