@@ -1,0 +1,58 @@
+{
+  "developer": {
+    "name": "Jan Riechers",
+    "url": "https://www.dwrox.net"
+  },
+  "default_locale": "en",
+  "action": {
+    "default_title": "FlagCookies",
+    "default_popup": "cookies.html",
+    "default_icon": {
+      "48": "icons/flagcookies_icon.svg",
+      "64": "icons/flagcookies_icon.svg",
+      "96": "icons/flagcookies_icon.svg",
+      "128": "icons/flagcookies_icon.svg"
+    }
+  },
+  "description": "__MSG_AddonDescription__",
+  "icons": {
+    "48": "icons/flagcookies_icon.svg",
+    "64": "icons/flagcookies_icon.svg",
+    "96": "icons/flagcookies_icon.svg",
+    "128": "icons/flagcookies_icon.svg"
+  },
+  "homepage_url": "https://github.com/jrie/flagCookies",
+  "manifest_version": 3,
+  "name": "Flag Cookies",
+  "version": "3.4.0",
+  "permissions": [
+    "cookies",
+    "tabs",
+    "webRequest",
+    "storage",
+    "unlimitedStorage",
+    "clipboardWrite",
+    "notifications",
+    "contextualIdentities",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "cookies.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}
