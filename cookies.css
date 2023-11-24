@@ -24,6 +24,10 @@ body {
   text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.175);
 }
 
+html * {
+  box-sizing: border-box;
+}
+
 html .dark,
 body.dark {
   background-color: #ccc;
@@ -259,7 +263,7 @@ ul {
 }
 
 #content>ul {
-  margin: 0px 0px;
+  margin: 0px 10px;
   padding: 0px;
   margin-top: 14px;
   margin-bottom: 16px;
@@ -315,6 +319,10 @@ li.cookieEntry.hidden {
 .dark li.cookieEntry:hover .cookieValue,
 .dark li.cookieEntrySublist:hover .cookieKey,
 .dark li.cookieEntrySublist:hover .cookieValue,
+.dark li.dataEntry:hover .sessionDataKey,
+.dark li.dataEntry:hover .sessionDataSubKey,
+li.dataEntry:hover .sessionDataKey,
+li.dataEntry:hover .sessionDataSubKey,
 li.cookieEntry.inactive-cookie:hover,
 li.cookieEntrySublist.inactive-cookie:hover {
   color: #fff;
@@ -413,7 +421,7 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
 
 }
 
-.collapseToogle {
+.collapseToggle {
   float: left;
   font-weight: bold;
   font-size: 1.5em;
@@ -426,11 +434,11 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
   border-radius: 8px;
 }
 
-.collapseToogle.active {
+.collapseToggle.active {
   text-indent: -0.35em;
 }
 
-.chrome .collapseToogle.active {
+.chrome .collapseToggle.active {
   text-indent: -0.25em;
 }
 
@@ -446,13 +454,50 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
 
 #cookie-list p,
 #cookie-list-flagged p,
-#cookie-list-permitted p {
+#cookie-list-permitted p,
+#session-data-list p {
   position: relative;
   word-wrap: break-word;
   width: 85%;
   left: 6%;
   top: 0%;
   display: inline-block;
+}
+
+.chrome .sessionDataKey,
+.sessionDataKey {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.6ch;
+}
+
+.chrome .sessionDataValues,
+.sessionDataValues {
+  margin: 0px;
+  padding: 0px;
+}
+
+.sessionDataContainer {
+  padding: 0px 0.35em;
+}
+
+.sessionDataDivider {
+  display: block;
+  margin-top: 2.2ch;
+}
+
+.sessionDataSubKey {
+  display: inline-block;
+  font-weight: bold;
+  width: 28%;
+  margin-right: 1.5ch;
+  margin-bottom: 0.65ch;
+}
+
+.sessionDataValueNode {
+  display: inline-block;
+  word-wrap: break-word;
+  width: calc(70% - 5ch);
 }
 
 button,
@@ -550,6 +595,10 @@ button#permittedCookies {
   background-size: 21px;
   background-repeat: no-repeat;
   background-position: 8px center;
+}
+
+button#sessionData {
+  padding: 7px 20px 8px 20px;
 }
 
 .cookieCount {
@@ -671,10 +720,22 @@ button#help {
   background-size: 24px;
 }
 
+button#donate {
+  background-color: #ddd;
+  border-color: #ddd;
+  color: #557;
+  display: inline;
+  margin-right: 7px;
+  border: 1px solid #99a;
+  transition: background-color, color;
+  transition-duration: 120ms;
+}
+
 .dark button#auto-flag,
 .dark button#global-flag,
 .dark button#account-mode,
-.dark button#help {
+.dark button#help,
+.dark button#donate {
   background-color: #446;
   border-color: #335;
   color: #fff;
@@ -684,7 +745,8 @@ button#help {
 .chrome button#auto-flag,
 .chrome button#global-flag,
 .chrome button#account-mode,
-.chrome button#help {
+.chrome button#help,
+.chrome button#donate {
   padding-top: 10px;
   padding-bottom: 10px;
 }
@@ -722,7 +784,9 @@ button#global-flag {
 
 button#auto-flag.active,
 button#global-flag.active,
-button#account-mode.active {
+button#account-mode.active,
+button#help.active,
+button#donate.active {
   background-color: #b20600;
   background-image: url('icons/cookie_flag_28.png');
   color: #eee;
@@ -735,6 +799,10 @@ button#account-mode.active {
 
 button#global-flag.active {
   background-image: url('icons/globe_wflag_28.png');
+}
+
+button#donate.active {
+  background-image: none;
 }
 
 #searchBar {
@@ -750,14 +818,14 @@ button#global-flag.active {
   margin: 0px;
   padding: 8px 15px 9px 34px;
   font-weight: bold;
-  width: 40%;
+  width: 25%;
   position: absolute;
   right: 1%;
   bottom: 6px;
 }
 
 .chrome #searchBar {
-  width: 40%;
+  width: 25%;
   margin-left: 1px;
 }
 
@@ -1055,7 +1123,8 @@ textarea#log {
   color: #fff;
 }
 
-#profilePane button.dumpster {
+#profilePane button.dumpster,
+.dumpster {
   background-image: url('icons/dumpster_22.png');
   background-position: center center;
   background-repeat: no-repeat;
@@ -1067,6 +1136,10 @@ textarea#log {
   position: absolute;
   right: 6px;
   top: 6px;
+}
+
+.dumpster:hover {
+  background-color: #1a2f45;
 }
 
 .chrome #settings-confirm-clear span,
@@ -1102,4 +1175,9 @@ button.checkmark-confirm.active {
 .help-highlight {
   color: #0a0;
   font-weight: bold;
+}
+
+.panel-section-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 16px;
 }
