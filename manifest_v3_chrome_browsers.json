@@ -1,0 +1,40 @@
+{
+  "default_locale": "en",
+  "action": {
+    "default_title": "FlagCookies",
+    "default_popup": "cookies.html",
+    "default_icon": {
+      "16": "icons/fc16.png",
+      "48": "icons/fc48.png",
+      "128": "icons/fc128.png"
+    }
+  },
+  "description": "__MSG_AddonDescription__",
+  "icons": {
+    "16": "icons/fc16.png",
+    "48": "icons/fc48.png",
+    "128": "icons/fc128.png"
+  },
+  "homepage_url": "https://github.com/jrie/flagCookies",
+  "manifest_version": 3,
+  "name": "Flag Cookies",
+  "version": "3.4.0",
+  "permissions": ["cookies", "tabs", "webRequest", "storage", "unlimitedStorage",  "clipboardWrite", "notifications"],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "cookies.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}
