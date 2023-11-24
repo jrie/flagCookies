@@ -340,10 +340,10 @@ async function updateUIData (data, cookieData, logData, sessionData) {
   const cookieList = document.querySelector('#cookie-list')
   const loggedInCookieList = document.querySelector('#loggedInCookies')
 
-  if (rootDomain === null || cookieData === null || Object.keys(cookieData).length === 0) {
+  if (rootDomain === null || rootDomain === undefined || cookieData === null || Object.keys(cookieData).length === 0) {
     const infoDisplay = document.querySelector('#infoDisplay')
     let contentText = getMsg('NoActiveDomainCookiesText')
-    if (!useChrome && rootDomain !== null) {
+    if (!useChrome && rootDomain !== null && rootDomain !== undefined) {
       const priviligedPages = ['accounts-static.cdn.mozilla.net', 'accounts.firefox.com', 'addons.cdn.mozilla.net', 'addons.mozilla.org', 'api.accounts.firefox.com', 'content.cdn.mozilla.net', 'content.cdn.mozilla.net', 'discovery.addons.mozilla.org', 'input.mozilla.org', 'install.mozilla.org', 'oauth.accounts.firefox.com', 'profile.accounts.firefox.com', 'support.mozilla.org', 'sync.services.mozilla.com', 'testpilot.firefox.com']
       for (const page of priviligedPages) {
         if (rootDomain.indexOf(page) !== -1) {
