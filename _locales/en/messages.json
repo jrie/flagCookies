@@ -8,6 +8,14 @@
     "message": "Cookies for domain:",
     "description": "Cookies for domain label in UI"
   },
+  "ClearLocalStorageTitle": {
+    "message": "Clear local storage",
+    "description": "Help text for local storage clearing button"
+  },
+  "ClearSessionStorageTitle": {
+    "message": "Clear session storage",
+    "description": "Help text for session storage clearing button"
+  },
   "ActiveContainerGroupText": {
     "message": "Active container group:",
     "description": "UI display of active container group"
@@ -121,6 +129,10 @@
     "message": "No permitted cookies for domain.",
     "description": "Message in permitted cookies view that no cookies are flagged"
   },
+  "NoSessionDataForDomain": {
+    "message": "No session data for this domain.",
+    "description": "Message in session data that no session data is present"
+  },
   "CookieIsLockedProfileCookieHelpTextSettingsRef": {
     "message": "This cookie is set locked as profile mode cookie. You can manage profile mode cookies under 'Preferences'.",
     "description": "Cookie is set as profile mode cookies"
@@ -136,6 +148,18 @@
   "NotificationsDisabledNotifications": {
     "message": "Flag Cookies notifications disabled.",
     "description": "Notifications that notifications have been disabled."
+  },
+  "BrowserStorageClearedHeadline": {
+    "message": "Browser storage area has been cleared",
+    "description": "Notication title browser storage area cleared"
+  },
+  "BrowserLocaleStorageClearedText": {
+    "message": "Browser 'Local Storage' was cleread",
+    "description": "Notication text session storage area was cleared"
+  },
+  "BrowserSessionStorageClearedText": {
+    "message": "Browser 'Session Storage' was cleared",
+    "description": "Notication text session storage was cleared"
   },
   "ConfirmStorageClearingInfoMsg": {
     "message": "Please confirm clearing.",
@@ -201,6 +225,14 @@
   "BrowserRetrieveStorageDataError": {
     "message": "Error on browser storage retrieval.",
     "description": "Message when browser storage retrievel failed."
+  },
+  "BrowserDomainTitle": {
+    "message": "Internal browser page",
+    "description": "URL title if hit a internal browser page"
+  },
+  "NoCookiesForInternalBrowserPage": {
+    "message": "No data for internal browser page",
+    "description": "Subtitle if hit a internal browser page"
   },
   "UnknownDomain": {
     "message": "Unknown domain",
@@ -339,6 +371,35 @@
     }
   },
 
+  "localStorageKeyCountTitle": {
+    "message": "Count local session data: $foundLocalCount$",
+    "description": "Count of local storage items when hovering the mouse over the browser icon",
+    "placeholders": {
+      "foundLocalCount": {
+        "content": "$1",
+        "example": "1"
+      }
+    }
+  },
+  "sessionStorageKeyCountTitle": {
+    "message": "Count temporary session data: $foundSessionCount$",
+    "description": "Count of session storage items when hovering the mouse over the browser icon",
+    "placeholders": {
+      "foundSessionCount": {
+        "content": "$1",
+        "example": "1"
+      }
+    }
+  },
+  "LocalStorageTitle": {
+    "message": "Local Storage browser data",
+    "description": "Title for the Local Storage browser data"
+  },
+  "SessionStorageTitle": {
+    "message": "Session Storage browser data",
+    "description": "Title for the Session Storage browser data"
+  },
+
   "NoActionOnPage": {
     "message": "No actions taken on this website",
     "description": "Info message when hovering the mouse over the browser icon and no actions have taken place"
@@ -450,6 +511,10 @@
   "PermittedButtonText": {
     "message": "Permitted",
     "description": "Permitted tab button label text"
+  },
+  "SessionDataText": {
+    "message": "Session",
+    "description": "Session data tab button label text"
   },
   "ActionLogLabel": {
     "message": "Actions log",
@@ -631,13 +696,17 @@
     "message": "Show own permitted domain cookies which are to be kept.",
     "description": "Displayed help text for permitted cookie view tab"
   },
+  "SessionDataViewHelpText": {
+    "message": "Display of local and session storage data for this domain",
+    "description": "Displayed help text for the local and session data cookie view tab"
+  },
   "SearchBarHelpText": {
-    "message": "Search and filter for cookie names and values.",
-    "description": "Displayed help text for permitted cookie view tab"
+    "message": "Search and filter by name and or values.",
+    "description": "Displayed help text for search bar hover"
   },
   "SearchBarText": {
-    "message": "Search cookie list",
-    "description": "Searchbar placeholder text"
+    "message": "Search data",
+    "description": "Searchbar placeholder action text"
   },
   "ActionLogHelpText": {
     "message": "The log shows all cookie actions taken by Flag Cookies.",
