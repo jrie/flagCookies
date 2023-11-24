@@ -1,7 +1,6 @@
 # FlagCookies
 
-A cookie manager with cow powers.  Gives the ability to flag and set rules explicitly for cookies, also third-party cookies, cross origin and secure cookies.
-
+A cookie, and browser storage manager with cow powers.  Gives the ability to flag and set rules explicitly for cookies, also third-party cookies, cross origin and secure cookies.
 Domain.net and subdomain.domain.net can have individual rights. Providing several modes to set rules onto cookies and keeping a cookie profile, while being logged in in a website or service.
 
 ### Before you use this addon
@@ -22,7 +21,7 @@ In order to get the most out of it, you have to define either own rules for webs
 
 **FlagCookies distinguishes between http(s)://domain.net and http(s)://subdomain.domain.net** for the following features:
 
-* Detects and displays stored browser cookies and be able to manage (flag) and delete those while browsing, either automatically through ***global*** or ***auto flag*** mode or by explizit decision
+* Detects and displays stored browser cookies, storage data, and be able to manage (flag) and delete those while browsing, either automatically through ***global*** or ***auto flag*** mode or by explicit decision
 * **Flag cookies** either to be explicitly **deleted** even without *global* or *auto flag* mode or set them to be **permitted** and protected from removal by *global* or *auto flag* modes
 * **Profile** mode for a domain or cookies - to switch between *logged into a website/service* and *not logged in* modes in order to remove or keep cookies on demand
 * **Auto flag** mode only affecting this particular (sub)domain, removing every domain cookie which is not permitted or used as ***profile cookie***, this also includes third-party and cross origin cookies.
@@ -32,6 +31,8 @@ In order to get the most out of it, you have to define either own rules for webs
 * An **Action log** avaible in Preferences which provides output of what FlagCookies is doing. The **Action log** is disabled by defaul due to performance improvements and RAM usage - even so the log is cleared mostly on reload
 * **Displays count** of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon
 * Optional **notifications**, disabled by default for: **profile mode** shortcut activation/deactivation, ***cookies removed display*** and ***notifications enabled/disabled message***
+* Support for firstPartyIsolate/firstPartyDomain cookies
+* Support for container tabs/contextual identities
 
 ## Requirements
 
