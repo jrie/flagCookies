@@ -1,7 +1,7 @@
 # FlagCookies
 
-A cookie, and browser storage manager with cow powers.  Gives the ability to flag and set rules explicitly for cookies, also third-party cookies, cross origin and secure cookies.
-Domain.net and subdomain.domain.net can have individual rights. Providing several modes to set rules onto cookies and keeping a cookie profile, while being logged in in a website or service.
+A cookie, and browser storage manager with cow powers.  Gives the ability to flag and set rules explicitly for cookies, also third-party cookies, cross origin, and secure cookies aswell as browser storage management.
+Domain.net and subdomain.Domain.net can have individual rights. Providing several modes to set rules on cookies and keeping a cookie profile, while being logged in in a website or service.
 
 ### Before you use this addon
 This add-on is mainly aimed at power users, this might sounds harsh, but it is not!
