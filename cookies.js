@@ -52,7 +52,7 @@ async function clearCookiesWrapper (action, cookieDetails, currentTab) {
     const rootDomainDot = '.' + rootDomain
 
     const cookiesBase = await browser.cookies.getAll({ domain: cookieDomain, firstPartyDomain: firstPartyIsolate, storeId: contextName })
-    const cookiesBaseWWW = await browser.cookies.getAll({ domain:'www.' + cookieDomain, firstPartyDomain: firstPartyIsolate, storeId: contextName })
+    const cookiesBaseWWW = await browser.cookies.getAll({ domain: 'www.' + cookieDomain, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookiesSec = await browser.cookies.getAll({ domain: cookieDomain, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookies2 = await browser.cookies.getAll({ domain: domainDot, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookiesSec2 = await browser.cookies.getAll({ domain: domainDot, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName })
@@ -164,8 +164,6 @@ function setTabForClearCookies (tab) {
 
 function handleMessage (request, sender, sendResponse) {
   if (request.clearOnActivation !== undefined && request.tabId !== undefined) {
-    let tab = null
-
     if (useChrome) {
       chrome.tabs.get(request.tabId).then(setTabForClearCookies)
       return
@@ -1824,7 +1822,7 @@ async function onCookieChanged (changeInfo) {
   if (cookieData[contextName][currentTab.windowId][currentTab.id] === undefined) cookieData[contextName][currentTab.windowId][currentTab.id] = {}
 
   let foundCookie = false
-  let updatedCookie = {}
+  const updatedCookie = {}
 
   for (const domain of Object.keys(cookieData[contextName][currentTab.windowId][currentTab.id])) {
     let index = 0
@@ -1861,7 +1859,6 @@ async function onCookieChanged (changeInfo) {
       break
     }
   }
-
 
   if (!foundCookie) {
     for (const key of Object.keys(cookieDetails)) {

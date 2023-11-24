@@ -57,7 +57,7 @@ async function initDomainURLandProceed (tabs) {
   let sessionData = {}
 
   if (useChrome) {
-    cookieData = await chrome.runtime.sendMessage({ getCookies: true,  windowId: tab.windowId, tabId })
+    cookieData = await chrome.runtime.sendMessage({ getCookies: true, windowId: tab.windowId, tabId })
     sessionData = await chrome.runtime.sendMessage({ getLocalData: true, windowId: tab.windowId, tabId })
   } else {
     cookieData = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId: tab.windowId, tabId })
@@ -226,7 +226,6 @@ function createSessionStorageDataView (name, storageData, title, targetList) {
     dumpster.title = getMsg('ClearSessionStorageTitle')
   }
 
-
   cookieSub.appendChild(dumpster)
 
   const cookieSubContent = document.createElement('ul')
@@ -316,13 +315,11 @@ async function updateUIData (data, cookieData, logData, sessionData) {
       }
     }
 
-
     if (isBrowserPage) {
       introUrl.appendChild(document.createTextNode(getMsg('BrowserDomainTitle')))
     } else {
       introUrl.appendChild(document.createTextNode(getMsg('UnknownDomain')))
     }
-
   } else {
     introUrl.appendChild(document.createTextNode(rootDomain))
   }
@@ -339,6 +336,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
   const cookieList = document.querySelector('#cookie-list')
   const loggedInCookieList = document.querySelector('#loggedInCookies')
+
+  let activeCookies = false
 
   if (rootDomain === null || rootDomain === undefined || cookieData === null || Object.keys(cookieData).length === 0) {
     const infoDisplay = document.querySelector('#infoDisplay')
@@ -358,13 +357,11 @@ async function updateUIData (data, cookieData, logData, sessionData) {
   } else if (rootDomain !== null && rootDomain !== undefined) {
     const sortedCookieDomains = Object.keys(cookieData).sort()
 
-    let activeCookies = false
-
     for (const cookieDomain of sortedCookieDomains) {
       let hasHeader = false
       let cookieIndex = 0
       // Check sorting of domains, pushing root and root related to the top
-      //console.log(cookieDomain)
+      // console.log(cookieDomain)
 
       for (const cookie of cookieData[cookieDomain]) {
         if (cookie.isAdded) continue
@@ -601,7 +598,6 @@ async function updateUIData (data, cookieData, logData, sessionData) {
   if (isBrowserPage) {
     return
   }
-
 
   if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined) {
     const domainData = data[contextName][rootDomain]
@@ -1496,7 +1492,6 @@ function doSearch (searchVal, targetList) {
       child.classList.remove('hidden')
       hasVisible = true
     }
-
   }
 
   if (currentParent !== null && !hasVisible) currentParent.classList.add('hidden')
@@ -1874,7 +1869,7 @@ async function accountModeSwitchNeutral (data, evt) {
         if (Object.keys(data.flagCookies_accountMode).length === 0) {
           if (useChrome) await chrome.storage.local.remove('flagCookies_accountMode')
           else await browser.storage.local.remove('flagCookies_accountMode')
-          delete data['flagCookies_accountMode']
+          delete data.flagCookies_accountMode
         }
       }
     }
