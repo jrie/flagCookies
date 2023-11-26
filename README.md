@@ -12,16 +12,18 @@ Domain.net and subdomain.Domain.net can have individual rights. Providing severa
 ### Before you use this addon
 This add-on is mainly aimed at power users, this might sound harsh, but it is not!
 
-To get the most out of FlagCookies, you have to define either own rules for websites, or cookies explicity, or use the "Global Flag", or "Auto flag" modes.
+To get the most out of FlagCookies, you have to define either own cookie rules for websites and or make use of `Global Flag`, or `Auto flag`, `Profile` modes.
 Also, in case you use payment services, be advised to disable the "Global flag" feature temporarily. For example when using Paypal or other shopping/payment provider websites and services.
 
 ### *Long story made short* - Basic usage
 1) Use `Global mode` if you are surfing, this will remove all kind of cookies while browsing the web if not protected by `profile` mode.
-
 2) Use `Auto flag` which will remove all cookies for one website/domain - this can be useful if you only want to automatically remove these page cookies every time you browse this website.
 3) Use `Profile mode` either globally for a website, protecting all cookies of that domain if no cookies are picked as profile cookies. Or protect single cookies even when `Global flag` or `Auto flag` modes are active.
-
 4) `Click / Flag` and set rules for each cookie individually, works together with the other modes.
+
+### JDownloader2
+Note: It is possible to export detected cookies into a json file or into the clipboard, used by JDownloader2, from the `Settings` tab inside of FlagCookies.
+More information also can be found here: [JDownloader2 Knowledgebase with cookie import instructions](https://support.jdownloader.org/Knowledgebase/Article/View/account-cookie-login-instructions)
 
 ## Features
 
@@ -35,7 +37,7 @@ Also, in case you use payment services, be advised to disable the "Global flag" 
 * **Preferences** allowing to import and export settings to a ZIP file. Import does not work in private windows!
 * **Preferences** allows to manage *logged in profile* cookies, delete all domain settings and add-on settings
 * An **Action log** avaible in Preferences which provides output of what FlagCookies is doing. The **Action log** is disabled by default due to performance improvements and RAM usage - even so the log is cleared mostly on reload
-* **Displays count** of deleted cookies in the browser toolbar icon and in addition a summary of the action log when hovering the toolbar icon if the action log is enabled
+* **Displays count** of deleted cookies in the browser toolbar icon and in addition a breakdown summary of the action log when hovering the toolbar icon if the action log is enabled
 * Optional **notifications**
 * Support for firstPartyIsolate/firstPartyDomain cookies
 * Support for container tabs/contextual identities
@@ -63,14 +65,13 @@ Use Edge addon store: [Flag Cookies @ Microsoft for Edge](https://microsoftedge.
 Please read along here: https://github.com/jrie/flagCookies/wiki/FlagCookies-help-and-documentation
 
 ## Translations
-As of version 3.0.27 translations can be done for Flag Cookies.
+As of version 3.0.27 translations can be done of Flag Cookies.
 
 All translations are located inside **\_locales/** folder - and the folders **en** for general English,as well as **de** for German language. Inside every folder is a **messages.json** located. This file holds all translated strings.
-
 To create a new language, for example French language, use **fr** as code. So it ends up to everything French language related inside **\_locales/fr/messages.json**. To add another layer of help copy the **help.html** from the **en** directory to **fr/help.html** - when everything is done correctly, you will be able to see changes when using **about:debugging** in Firefox and loading the add-on.
 
-More information can be found here: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
 
+More information can be found here: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization
 
 ## Providing feedback/feature wishes/ideas
 Please file an issue on the ***issues*** page. I gladly try to respond to feedback and to improve FlagCookies. If you think a feature is missing or at worst, not working as expected, please also open an issue.
@@ -80,6 +81,7 @@ There is also a discussion on Mozillas Discourse where you can provide feedback:
 ## Thanks and notes
 
 To all who helped so far through critic, general feedback and ideas. Keeps me going!
+And of course for everyone supporting the project in this or the other way.
 
 ### German speaking thread @ ngb.to about FlagCookies
 [Flag Cookies on german bulletin board ngb.to](https://ngb.to/threads/32496-Firefox-Addon-FlagCookies)
