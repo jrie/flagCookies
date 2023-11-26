@@ -25,7 +25,7 @@ Also, in case you use payment services, be advised to disable the "Global flag" 
 Note: It is possible to export detected cookies into a json file or into the clipboard, used by JDownloader2, from the `Settings` tab inside of FlagCookies.
 More information also can be found here: [JDownloader2 Knowledgebase with cookie import instructions](https://support.jdownloader.org/Knowledgebase/Article/View/account-cookie-login-instructions)
 
-## Features
+## Some features
 
 **FlagCookies distinguishes between http(s)://domain.net and http(s)://subdomain.domain.net** for the following features:
 
