@@ -17,6 +17,12 @@ const useChrome = typeof (browser) === 'undefined'
 // Localization
 const getMsg = useChrome ? getChromeMessage : getFirefoxMessage
 
+// Firefox
+let browserActionAPI
+if (!useChrome) {
+  browserActionAPI = typeof (browser.action) === 'undefined' ? browser.browserAction : browser.action
+}
+
 function getChromeMessage (messageName, params) {
   if (params !== undefined) return chrome.i18n.getMessage(messageName, params)
   return chrome.i18n.getMessage(messageName)
@@ -445,10 +451,10 @@ async function setMouseOverTitle (contextName, tab) {
 
     chrome.action.setTitle({ title: titleString, tabId: tab.id })
   } else {
-    if (countStr !== '0') browser.action.setBadgeText({ text: countStr, tabId: tab.id })
-    else browser.action.setBadgeText({ text: '', tabId: tab.id })
+    if (countStr !== '0') browserActionAPI.setBadgeText({ text: countStr, tabId: tab.id })
+    else browserActionAPI.setBadgeText({ text: '', tabId: tab.id })
 
-    browser.action.setTitle({ title: titleString, tabId: tab.id })
+    browserActionAPI.setTitle({ title: titleString, tabId: tab.id })
   }
 }
 
@@ -1563,11 +1569,11 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   if (changeInfo.status !== undefined && changeInfo.status === 'loading') {
     if (openTabData[tab.windowId] === undefined || openTabData[tab.windowId][tabId] === undefined || openTabData[tab.windowId][tabId][0] === undefined) {
       if (useChrome) chrome.action.disable(tabId)
-      else browser.action.disable(tabId)
+      else browserActionAPI.disable(tabId)
       resetCookieInformation(tab)
     } else {
       if (useChrome) chrome.action.enable(tabId)
-      else browser.action.enable(tabId)
+      else browserActionAPI.enable(tabId)
     }
 
     clearCookiesWrapper(getMsg('ActionDocumentLoad'), null, tab)
@@ -1576,7 +1582,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
   if (changeInfo.status !== undefined && changeInfo.status === 'complete') {
     if (useChrome) chrome.action.enable(tabId)
-    else browser.action.enable(tabId)
+    else browserActionAPI.enable(tabId)
 
     let domainKey = ''
     const urlMatch = tab.url.match(/^(http:|https:)\/\/.[^/]*/i)
@@ -1607,7 +1613,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     addTabURLtoDataList(tab, { url: domainKey, frameId: 0, parentFrameId: -1, type: 'main_frame' }, domainKey)
 
     if (useChrome) chrome.action.enable(tabId)
-    else browser.action.enable(tabId)
+    else browserActionAPI.enable(tabId)
 
     setMouseOverTitle(contextName, tab)
     setBrowserActionIcon(contextName, domainKey, tabId)
@@ -1696,7 +1702,7 @@ async function setBrowserActionIcon (contextName, tabDomain, tabId) {
       return
     }
 
-    browser.action.setIcon({
+    browserActionAPI.setIcon({
       tabId,
       path: {
         48: 'icons/flagcookies_profil_icon.svg',
@@ -1722,7 +1728,7 @@ async function setBrowserActionIcon (contextName, tabDomain, tabId) {
     return
   }
 
-  browser.action.setIcon({
+  browserActionAPI.setIcon({
     tabId,
     path: {
       48: 'icons/flagcookies_icon.svg',
@@ -2422,6 +2428,6 @@ if (useChrome) {
   browser.windows.onRemoved.addListener(removeTabIdfromDataList)
   browser.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, { urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest'] })
   browser.runtime.onInstalled.addListener(onInstallNotification)
-  browser.action.setBadgeBackgroundColor({ color: '#FF0000' })
-  browser.action.setBadgeTextColor({ color: '#FFFFFF' })
+  browserActionAPI.setBadgeBackgroundColor({ color: '#FF0000' })
+  browserActionAPI.setBadgeTextColor({ color: '#FFFFFF' })
 }

@@ -1,5 +1,10 @@
 const useChrome = typeof (browser) === 'undefined'
 
+let browserActionAPI
+if (!useChrome) {
+  browserActionAPI = typeof (browser.action) === 'undefined' ? browser.browserAction : browser.action
+}
+
 const countList = {
   '#activeCookies': 0,
   '#permittedCookies': 0,
@@ -1880,7 +1885,7 @@ async function accountModeSwitchNeutral (data, evt) {
 
     // Account mode icon removal
     if (useChrome) chrome.action.setIcon({ tabId, path: { 16: 'icons/fc16.png', 48: 'icons/fc48.png', 128: 'icons/fc128.png' } })
-    else browser.action.setIcon({ tabId, path: { 48: 'icons/flagcookies_icon.svg', 64: 'icons/flagcookies_icon.svg', 96: 'icons/flagcookies_icon.svg', 128: 'icons/flagcookies_icon.svg' } })
+    else browserActionAPI.setIcon({ tabId, path: { 48: 'icons/flagcookies_icon.svg', 64: 'icons/flagcookies_icon.svg', 96: 'icons/flagcookies_icon.svg', 128: 'icons/flagcookies_icon.svg' } })
     return
   }
 
@@ -1894,7 +1899,7 @@ async function accountModeSwitchNeutral (data, evt) {
 
   // Account mode icon
   if (useChrome) chrome.action.setIcon({ tabId, path: { 16: 'icons/fc16p.png', 48: 'icons/fc48p.png', 128: 'icons/fc128p.png' } })
-  else browser.action.setIcon({ tabId, path: { 48: 'icons/flagcookies_profil_icon.svg', 64: 'icons/flagcookies_profil_icon.svg', 96: 'icons/flagcookies_profil_icon.svg', 128: 'icons/flagcookies_profil_icon.svg' } })
+  else browserActionAPI.setIcon({ tabId, path: { 48: 'icons/flagcookies_profil_icon.svg', 64: 'icons/flagcookies_profil_icon.svg', 96: 'icons/flagcookies_profil_icon.svg', 128: 'icons/flagcookies_profil_icon.svg' } })
 }
 
 function loadHelp (currentLocal) {
