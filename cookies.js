@@ -1968,6 +1968,7 @@ function addTabURLtoDataList (tab, details, domain) {
         cookieCount[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
 
         openTabData[tabWindowId][tabTabId][0] = { s: contextName, u: requestURL, d: rootDomain }
+        cookieData[contextName][tabWindowId][tabTabId].fgRoot = rootDomain
       }
 
       return
@@ -2173,13 +2174,10 @@ async function clearCookiesOnRequest (details) {
         if (cookieData[contextName] === undefined) cookieData[contextName] = {}
         if (cookieData[contextName][currentTab.windowId] === undefined) cookieData[contextName][currentTab.windowId] = {}
         if (cookieData[contextName][currentTab.windowId][currentTab.id] === undefined) cookieData[contextName][currentTab.windowId][currentTab.id] = {}
-        if (cookieData[contextName][currentTab.windowId][currentTab.id][domainURL] === undefined) cookieData[contextName][currentTab.windowId][currentTab.id] = {}
-        cookieData[contextName][currentTab.windowId][currentTab.id].fgRoot = domainURL
       } else {
         if (cookieData[contextName] === undefined) cookieData[contextName] = {}
         if (cookieData[contextName][currentTab.windowId] === undefined) cookieData[contextName][currentTab.windowId] = {}
         if (cookieData[contextName][currentTab.windowId][currentTab.id] === undefined) cookieData[contextName][currentTab.windowId][currentTab.id] = {}
-        cookieData[contextName][currentTab.windowId][currentTab.id].fgRoot = domainURL
 
         if (removedData[contextName] === undefined) removedData[contextName] = {}
         if (removedData[contextName][currentTab.windowId] === undefined) removedData[contextName][currentTab.windowId] = {}
@@ -2195,6 +2193,8 @@ async function clearCookiesOnRequest (details) {
           cookieCount[contextName][currentTab.windowId][currentTab.id] = { count: 0, cookies: [] }
         }
       }
+
+      cookieData[contextName][currentTab.windowId][currentTab.id].fgRoot = domainURL
 
       if (logData[contextName] !== undefined && logData[contextName][currentTab.windowId] !== undefined && logData[contextName][currentTab.windowId][currentTab.id] !== undefined) {
         clearDomainLog(currentTab, details)
