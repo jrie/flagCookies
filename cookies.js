@@ -190,12 +190,6 @@ function handleMessage (request, sender, sendResponse) {
   }
 
   if (request.getLocalData !== undefined && request.windowId !== undefined && request.tabId !== undefined) {
-    let contextName = 'default'
-
-    if (request.storeId !== undefined) {
-      contextName = request.storeId
-    }
-
     const sessionData = { local: {}, session: {} }
 
     if (localStorageData[request.windowId] !== undefined && localStorageData[request.windowId][request.tabId] !== undefined) {
