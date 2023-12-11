@@ -198,12 +198,12 @@ function handleMessage (request, sender, sendResponse) {
 
     const sessionData = { local: {}, session: {} }
 
-    if (localStorageData[contextName] !== undefined && localStorageData[contextName][request.windowId] !== undefined && localStorageData[contextName][request.windowId][request.tabId] !== undefined) {
-      sessionData.local = localStorageData[contextName][request.windowId][request.tabId]
+    if (localStorageData[request.windowId] !== undefined && localStorageData[request.windowId][request.tabId] !== undefined) {
+      sessionData.local = localStorageData[request.windowId][request.tabId]
     }
 
-    if (sessionStorageData[contextName] !== undefined && sessionStorageData[contextName][request.windowId] !== undefined && sessionStorageData[contextName][request.windowId][request.tabId] !== undefined) {
-      sessionData.session = sessionStorageData[contextName][request.windowId][request.tabId]
+    if (sessionStorageData[request.windowId] !== undefined && sessionStorageData[request.windowId][request.tabId] !== undefined) {
+      sessionData.session = sessionStorageData[request.windowId][request.tabId]
     }
 
     sendResponse(sessionData)
@@ -218,27 +218,25 @@ function handleMessage (request, sender, sendResponse) {
       contextName = tab.cookieStoreId
     }
 
-    if (localStorageData[contextName] === undefined) localStorageData[contextName] = {}
-    if (localStorageData[contextName][tab.windowId] === undefined) localStorageData[contextName][tab.windowId] = {}
-    localStorageData[contextName][tab.windowId][tab.id] = {}
+    if (localStorageData[tab.windowId] === undefined) localStorageData[tab.windowId] = {}
+    localStorageData[tab.windowId][tab.id] = {}
 
-    if (sessionStorageData[contextName] === undefined) sessionStorageData[contextName] = {}
-    if (sessionStorageData[contextName][tab.windowId] === undefined) sessionStorageData[contextName][tab.windowId] = {}
-    sessionStorageData[contextName][tab.windowId][tab.id] = {}
+    if (sessionStorageData[tab.windowId] === undefined) sessionStorageData[tab.windowId] = {}
+    sessionStorageData[tab.windowId][tab.id] = {}
 
     for (const key of Object.keys(request.local)) {
       try {
-        localStorageData[contextName][tab.windowId][tab.id][key] = JSON.parse(request.local[key])
+        localStorageData[tab.windowId][tab.id][key] = JSON.parse(request.local[key])
       } catch {
-        localStorageData[contextName][tab.windowId][tab.id][key] = request.local[key]
+        localStorageData[tab.windowId][tab.id][key] = request.local[key]
       }
     }
 
     for (const key of Object.keys(request.session)) {
       try {
-        sessionStorageData[contextName][tab.windowId][tab.id][key] = JSON.parse(request.session[key])
+        sessionStorageData[tab.windowId][tab.id][key] = JSON.parse(request.session[key])
       } catch {
-        sessionStorageData[contextName][tab.windowId][tab.id][key] = request.session[key]
+        sessionStorageData[tab.windowId][tab.id][key] = request.session[key]
       }
     }
 
@@ -381,12 +379,12 @@ async function setMouseOverTitle (contextName, tab) {
     titleString += '\n' + getMsg('cookieCountDisplayIconHover', cookieCount[contextName][tab.windowId][tab.id].count.toString())
   }
 
-  if (localStorageData[contextName] !== undefined && localStorageData[contextName][tab.windowId] !== undefined && localStorageData[contextName][tab.windowId][tab.id] !== undefined) {
-    titleString += '\n' + getMsg('localStorageKeyCountTitle', Object.keys(localStorageData[contextName][tab.windowId][tab.id]).length.toString())
+  if (localStorageData[tab.windowId] !== undefined && localStorageData[tab.windowId][tab.id] !== undefined) {
+    titleString += '\n' + getMsg('localStorageKeyCountTitle', Object.keys(localStorageData[tab.windowId][tab.id]).length.toString())
   }
 
-  if (sessionStorageData[contextName] !== undefined && sessionStorageData[contextName][tab.windowId] !== undefined && sessionStorageData[contextName][tab.windowId][tab.id] !== undefined) {
-    titleString += '\n' + getMsg('sessionStorageKeyCountTitle', Object.keys(sessionStorageData[contextName][tab.windowId][tab.id]).length.toString())
+  if (sessionStorageData[tab.windowId] !== undefined && sessionStorageData[tab.windowId][tab.id] !== undefined) {
+    titleString += '\n' + getMsg('sessionStorageKeyCountTitle', Object.keys(sessionStorageData[tab.windowId][tab.id]).length.toString())
   }
 
   let msgsAdded = false
@@ -2033,27 +2031,19 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
       }
     }
 
-    if (localStorageData[contextName] !== undefined && localStorageData[contextName][removeInfo.windowId] !== undefined && localStorageData[contextName][removeInfo.windowId][tabId] !== undefined) {
-      delete localStorageData[contextName][removeInfo.windowId][tabId]
+    if (localStorageData[removeInfo.windowId] !== undefined && localStorageData[removeInfo.windowId][tabId] !== undefined) {
+      delete localStorageData[removeInfo.windowId][tabId]
 
-      if (Object.keys(localStorageData[contextName][removeInfo.windowId]).length === 0) {
-        delete localStorageData[contextName][removeInfo.windowId]
-
-        if (Object.keys(localStorageData[contextName]).length === 0) {
-          delete localStorageData[contextName]
-        }
+      if (Object.keys(localStorageData[removeInfo.windowId]).length === 0) {
+        delete localStorageData[removeInfo.windowId]
       }
     }
 
-    if (sessionStorageData[contextName] !== undefined && sessionStorageData[contextName][removeInfo.windowId] !== undefined && sessionStorageData[contextName][removeInfo.windowId][tabId] !== undefined) {
-      delete sessionStorageData[contextName][removeInfo.windowId][tabId]
+    if (sessionStorageData[removeInfo.windowId] !== undefined && sessionStorageData[removeInfo.windowId][tabId] !== undefined) {
+      delete sessionStorageData[removeInfo.windowId][tabId]
 
-      if (Object.keys(sessionStorageData[contextName][removeInfo.windowId]).length === 0) {
-        delete sessionStorageData[contextName][removeInfo.windowId]
-
-        if (Object.keys(sessionStorageData[contextName]).length === 0) {
-          delete sessionStorageData[contextName]
-        }
+      if (Object.keys(sessionStorageData[removeInfo.windowId]).length === 0) {
+        delete sessionStorageData[removeInfo.windowId]
       }
     }
 
