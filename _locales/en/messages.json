@@ -154,7 +154,7 @@
     "description": "Notication title browser storage area cleared"
   },
   "BrowserLocaleStorageClearedText": {
-    "message": "Browser 'Local Storage' was cleread",
+    "message": "Browser 'Local Storage' was cleared",
     "description": "Notication text session storage area was cleared"
   },
   "BrowserSessionStorageClearedText": {
