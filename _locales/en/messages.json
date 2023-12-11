@@ -748,7 +748,7 @@
     "message": "Logged in profile mode cookies, 'keyed' coookies.",
     "description": "Displayed help text for profile mode cookies"
   },
-  "GneralAndGlobalSettingsHelpText": {
+  "GeneralAndGlobalSettingsHelpText": {
     "message": "Flag Cookies general and global settings.",
     "description": "Displayed help text for action log"
   },
