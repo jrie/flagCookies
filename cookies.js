@@ -518,9 +518,9 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
       if (hasHttpProfile) cookieDomainString = 'http://' + domain
       else if (hasHttpsProfile) cookieDomainString = 'https://' + domain
 
-      for (const domain of Object.keys(cookieData[contextName][currentTab.windowId][currentTab.id])) {
+      for (const domainKey of Object.keys(cookieData[contextName][currentTab.windowId][currentTab.id])) {
         let index = 0
-        for (const cookieEntry of cookieData[contextName][currentTab.windowId][currentTab.id][domain]) {
+        for (const cookieEntry of cookieData[contextName][currentTab.windowId][currentTab.id][domainKey]) {
           if (cookieEntry.name === cookie.name && cookieEntry.domain === domainKey) {
             foundCookie = true
 
@@ -537,7 +537,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
               cookie.fgProtected = true
             }
 
-            cookieData[contextName][currentTab.windowId][currentTab.id][domain][index] = cookie
+            cookieData[contextName][currentTab.windowId][currentTab.id][domainKey][index] = cookie
             break
           }
 
