@@ -13,6 +13,7 @@ const countList = {
 }
 
 let tabId = 0
+let windowId = 0
 let rootDomain = ''
 let contextName = 'default'
 let isBrowserPage = false
@@ -35,6 +36,7 @@ function getFirefoxMessage (messageName, params) {
 async function initDomainURLandProceed (tabs) {
   const tab = tabs.pop()
   tabId = tab.id
+  windowId = tab.windowId
 
   let data = null
 
@@ -87,7 +89,7 @@ function sortObjectByKey (ObjectElements, keyName, doReverse) {
   return Object.values(ObjectElements).sort(sortByKey)
 }
 
-function clearAndUpdateUI (sourceName) {
+function resetStorageCounts (sourceName) {
   let targetStorage = ''
   if (sourceName === 'local') {
     countList['#sessionData'].local = 0
@@ -195,7 +197,7 @@ function clearStorageDataFromUI (evt) {
     browser.notifications.create('notification_cleared_storage_data', { type: 'basic', message: messageString, title: getMsg('BrowserStorageClearedHeadline'), iconUrl: 'icons/flagcookies_icon.svg' })
   }
 
-  clearAndUpdateUI(targetDataName)
+  resetStorageCounts(targetDataName)
 }
 
 function createSessionStorageDataView (name, storageData, title, targetList) {
@@ -292,9 +294,46 @@ function createSessionStorageDataView (name, storageData, title, targetList) {
   countList['#sessionData'].total = countList['#sessionData'].local + countList['#sessionData'].session
 }
 
+async function clearCookiesByDomain (evt) {
+  const cookieDomain = evt.target.dataset.cookieDomain
+
+  let clearResult = false
+  if (useChrome) {
+    clearResult = await chrome.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName })
+  } else {
+    clearResult = await browser.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName })
+  }
+
+  if (clearResult) {
+    let data = null
+    let cookieData = {}
+    let sessionData = {}
+
+    if (useChrome) {
+      data = await chrome.storage.local.get()
+      cookieData = await chrome.runtime.sendMessage({ getCookies: true, windowId, tabId })
+      sessionData = await chrome.runtime.sendMessage({ getLocalData: true, windowId, tabId })
+    } else {
+      data = await browser.storage.local.get()
+      cookieData = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
+      sessionData = await browser.runtime.sendMessage({ getLocalData: true, storeId: contextName, windowId, tabId })
+    }
+
+    updateUIData(data, cookieData.cookies, cookieData.logData, sessionData)
+  }
+}
+
 async function updateUIData (data, cookieData, logData, sessionData) {
   // set the header of the panel
   const activeTabUrl = document.querySelector('#header-title')
+  activeTabUrl.replaceChildren()
+
+  countList['#activeCookies'] = 0
+  countList['#permittedCookies'] = 0
+  countList['#flaggedCookies'] = 0
+
+  document.querySelector('#header-title').replaceChildren()
+
   const introSpan = document.createElement('span')
   introSpan.className = 'intro'
 
@@ -314,8 +353,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
     }
 
     if (tab !== undefined) {
-      const activeTabUrl = tab.url.toLowerCase()
-      if (activeTabUrl.startsWith('chrome:') || activeTabUrl.startsWith('about:') || activeTabUrl.startsWith('edge:')) {
+      const tabURL = tab.url.toLowerCase()
+      if (tabURL.startsWith('chrome:') || tabURL.startsWith('about:') || tabURL.startsWith('edge:')) {
         isBrowserPage = true
       }
     }
@@ -341,6 +380,9 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
   const cookieList = document.querySelector('#cookie-list')
   const loggedInCookieList = document.querySelector('#loggedInCookies')
+
+  cookieList.replaceChildren()
+  loggedInCookieList.replaceChildren()
 
   let activeCookies = false
 
@@ -408,6 +450,15 @@ async function updateUIData (data, cookieData, logData, sessionData) {
           const cookieSubContent = document.createElement('ul')
           cookieSubContent.className = 'subloadContainer'
           cookieSubDiv.appendChild(cookieSubContent)
+
+          const dumpster = document.createElement('button')
+          dumpster.addEventListener('click', clearCookiesByDomain)
+          dumpster.className = 'dumpster'
+          dumpster.dataset.cookieDomain = cookieDomain
+          dumpster.dataset.tabId = tabId
+          dumpster.title = getMsg('ClearDomainCookiesByDomain')
+          cookieSub.appendChild(dumpster)
+
           cookieList.appendChild(cookieSubDiv)
           hasHeader = true
         }

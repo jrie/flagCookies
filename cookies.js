@@ -168,6 +168,36 @@ function setTabForClearCookies (tab) {
   clearCookiesWrapper(getMsg('ActionDocumentLoad'), null, tab)
 }
 
+async function clearByDomainJob (request, sender, sendResponse) {
+  const tabId = request.tabId
+  const windowId = request.windowId
+  const contextName = request.contextName
+  const cookieDomain = request.cookieDomain
+  const cookieCount = cookieData[contextName][windowId][tabId][cookieDomain].length
+  let removedCookies = 0
+
+  for (const cookie of cookieData[contextName][windowId][tabId][cookieDomain]) {
+    const details = { url: 'https://' + cookieDomain + cookie.path, name: cookie.name }
+    const details2 = { url: 'http://' + cookieDomain + cookie.path, name: cookie.name }
+
+    if (useChrome) {
+      if (await chrome.cookies.remove(details) !== null || await chrome.cookies.remove(details2) !== null) {
+        ++removedCookies
+      }
+    } else {
+      if ((await browser.cookies.remove(details) !== null && await browser.cookies.get(details) === null) || (await browser.cookies.remove(details2) !== null && await browser.cookies.get(details2) === null)) {
+        ++removedCookies
+      }
+    }
+  }
+
+  if (removedCookies === cookieCount) {
+    delete cookieData[contextName][windowId][tabId][cookieDomain]
+    return true
+  }
+  return false
+}
+
 function handleMessage (request, sender, sendResponse) {
   if (request.clearOnActivation !== undefined && request.tabId !== undefined) {
     if (useChrome) {
@@ -187,6 +217,10 @@ function handleMessage (request, sender, sendResponse) {
     }
 
     return
+  }
+
+  if (request.clearByDomain !== undefined && request.clearByDomain === true) {
+    return clearByDomainJob(request, sender, sendResponse)
   }
 
   if (request.getLocalData !== undefined && request.windowId !== undefined && request.tabId !== undefined) {
