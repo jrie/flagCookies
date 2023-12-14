@@ -181,11 +181,15 @@ async function clearByDomainJob (request, sender, sendResponse) {
     const details2 = { url: 'http://' + cookieDomain + cookie.path, name: cookie.name }
 
     if (useChrome) {
-      if (await chrome.cookies.remove(details) !== null || await chrome.cookies.remove(details2) !== null) {
+      if (await chrome.cookies.get(details) === null && await chrome.cookies.get(details2) === null) {
+        ++removedCookies
+      } else if (await chrome.cookies.remove(details) !== null || await chrome.cookies.remove(details2) !== null) {
         ++removedCookies
       }
     } else {
-      if ((await browser.cookies.remove(details) !== null && await browser.cookies.get(details) === null) || (await browser.cookies.remove(details2) !== null && await browser.cookies.get(details2) === null)) {
+      if (await browser.cookies.get(details) === null && await browser.cookies.get(details2) === null) {
+        ++removedCookies
+      } else if ((await browser.cookies.remove(details) !== null && await browser.cookies.get(details) === null) || (await browser.cookies.remove(details2) !== null && await browser.cookies.get(details2) === null)) {
         ++removedCookies
       }
     }
