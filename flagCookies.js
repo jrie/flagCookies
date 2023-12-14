@@ -1297,12 +1297,12 @@ function switchView (evt) {
   }
 
   const donate = document.querySelector('#donate')
-  const donateActive = false
+  let donateActive = false
   if (donate !== evt.target) {
     donate.classList.remove('active')
     document.querySelector('#donate-view').replaceChildren()
   } else if (donate.classList.contains('active')) {
-    helpActive = true
+    donateActive = true
   } else if (donate === evt.target) {
     useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage())
   }
