@@ -199,6 +199,7 @@ async function clearByDomainJob (request, sender, sendResponse) {
     delete cookieData[contextName][windowId][tabId][cookieDomain]
     return true
   }
+
   return false
 }
 
