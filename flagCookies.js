@@ -1287,15 +1287,33 @@ function switchView (evt) {
 
   const help = document.querySelector('#help')
   let helpActive = false
-  if (help !== evt.target) help.classList.remove('active')
-  else if (help.classList.contains('active')) helpActive = true
+  if (help !== evt.target) {
+    help.classList.remove('active')
+    document.querySelector('#help-view').replaceChildren()
+  } else if (help.classList.contains('active')) {
+    helpActive = true
+  } else if (help === evt.target) {
+    useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
+  }
 
   const donate = document.querySelector('#donate')
-  let donateActive = false
-  if (donate !== evt.target) donate.classList.remove('active')
-  else if (donate.classList.contains('active')) donateActive = true
+  const donateActive = false
+  if (donate !== evt.target) {
+    donate.classList.remove('active')
+    document.querySelector('#donate-view').replaceChildren()
+  } else if (donate.classList.contains('active')) {
+    helpActive = true
+  } else if (donate === evt.target) {
+    useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage())
+  }
 
   evt.target.classList.add('active')
+
+  if (!prefsActive && !helpActive && !donateActive) {
+    list.removeAttribute('class')
+    return
+  }
+
   if (list.children.length === 0) {
     const infoDisplay = document.querySelector('#infoDisplay')
 
@@ -2204,8 +2222,8 @@ function exportCookiesClipboard () {
 // --------------------------------------------------------------------------------------------------------------------------------
 // Startup code
 try {
-  useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
-  useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage())
+  // useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
+  // useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage())
 } catch (e) {
   console.log(e)
 }
