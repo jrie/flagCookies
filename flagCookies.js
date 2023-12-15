@@ -320,6 +320,14 @@ async function clearCookiesByDomain (evt) {
     }
 
     updateUIData(data, cookieData.cookies, cookieData.logData, sessionData)
+
+    if (useChrome) {
+      if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
+        chrome.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/fc128.png' })
+      }
+    } else if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
+      browser.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/flagcookies_icon.svg' })
+    }
   }
 }
 
