@@ -173,7 +173,7 @@ async function clearByDomainJob (request, sender, sendResponse) {
   const windowId = request.windowId
   const contextName = request.contextName
   const cookieDomain = request.cookieDomain
-  const cookieCount = cookieData[contextName][windowId][tabId][cookieDomain].length
+  let cookieCount = cookieData[contextName][windowId][tabId][cookieDomain].length
   let removedCookies = 0
 
   for (const cookie of cookieData[contextName][windowId][tabId][cookieDomain]) {
@@ -182,13 +182,13 @@ async function clearByDomainJob (request, sender, sendResponse) {
 
     if (useChrome) {
       if (await chrome.cookies.get(details) === null && await chrome.cookies.get(details2) === null) {
-        ++removedCookies
+        --cookieCount
       } else if (await chrome.cookies.remove(details) !== null || await chrome.cookies.remove(details2) !== null) {
         ++removedCookies
       }
     } else {
       if (await browser.cookies.get(details) === null && await browser.cookies.get(details2) === null) {
-        ++removedCookies
+        --cookieCount
       } else if ((await browser.cookies.remove(details) !== null && await browser.cookies.get(details) === null) || (await browser.cookies.remove(details2) !== null && await browser.cookies.get(details2) === null)) {
         ++removedCookies
       }
@@ -1665,7 +1665,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
         const data = await browser.storage.local.get('flagCookies_notifications')
         if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
-          browser.notifications.create('cookie_cleared', { type: 'basic', message: getMsg('NotificationCookiesRemoved', [countStr, strippedDomainURL, contextName]), title: getMsg('NotificationCookiesRemovedTitle'), iconUrl: 'icons/fc128.png' })
+          browser.notifications.create('cookie_cleared', { type: 'basic', message: getMsg('NotificationCookiesRemoved', [countStr, strippedDomainURL, contextName]), title: getMsg('NotificationCookiesRemovedTitle'), iconUrl: 'icons/flagcookies_icon.svg' })
         }
       }
     }
