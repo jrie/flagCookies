@@ -430,6 +430,24 @@
       "contextName": { "content": "$3", "example": "default - no need to translate"}
     }
   },
+  "ClearDomainCookiesByDomain": {
+    "message": "Domain Cookies löschen",
+    "description": "Displayed help text for dumpster icon cookie removal for one domain name"
+  },
+  "NotificationCookiesRemovedByDomain": {
+    "message": "Cookies für die Domain '$domainName$' entfernt.",
+    "description": "Displayed notification text for removed cookies by domain with dump icon click",
+    "placeholders": {
+      "domainName": {
+        "content": "$1",
+        "example": "https://domain.com"
+      }
+    }
+  },
+  "NotificationCookiesRemovedByDomainTitle": {
+    "message": "Cookies entfernt",
+    "description": "Headline of notification on removal of cookies by dump icon click"
+  },
   "NotificationProfileModeTitleEnabled": {
     "message": "Flag Cookies: Profile Modus angeschaltet",
     "description": "Headline of notification on removal of cookies"
