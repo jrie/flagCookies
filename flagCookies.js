@@ -2228,14 +2228,6 @@ function exportCookiesClipboard () {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-// Startup code
-try {
-  // useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
-  // useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage())
-} catch (e) {
-  console.log(e)
-}
-
 document.querySelector('#activeCookies').addEventListener('click', switchView)
 document.querySelector('#flaggedCookies').addEventListener('click', switchView)
 document.querySelector('#permittedCookies').addEventListener('click', switchView)
