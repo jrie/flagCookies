@@ -405,6 +405,10 @@
     "message": "Cookie Veränderung",
     "description": "Displayed log action when a cookie change took place"
   },
+  "ActionDomainClearByButton": {
+    "message": "Durch Nutzer",
+    "description": "Displayed log action when domain cookies are cleared by dumpster button"
+  },
   "ActionDocumentLoad": {
     "message": "Dokument laden/neuladen",
     "description": "Displayed log action when document is loaded"

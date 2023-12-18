@@ -408,6 +408,10 @@
     "message": "cookie change",
     "description": "Displayed log action when a cookie change took place"
   },
+  "ActionDomainClearByButton": {
+    "message": "by user",
+    "description": "Displayed log action when domain cookies are cleared by dumpster button"
+  },
   "ActionDocumentLoad": {
     "message": "document load",
     "description": "Displayed log action when document is loaded"

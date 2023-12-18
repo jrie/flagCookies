@@ -165,7 +165,7 @@ async function handleTabChange (activeInfo) {
 
 function setTabForClearCookies (tab) {
   // TODO: Add translation for log message in locales
-  clearCookiesWrapper(getMsg('ActionDocumentLoad'), null, tab)
+  clearCookiesWrapper(getMsg('ActionDomainClearByButton'), null, tab)
 }
 
 async function clearByDomainJob (request, sender, sendResponse) {
