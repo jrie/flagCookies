@@ -37,9 +37,21 @@
     "message": "This cookie is allowed and unhandled. Click to change.",
     "description": "Display cookie is allowed on hover cookie flag button"
   },
+  "SetCookieDomainProfileButtonHelpText": {
+    "message": "Set cookies for domain as profile mode cookies",
+    "description": "Help text for cookie key icon/button for domain"
+  },
+  "RemoveCookieDomainProfileButtonHelpText": {
+    "message": "Remove cookies from cookie profile for domain",
+    "description": "Help text for cookie key removal icon/button for domain"
+  },
   "SetCookieProfileButtonHelpText": {
-    "message": "Set this cookie as profile mode cookie.",
+    "message": "Set cookie as profile mode cookie.",
     "description": "Help text for cookie key icon/button"
+  },
+  "SetCookieProfileDomainButtonHelpText": {
+    "message": "Set domain cookies as profile mode cookies.",
+    "description": "Help text for domain cookie key icon/button"
   },
   "CookieIsFlaggedHelpText": {
     "message": "This cookie is flagged and will be removed during url load and reload.",
