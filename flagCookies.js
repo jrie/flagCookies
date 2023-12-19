@@ -417,6 +417,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
       let cookieIndex = 0
       // Check sorting of domains, pushing root and root related to the top
       // console.log(cookieDomain)
+      let lockSwitchDomain = null
+      let hasUnlockedCookie = false
 
       for (const cookie of cookieData[cookieDomain]) {
         if (cookie.isAdded) continue
@@ -427,6 +429,9 @@ async function updateUIData (data, cookieData, logData, sessionData) {
         const cookieInDomain = rootDomain.indexOf(domainPart) !== -1
 
         if (!hasHeader) {
+          hasUnlockedCookie = false
+          lockSwitchDomain = document.createElement('button')
+
           const cookieSubDiv = document.createElement('li')
           cookieSubDiv.className = 'subcontainer'
 
@@ -459,12 +464,11 @@ async function updateUIData (data, cookieData, logData, sessionData) {
           cookieSubContent.className = 'subloadContainer'
           cookieSubDiv.appendChild(cookieSubContent)
 
-          const lockSwitch = document.createElement('button')
-          lockSwitch.className = 'setKeyCookie'
-          lockSwitch.title = getMsg('SetCookieProfileDomainButtonHelpText')
-          lockSwitch.dataset.domain = cookieDomain
-          lockSwitch.addEventListener('click', cookieLockSwitchByDomain)
-          cookieSub.appendChild(lockSwitch)
+          lockSwitchDomain.className = 'setKeyCookie'
+          lockSwitchDomain.title = getMsg('SetCookieProfileDomainButtonHelpText')
+          lockSwitchDomain.dataset.domain = cookieDomain
+          lockSwitchDomain.addEventListener('click', cookieLockSwitchByDomain)
+          cookieSub.appendChild(lockSwitchDomain)
 
           const dumpster = document.createElement('button')
           dumpster.addEventListener('click', clearCookiesByDomain)
@@ -528,6 +532,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
             lockSwitch.title = getMsg('CookieIsLockedProfileCookieHelpText')
             loggedInCookieList.removeAttribute('class')
+          } else {
+            hasUnlockedCookie = true
           }
 
           const p = document.createElement('p')
@@ -643,6 +649,10 @@ async function updateUIData (data, cookieData, logData, sessionData) {
           cookieData[cookieDomain][cookieIndex] = cookie
           ++cookieIndex
         }
+      }
+
+      if (!hasUnlockedCookie) {
+        lockSwitchDomain.classList.add('locked')
       }
     }
   }
