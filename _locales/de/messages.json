@@ -38,7 +38,7 @@
   },
   "SetCookieDomainProfileButtonHelpText": {
     "message": "Cookies der Domain als Profil Cookie setzen.",
-    "description": "Help text for cookie key icon/button" for domain
+    "description": "Help text for cookie key icon/button for domain"
   },
   "RemoveCookieDomainProfileButtonHelpText": {
     "message": "Cookies der Domain aus Profil Cookie-Liste entfernen.",
