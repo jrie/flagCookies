@@ -459,6 +459,13 @@ async function updateUIData (data, cookieData, logData, sessionData) {
           cookieSubContent.className = 'subloadContainer'
           cookieSubDiv.appendChild(cookieSubContent)
 
+          const lockSwitch = document.createElement('button')
+          lockSwitch.className = 'setKeyCookie'
+          lockSwitch.title = getMsg('SetCookieProfileDomainButtonHelpText')
+          lockSwitch.dataset.domain = cookieDomain
+          lockSwitch.addEventListener('click', cookieLockSwitchByDomain)
+          cookieSub.appendChild(lockSwitch)
+
           const dumpster = document.createElement('button')
           dumpster.addEventListener('click', clearCookiesByDomain)
           dumpster.className = 'dumpster'
@@ -1205,6 +1212,89 @@ async function cookieLockSwitch (evt) {
   }
 
   cookieLockSwitchNeutral(await browser.storage.local.get(), evt)
+}
+
+async function cookieLockSwitchByDomain (evt) {
+  let data = {}
+  let cookieData = {}
+
+  if (useChrome) {
+    data = await chrome.storage.local.get()
+    cookieData = await chrome.runtime.sendMessage({ getCookies: true, windowId, tabId })
+  } else {
+    data = await browser.storage.local.get()
+    cookieData = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
+  }
+
+  const cookieDomain = evt.target.dataset.domain
+  const loggedInCookieList = document.querySelector('#loggedInCookies')
+
+  if (data.flagCookies_logged === undefined) data.flagCookies_logged = {}
+  if (data.flagCookies_logged[contextName] === undefined) data.flagCookies_logged[contextName] = {}
+  if (data.flagCookies_logged[contextName][rootDomain] === undefined) data.flagCookies_logged[contextName][rootDomain] = {}
+  if (data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined) data.flagCookies_logged[contextName][rootDomain][cookieDomain] = {}
+
+  if (evt.target.classList.contains('locked')) {
+    for (const cookie of cookieData.cookies[cookieDomain]) {
+      removeCookieOfProfileList(loggedInCookieList, cookie.name, cookieDomain)
+
+      if (data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] !== undefined) {
+        delete data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name]
+
+        if (Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length === 0) {
+          delete data.flagCookies_logged[contextName][rootDomain][cookieDomain]
+
+          if (Object.keys(data.flagCookies_logged[contextName][rootDomain]).length === 0) {
+            delete data.flagCookies_logged[contextName][rootDomain]
+
+            if (Object.keys(data.flagCookies_logged[contextName]).length === 0) {
+              delete data.flagCookies_logged[contextName]
+
+              if (Object.keys(data.flagCookies_logged).length === 0) {
+                if (useChrome) await chrome.storage.local.remove('flagCookies_logged')
+                else await browser.storage.local.remove('flagCookies_logged')
+                delete data.flagCookies_logged
+              }
+            }
+          }
+        }
+      }
+    }
+
+    evt.target.classList.remove('locked')
+    evt.target.title = getMsg('SetCookieDomainProfileButtonHelpText')
+
+    const domainCookieEntrys = document.querySelectorAll('.cookieEntry > .setKeyCookie[data-domain="' + cookieDomain + '"]')
+    for (const domainCookieLock of domainCookieEntrys) {
+      domainCookieLock.classList.remove('locked')
+      domainCookieLock.title = getMsg('SetCookieProfileButtonHelpText')
+    }
+
+    if (data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined) {
+      document.querySelector('#profileNoData').removeAttribute('class')
+    }
+    return
+  }
+
+  for (const cookie of cookieData.cookies[cookieDomain]) {
+    data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] = true
+
+    if (!isDomainCookieInList('#loggedInCookies', cookie.name, cookieDomain)) addCookieToProfileList(loggedInCookieList, cookie.name, cookieDomain, 'flagCookies_logged')
+    loggedInCookieList.removeAttribute('class')
+  }
+
+  if (useChrome) await chrome.storage.local.set(data)
+  else await browser.storage.local.set(data)
+
+  document.querySelector('#profileNoData').className = 'hidden'
+  evt.target.classList.add('locked')
+  evt.target.title = getMsg('RemoveCookieDomainProfileButtonHelpText')
+
+  const domainCookieEntrys = document.querySelectorAll('.cookieEntry > .setKeyCookie[data-domain="' + cookieDomain + '"]')
+  for (const domainCookieLock of domainCookieEntrys) {
+    domainCookieLock.classList.add('locked')
+    domainCookieLock.title = getMsg('CookieIsLockedProfileCookieHelpTextSettingsRef')
+  }
 }
 
 async function cookieLockSwitchNeutral (data, evt) {
