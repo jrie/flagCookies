@@ -412,13 +412,26 @@ li.cookieEntrySublistd.unremoved-secure-cookie {
   margin-top: 2px;
 }
 
+.subloadbar button {
+  width: 28px;
+  height: 28px;
+}
+
+.subloadbar button.setKeyCookie {
+  right: 48px;
+  top: 6px;
+}
+
+.subloadbar button.dumpster {
+  right: 6px;
+}
+
 .domainNameMenu {
   position: relative;
   left: 10px;
   top: -6px;
   float: left;
   margin-right: 12px;
-
 }
 
 .collapseToggle {
@@ -671,7 +684,6 @@ button.setKeyCookie.locked {
   background-color: #fff;
   background-image: url('icons/key_a26.png');
 }
-
 
 button.checkmark.flagged {
   background-position: center center;
