@@ -1273,6 +1273,10 @@ async function cookieLockSwitchByDomain (evt) {
     if (data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined) {
       document.querySelector('#profileNoData').removeAttribute('class')
     }
+
+    if (useChrome) await chrome.storage.local.set(data)
+    else await browser.storage.local.set(data)
+
     return
   }
 
