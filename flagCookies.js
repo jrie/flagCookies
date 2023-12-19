@@ -1217,13 +1217,16 @@ async function cookieLockSwitch (evt) {
 async function cookieLockSwitchByDomain (evt) {
   let data = {}
   let cookieData = {}
+  let sessionData = {}
 
   if (useChrome) {
     data = await chrome.storage.local.get()
     cookieData = await chrome.runtime.sendMessage({ getCookies: true, windowId, tabId })
+    sessionData = await chrome.runtime.sendMessage({ getLocalData: true, windowId, tabId })
   } else {
     data = await browser.storage.local.get()
     cookieData = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
+    sessionData = await browser.runtime.sendMessage({ getLocalData: true, storeId: contextName, windowId, tabId })
   }
 
   const cookieDomain = evt.target.dataset.domain
@@ -1236,8 +1239,6 @@ async function cookieLockSwitchByDomain (evt) {
 
   if (evt.target.classList.contains('locked')) {
     for (const cookie of cookieData.cookies[cookieDomain]) {
-      removeCookieOfProfileList(loggedInCookieList, cookie.name, cookieDomain)
-
       if (data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] !== undefined) {
         delete data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name]
 
@@ -1276,6 +1277,8 @@ async function cookieLockSwitchByDomain (evt) {
 
     if (useChrome) await chrome.storage.local.set(data)
     else await browser.storage.local.set(data)
+
+    updateUIData(data, cookieData.cookies, cookieData.logData, sessionData)
 
     return
   }
