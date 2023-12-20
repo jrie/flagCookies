@@ -1291,8 +1291,6 @@ async function cookieLockSwitchByDomain (evt) {
     if (useChrome) await chrome.storage.local.set(data)
     else await browser.storage.local.set(data)
 
-    updateUIData(data, cookieData.cookies, cookieData.logData, sessionData)
-
     return
   }
 
