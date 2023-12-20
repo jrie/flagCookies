@@ -1230,16 +1230,13 @@ async function cookieLockSwitch (evt) {
 async function cookieLockSwitchByDomain (evt) {
   let data = {}
   let cookieData = {}
-  let sessionData = {}
 
   if (useChrome) {
     data = await chrome.storage.local.get()
     cookieData = await chrome.runtime.sendMessage({ getCookies: true, windowId, tabId })
-    sessionData = await chrome.runtime.sendMessage({ getLocalData: true, windowId, tabId })
   } else {
     data = await browser.storage.local.get()
     cookieData = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
-    sessionData = await browser.runtime.sendMessage({ getLocalData: true, storeId: contextName, windowId, tabId })
   }
 
   const cookieDomain = evt.target.dataset.domain
