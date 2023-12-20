@@ -2036,6 +2036,7 @@ async function dumpProfileCookieNeutral (data, evt) {
     if (contentChild.dataset.name === cookieName && contentChild.dataset.domain === cookieDomain) {
       contentChild.classList.remove('locked')
       contentChild.title = getMsg('SetCookieProfileButtonHelpText')
+      document.querySelector('#cookie-list .setKeyCookie[data-domain="' + cookieDomain + '"]').classList.remove('locked')
       break
     }
   }
