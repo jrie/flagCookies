@@ -1353,6 +1353,8 @@ async function cookieLockSwitchNeutral (data, evt) {
       evt.target.classList.remove('locked')
       evt.target.title = getMsg('SetCookieProfileButtonHelpText')
 
+      evt.target.parentNode.parentNode.parentNode.querySelector('.setKeyCookie[data-domain="' + cookieDomain + '"]').classList.remove('locked')
+
       if (data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined) {
         document.querySelector('#profileNoData').removeAttribute('class')
       }
@@ -1370,6 +1372,13 @@ async function cookieLockSwitchNeutral (data, evt) {
     document.querySelector('#profileNoData').className = 'hidden'
     evt.target.classList.add('locked')
     evt.target.title = getMsg('CookieIsLockedProfileCookieHelpTextSettingsRef')
+
+    const lockedCookieCount = evt.target.parentNode.parentNode.children.length
+    const cookieCount = Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length
+
+    if (lockedCookieCount === cookieCount) {
+      evt.target.parentNode.parentNode.parentNode.querySelector('.setKeyCookie[data-domain="' + cookieDomain + '"]').classList.add('locked')
+    }
   }
 }
 
