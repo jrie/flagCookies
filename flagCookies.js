@@ -718,6 +718,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
   if (sessionData !== null) {
     const sessionDataList = document.querySelector('#session-data-list')
+    sessionDataList.replaceChildren()
 
     if (Object.keys(sessionData.local).length !== 0) {
       createSessionStorageDataView('LocalStorage', sessionData.local, getMsg('LocalStorageTitle'), sessionDataList)
