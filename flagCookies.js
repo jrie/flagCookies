@@ -781,6 +781,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
     bubble.appendChild(document.createTextNode(amount))
     document.querySelector(key).appendChild(bubble)
+
+    document.querySelector('#searchBar').dispatchEvent(new Event('keyup'))
   }
 
   // TODO: Check if we can make easier acces if unfolded by default?
