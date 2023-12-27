@@ -524,7 +524,7 @@
     "description": "Global button label text, note this is in UI and might require some styling changes."
   },
   "AutoFlagButtonText": {
-    "message": "Auto flag",
+    "message": "Auto",
     "description": "Auto flag button label text"
   },
   "ProfileButtonText": {
