@@ -802,11 +802,11 @@
     "description": "Displayed text for expired cookie export"
   },
   "ExpiredCookieMsg": {
-    "message": "(expired cookie)",
+    "message": "(abgelaufener Cookie)",
     "description": "Information that the cookie is expired"
   },
   "SecureCookieMsg": {
-    "message": "(secure cookie)",
+    "message": "(sicherer Cookie)",
     "description": "Information that the cookie is secured"
   },
   "CookieNotPresentMsg": {
