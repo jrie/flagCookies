@@ -663,7 +663,9 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
     for (const cookieDomainKey of Object.keys(cookieData[contextName][currentTab.windowId][currentTab.id])) {
       if (cookieDomainKey === 'fgRoot') continue
 
+      let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
       let index = 0
+
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
         if (cookie.fgHandled !== undefined && cookie.fgHandled) {
           ++index
@@ -675,7 +677,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           firstPartyIsolate = cookie.firstPartyDomain
         }
 
-        let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         const isManagedCookieHttp = hasDataContext && data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookieDomainKey] !== undefined && data[contextName]['http://' + cookieDomain][cookieDomainKey][cookie.name] !== undefined
@@ -984,8 +985,9 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
   } else if (globalFlagEnabled) {
     for (const cookieDomainKey of Object.keys(cookieData[contextName][currentTab.windowId][currentTab.id])) {
       if (cookieDomainKey === 'fgRoot') continue
-
+      let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
       let index = 0
+
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
         if (cookie.fgHandled !== undefined && cookie.fgHandled === true) {
           ++index
@@ -998,8 +1000,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         }
 
         if (cookie.fgNotPresent !== undefined) delete cookie.fgNotPresent
-
-        let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         const isManagedCookieHttp = hasDataContext && data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain][cookie.name] !== undefined
@@ -1288,10 +1288,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
   } else {
     for (const cookieDomainKey of Object.keys(cookieData[contextName][currentTab.windowId][currentTab.id])) {
       if (cookieDomainKey === 'fgRoot') continue
+      let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
 
       let index = 0
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
-        let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
