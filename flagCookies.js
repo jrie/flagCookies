@@ -1474,42 +1474,12 @@ async function flagAutoSwitch () {
     data = await browser.storage.local.get()
   }
 
-  if (data.flagCookies_autoFlag === undefined) data.flagCookies_autoFlag = {}
-  if (data.flagCookies_autoFlag[contextName] === undefined) data.flagCookies_autoFlag[contextName] = {}
-
   const autoFlagButton = document.querySelector('#auto-flag')
 
   if (!autoFlagButton.classList.contains('active')) {
     autoFlagButton.classList.add('active')
-    data.flagCookies_autoFlag[contextName][rootDomain] = true
-
-    if (useChrome) {
-      await chrome.storage.local.set(data)
-    } else {
-      await browser.storage.local.set(data)
-    }
-
     switchAutoFlag(true, '#cookie-list')
   } else {
-    delete data.flagCookies_autoFlag[contextName][rootDomain]
-
-    if (Object.keys(data.flagCookies_autoFlag[contextName]).length === 0) {
-      delete data.flagCookies_autoFlag[contextName]
-
-      if (Object.keys(data.flagCookies_autoFlag).length === 0) {
-        delete data.flagCookies_autoFlag
-
-        if (useChrome) await chrome.storage.local.remove('flagCookies_autoFlag')
-        else await browser.storage.local.remove('flagCookies_autoFlag')
-      }
-    }
-
-    if (useChrome) {
-      await chrome.storage.local.set(data)
-    } else {
-      await browser.storage.local.set(data)
-    }
-
     autoFlagButton.classList.remove('active')
     switchAutoFlag(false, '#cookie-list')
   }
@@ -1598,12 +1568,9 @@ async function switchAutoFlag (doSwitchOn, targetList) {
       const contentChild = child.children[0]
 
       if (!contentChild.classList.contains('checkmark') && !contentChild.classList.contains('auto-flagged')) continue
-
-      if (data.flagCookies_autoFlag === undefined || data.flagCookies_autoFlag[contextName] === undefined || data.flagCookies_autoFlag[contextName] !== true) {
-        if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
-        contentChild.className = 'checkmark'
-        contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
-      }
+      if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
+      contentChild.className = 'checkmark'
+      contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
     }
 
     if (data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
@@ -1657,6 +1624,7 @@ async function switchAutoFlagGlobal (doSwitchOn, targetList) {
       }
     }
 
+    if (data.flagCookies_autoFlag === undefined) data.flagCookies_autoFlag = {}
     if (data.flagCookies_autoFlag[contextName] === undefined) data.flagCookies_autoFlag[contextName] = {}
     if (data.flagCookies_autoFlag[contextName][rootDomain] === undefined) data.flagCookies_autoFlag[contextName][rootDomain] = true
 
@@ -1681,7 +1649,7 @@ async function switchAutoFlagGlobal (doSwitchOn, targetList) {
       }
     }
 
-    if (data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
+    if (data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
       delete data.flagCookies_autoFlag[contextName][rootDomain]
 
       if (Object.keys(data.flagCookies_autoFlag[contextName]).length === 0) {
