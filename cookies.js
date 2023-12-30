@@ -525,6 +525,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
   let foundCookie = false
   for (const cookie of cookies) {
     foundCookie = false
+
+    for (const key of Object.keys(cookie)) {
+      if (key.startsWith('fg')) {
+        delete cookie[key]
+        continue
+      }
+    }
+
     /*
     if (cookie.fgHandled !== undefined) delete cookie.fgHandled
     if (cookie.fgNotPresent !== undefined) delete cookie.fgNotPresent
@@ -558,13 +566,13 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             foundCookie = true
 
             if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][cookieDomainString][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][cookieDomainString][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookieEntry.name] === true) {
-              cookieEntry.fgProfile = true
-              cookieEntry.fgAllowed = true
-              cookieEntry.fgProtected = true
-              cookieEntry.fgDomain = strippedRootDomain
+              cookie.fgProfile = true
+              cookie.fgAllowed = true
+              cookie.fgProtected = true
+              cookie.fgDomain = strippedRootDomain
             }
 
-            cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey][index] = cookieEntry
+            cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey][index] = cookie
             break
           }
 
@@ -662,10 +670,9 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
   if (!globalFlagEnabled && urlInFlag) {
     for (const cookieDomainKey of Object.keys(cookieData[contextName][currentTab.windowId][currentTab.id])) {
       if (cookieDomainKey === 'fgRoot') continue
-
       let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
-      let index = 0
 
+      let index = 0
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
         if (cookie.fgHandled !== undefined && cookie.fgHandled) {
           ++index
@@ -986,8 +993,8 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
     for (const cookieDomainKey of Object.keys(cookieData[contextName][currentTab.windowId][currentTab.id])) {
       if (cookieDomainKey === 'fgRoot') continue
       let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
-      let index = 0
 
+      let index = 0
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
         if (cookie.fgHandled !== undefined && cookie.fgHandled === true) {
           ++index
@@ -1886,6 +1893,11 @@ async function onCookieChanged (changeInfo) {
         */
 
         for (const key of Object.keys(cookie)) {
+          if (key.startsWith('fg')) {
+            delete cookie[key]
+            continue
+          }
+
           updatedCookie[key] = cookie[key]
         }
 
