@@ -674,11 +674,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
-        if (cookie.fgHandled !== undefined && cookie.fgHandled) {
-          ++index
-          continue
-        }
-
         let firstPartyIsolate = null
         if (cookie.firstPartyDomain !== undefined) {
           firstPartyIsolate = cookie.firstPartyDomain
@@ -696,12 +691,12 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         else if (cookie.fgRoot !== undefined) delete cookie.fgRoot
 
         const isManagedCookie = hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined
-        const isLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && ((data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) || (data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined))
+        const isLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && (data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined
 
         cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey][index] = cookie
 
         if (!isManagedCookie && hasLocalProfile) {
-          if ((isLogged)) {
+          if (isLogged) {
             if (isLogEnabled) {
               const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, cookieDomainKey])
               addToLogData(currentTab, msg, timeString, timestamp)
@@ -996,11 +991,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
-        if (cookie.fgHandled !== undefined && cookie.fgHandled === true) {
-          ++index
-          continue
-        }
-
         let firstPartyIsolate = null
         if (cookie.firstPartyDomain !== undefined) {
           firstPartyIsolate = cookie.firstPartyDomain
@@ -1019,9 +1009,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         else if (cookie.fgRoot !== undefined) delete cookie.fgRoot
 
         const isManagedCookie = hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookie.domain] !== undefined && data[contextName][strippedRootDomain][cookie.domain][cookie.name] !== undefined
+        const isLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && (data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined
 
         if (!isManagedCookie && cookie.fgRoot === undefined) {
-          if (hasLogged && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookie.domain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookie.domain][cookie.name] !== undefined) {
+          if (isLogged) {
             if (isLogEnabled) {
               const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, accountDomain])
               addToLogData(currentTab, msg, timeString, timestamp)
@@ -1315,7 +1306,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         if (cookieDomain === strippedRootDomain) cookie.fgRoot = true
         else if (cookie.fgRoot !== undefined) delete cookie.fgRoot
 
-        if ((data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true) || (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][strippedRootDomain] !== undefined)) {
+        if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true && data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][strippedRootDomain] !== undefined) {
           cookie.fgProfile = true
           cookie.fgDomain = strippedRootDomain
         }

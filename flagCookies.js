@@ -561,7 +561,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
             if (cookie.fgRoot === undefined && (cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined)) {
               const pCookieDomainMessageElm = document.createElement('span')
               let pCookieDomainMessage = ''
-              if (cookie.fgPermitted !== undefined) {
+              if (cookie.fgPermitted !== undefined && cookie.fgProfile === undefined && cookie.fgProtected === undefined) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie.fgDomain])
               } else if (cookie.fgLogged !== undefined) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie.fgDomain])
@@ -593,7 +593,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
             if (cookie.fgRoot === undefined && (cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined)) {
               const pCookieDomainMessageElm = document.createElement('span')
               let pCookieDomainMessage = ''
-              if (cookie.fgPermitted !== undefined) {
+              if (cookie.fgPermitted !== undefined && cookie.fgProfile === undefined && cookie.fgProtected === undefined) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie.fgDomain])
               } else if (cookie.fgLogged !== undefined) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie.fgDomain])
@@ -1467,13 +1467,6 @@ function switchView (evt) {
 // ---------------------------------------------------------------------------------------------------------------------------------
 // Switch auto flagging
 async function flagAutoSwitch () {
-  let data = null
-  if (useChrome) {
-    data = await chrome.storage.local.get()
-  } else {
-    data = await browser.storage.local.get()
-  }
-
   const autoFlagButton = document.querySelector('#auto-flag')
 
   if (!autoFlagButton.classList.contains('active')) {
@@ -1493,14 +1486,12 @@ async function flagGlobalAuto () {
     data = await browser.storage.local.get()
   }
 
-  if (data.flagCookies_flagGlobal === undefined) data.flagCookies_flagGlobal = {}
-  if (data.flagCookies_flagGlobal[contextName] === undefined) data.flagCookies_flagGlobal[contextName] = false
-
   const globalFlagButton = document.querySelector('#global-flag')
 
   if (!globalFlagButton.classList.contains('active')) {
     globalFlagButton.classList.add('active')
-    data.flagCookies_flagGlobal[contextName] = true
+    if (data.flagCookies_flagGlobal === undefined) data.flagCookies_flagGlobal = {}
+    if (data.flagCookies_flagGlobal[contextName] === undefined) data.flagCookies_flagGlobal[contextName] = true
 
     if (useChrome) {
       await chrome.storage.local.set(data)
@@ -1511,12 +1502,24 @@ async function flagGlobalAuto () {
     switchAutoFlagGlobal(true, '#cookie-list')
   } else {
     globalFlagButton.classList.remove('active')
-    data.flagCookies_flagGlobal[contextName] = false
+    if (data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined) {
+      delete data.flagCookies_flagGlobal[contextName]
 
-    if (useChrome) {
-      await chrome.storage.local.set(data)
-    } else {
-      await browser.storage.local.set(data)
+      if (Object.keys(data.flagCookies_flagGlobal).length === 0) {
+        if (useChrome) {
+          await chrome.storage.local.remove('flagCookies_flagGlobal')
+        } else {
+          await browser.storage.local.remove('flagCookies_flagGlobal')
+        }
+
+        delete data.flagCookies_flagGlobal
+      }
+
+      if (useChrome) {
+        await chrome.storage.local.set(data)
+      } else {
+        await browser.storage.local.set(data)
+      }
     }
 
     const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined
@@ -1564,13 +1567,21 @@ async function switchAutoFlag (doSwitchOn, targetList) {
       browser.runtime.sendMessage({ clearOnActivation: true, tabId })
     }
   } else {
+    const hasGlobalFlag = data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined
+
     for (const child of containerNode) {
       const contentChild = child.children[0]
 
       if (!contentChild.classList.contains('checkmark') && !contentChild.classList.contains('auto-flagged')) continue
       if (contentChild.classList.contains('flagged') || contentChild.classList.contains('permit')) continue
-      contentChild.className = 'checkmark'
-      contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
+
+      if (hasGlobalFlag) {
+        contentChild.className = 'checkmark auto-flagged'
+        contentChild.title = getMsg('CookieIsAutoFlaggedHelpText')
+      } else {
+        contentChild.classList.remove('auto-flagged')
+        contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
+      }
     }
 
     if (data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
@@ -1624,15 +1635,9 @@ async function switchAutoFlagGlobal (doSwitchOn, targetList) {
       }
     }
 
-    if (data.flagCookies_autoFlag === undefined) data.flagCookies_autoFlag = {}
-    if (data.flagCookies_autoFlag[contextName] === undefined) data.flagCookies_autoFlag[contextName] = {}
-    if (data.flagCookies_autoFlag[contextName][rootDomain] === undefined) data.flagCookies_autoFlag[contextName][rootDomain] = true
-
     if (useChrome) {
-      await chrome.storage.local.set(data)
       chrome.runtime.sendMessage({ clearOnActivation: true, tabId })
     } else {
-      await browser.storage.local.set(data)
       browser.runtime.sendMessage({ clearOnActivation: true, tabId })
     }
   } else {
@@ -1647,29 +1652,6 @@ async function switchAutoFlagGlobal (doSwitchOn, targetList) {
         contentChild.className = 'checkmark'
         contentChild.title = getMsg('CookieFlagButtonAllowedHelpText')
       }
-    }
-
-    if (data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
-      delete data.flagCookies_autoFlag[contextName][rootDomain]
-
-      if (Object.keys(data.flagCookies_autoFlag[contextName]).length === 0) {
-        delete data.flagCookies_autoFlag[contextName]
-
-        if (Object.keys(data.flagCookies_autoFlag).length === 0) {
-          delete data.flagCookies_autoFlag
-
-          if (useChrome) await chrome.storage.local.remove('flagCookies_autoFlag')
-          else await browser.storage.local.remove('flagCookies_autoFlag')
-        }
-      }
-    }
-
-    if (useChrome) {
-      await chrome.storage.local.set(data)
-      chrome.runtime.sendMessage({ clearOnActivation: true, tabId })
-    } else {
-      await browser.storage.local.set(data)
-      browser.runtime.sendMessage({ clearOnActivation: true, tabId })
     }
   }
 }
