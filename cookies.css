@@ -352,10 +352,12 @@ li.cookieEntrySublist:hover .cookie-domain {
   color: #ff8020;
 }
 
+/*
 li.cookieEntry.unremoved-secure-cookie,
-li.cookieEntrySublistd.unremoved-secure-cookie {
+li.cookieEntrySublist.unremoved-secure-cookie {
   border: 1px solid #e00;
 }
+*/
 
 .cookieKey,
 .cookieValue,

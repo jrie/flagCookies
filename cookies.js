@@ -1038,7 +1038,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
             increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
             cookie.fgPermitted = true
-            cookie.fgDomain = strippedRootDomain
+            cookie.fgDomain = accountDomain
             cookie.fgProfile = true
             cookie.fgHandled = true
 
@@ -1060,7 +1060,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
             increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
             cookie.fgPermitted = true
-            cookie.fgDomain = strippedRootDomain
+            cookie.fgDomain = accountDomain
             cookie.fgHandled = true
 
             cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey][index] = cookie
@@ -1306,7 +1306,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         if (cookieDomain === strippedRootDomain) cookie.fgRoot = true
         else if (cookie.fgRoot !== undefined) delete cookie.fgRoot
 
-        if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true && data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][strippedRootDomain] !== undefined) {
+        if ((data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true) || (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][strippedRootDomain] !== undefined)) {
           cookie.fgProfile = true
           cookie.fgDomain = strippedRootDomain
         }
@@ -1319,7 +1319,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           continue
         }
 
-        if (cookie.fgDomain !== undefined) delete cookie.fgDomain
+        // if (cookie.fgDomain !== undefined) delete cookie.fgDomain
         if (cookie.fgRoot === undefined) {
           const isEmptyProfile = protectDomainCookies || !hasLogged
           if (hasLogged && data.flagCookies_logged[contextName][accountDomain] !== undefined && data.flagCookies_logged[contextName][accountDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][accountDomain][cookieDomainKey][cookie.name] !== undefined) {
