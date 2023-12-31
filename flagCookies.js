@@ -527,7 +527,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
             }
           }
 
-          if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] !== undefined) {
+          if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] === true) {
             lockSwitch.classList.add('locked')
 
             lockSwitch.title = getMsg('CookieIsLockedProfileCookieHelpText')

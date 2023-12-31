@@ -358,7 +358,7 @@ function resetCookieInformation (tab) {
   if (cookieData === undefined) cookieData = {}
   if (cookieData[contextName] === undefined) cookieData[contextName] = {}
   if (cookieData[contextName][tab.windowId] === undefined) cookieData[contextName][tab.windowId] = {}
-  cookieData[contextName][tab.windowId][tab.id] = {}
+  if (cookieData[contextName][tab.windowId][tab.id] === undefined) cookieData[contextName][tab.windowId][tab.id] = {}
 }
 
 function increaseCount (contextName, tab, cookieName, domain) {
