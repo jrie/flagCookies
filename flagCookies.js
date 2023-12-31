@@ -485,7 +485,14 @@ async function updateUIData (data, cookieData, logData, sessionData) {
         if (hasHeader && cookie.isAdded !== undefined) continue
 
         const sortedCookies = sortObjectByKey(cookieData[cookieDomain], 'name', true)
+        const hasEmptyProfile = data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined || data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined || Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length === 0
+
         for (const cookie of sortedCookies) {
+          let cookieIsLogged = false
+          if (!hasEmptyProfile) {
+            cookieIsLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true
+          }
+
           activeCookies = true
           ++countList['#activeCookies']
 
@@ -565,15 +572,15 @@ async function updateUIData (data, cookieData, logData, sessionData) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie.fgDomain])
               } else if (cookie.fgLogged !== undefined) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie.fgDomain])
-              } else if (cookie.fgProtected !== undefined) {
+              } else if (cookie.fgProtected !== undefined || (!hasEmptyProfile && cookieIsLogged)) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainProtected', [cookie.fgDomain])
-              } else if (cookie.fgProfile !== undefined) {
+              } else if (cookie.fgProfile !== undefined && hasEmptyProfile) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainGlobalProtected', [cookie.fgDomain])
               }
 
               if (!isHandledCookie && cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) {
                 if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie.fgRemovedDomain])
-              } else if (cookie.fgDomain !== undefined && pCookieDomainMessage === '') {
+              } else if (cookie.fgDomain !== undefined && pCookieDomainMessage === '' && cookie.fgHandled) {
                 pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie.fgDomain])
               }
 
@@ -592,14 +599,15 @@ async function updateUIData (data, cookieData, logData, sessionData) {
           } else {
             if (cookie.fgRoot === undefined && (cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined)) {
               const pCookieDomainMessageElm = document.createElement('span')
+
               let pCookieDomainMessage = ''
               if (cookie.fgPermitted !== undefined && cookie.fgProfile === undefined && cookie.fgProtected === undefined) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie.fgDomain])
               } else if (cookie.fgLogged !== undefined) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie.fgDomain])
-              } else if (cookie.fgProtected !== undefined) {
+              } else if (cookie.fgProtected !== undefined || (!hasEmptyProfile && cookieIsLogged)) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainProtected', [cookie.fgDomain])
-              } else if (cookie.fgProfile !== undefined) {
+              } else if (cookie.fgProfile !== undefined && hasEmptyProfile) {
                 pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainGlobalProtected', [cookie.fgDomain])
               }
 
