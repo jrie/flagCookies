@@ -203,12 +203,13 @@ async function clearByDomainJob (request, sender, sendResponse) {
 
 function handleMessage (request, sender, sendResponse) {
   if (request.clearOnActivation !== undefined && request.tabId !== undefined) {
+    // TODO: Bugfix clearing on demand.. only disable for bugfix release
     if (useChrome) {
-      chrome.tabs.get(request.tabId).then(setTabForClearCookies)
+      // chrome.tabs.get(request.tabId).then(setTabForClearCookies)
       return
     }
 
-    browser.tabs.get(request.tabId).then(setTabForClearCookies)
+    // browser.tabs.get(request.tabId).then(setTabForClearCookies)
     return
   }
 
@@ -693,7 +694,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         else if (cookie.fgRoot !== undefined) delete cookie.fgRoot
 
         const isManagedCookie = hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined
-        const isLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && (data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined
+        const isLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && (data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true
 
         cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey][index] = cookie
 
