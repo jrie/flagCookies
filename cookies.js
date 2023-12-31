@@ -359,6 +359,7 @@ function resetCookieInformation (tab) {
   if (cookieData[contextName] === undefined) cookieData[contextName] = {}
   if (cookieData[contextName][tab.windowId] === undefined) cookieData[contextName][tab.windowId] = {}
   if (cookieData[contextName][tab.windowId][tab.id] === undefined) cookieData[contextName][tab.windowId][tab.id] = {}
+  else cookieData[contextName][tab.windowId][tab.id] = {}
 }
 
 function increaseCount (contextName, tab, cookieName, domain) {
@@ -556,6 +557,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
     if (hasHttpProfile || hasHttpsProfile) {
       let cookieDomainString = ''
+
       if (hasHttpProfile) cookieDomainString = 'http://' + domain
       else if (hasHttpsProfile) cookieDomainString = 'https://' + domain
 
