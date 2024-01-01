@@ -59,7 +59,7 @@ async function clearCookiesWrapper (action, cookieDetails, currentTab) {
     const cookiesBaseWWW = await browser.cookies.getAll({ domain: 'www.' + cookieDomain, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookiesSec = await browser.cookies.getAll({ domain: cookieDomain, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookies2 = await browser.cookies.getAll({ domain: domainDot, firstPartyDomain: firstPartyIsolate, storeId: contextName })
-    const cookiesSec2 = await browser.cookies.getAll({ domain: domainDot, secure: true, firstPartyDomain: fgirstPartyIsolate, storeId: contextName })
+    const cookiesSec2 = await browser.cookies.getAll({ domain: domainDot, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookies3 = await browser.cookies.getAll({ domain: domainHttp, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookiesSec3 = await browser.cookies.getAll({ domain: domainHttp, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookies4 = await browser.cookies.getAll({ domain: domainHttps, firstPartyDomain: firstPartyIsolate, storeId: contextName })
@@ -244,35 +244,39 @@ function handleMessage (request, sender, sendResponse) {
 
   if (request.local !== undefined && request.session !== undefined) {
     const tab = sender.tab
+
+    const tabWindowId = tab.windowId
+    const tabTabId = tab.id
+
     let contextName = 'default'
 
     if (tab.cookieStoreId !== undefined) {
       contextName = tab.cookieStoreId
     }
 
-    if (localStorageData[tab.windowId] === undefined) localStorageData[tab.windowId] = {}
-    localStorageData[tab.windowId][tab.id] = {}
+    if (localStorageData[tabWindowId] === undefined) localStorageData[tabWindowId] = {}
+    localStorageData[tabWindowId][tabTabId] = {}
 
-    if (sessionStorageData[tab.windowId] === undefined) sessionStorageData[tab.windowId] = {}
-    sessionStorageData[tab.windowId][tab.id] = {}
+    if (sessionStorageData[tabWindowId] === undefined) sessionStorageData[tabWindowId] = {}
+    sessionStorageData[tabWindowId][tabTabId] = {}
 
     for (const key of Object.keys(request.local)) {
       try {
-        localStorageData[tab.windowId][tab.id][key] = JSON.parse(request.local[key])
+        localStorageData[tabWindowId][tabTabId][key] = JSON.parse(request.local[key])
       } catch {
-        localStorageData[tab.windowId][tab.id][key] = request.local[key]
+        localStorageData[tabWindowId][tabTabId][key] = request.local[key]
       }
     }
 
     for (const key of Object.keys(request.session)) {
       try {
-        sessionStorageData[tab.windowId][tab.id][key] = JSON.parse(request.session[key])
+        sessionStorageData[tabWindowId][tabTabId][key] = JSON.parse(request.session[key])
       } catch {
-        sessionStorageData[tab.windowId][tab.id][key] = request.session[key]
+        sessionStorageData[tabWindowId][tabTabId][key] = request.session[key]
       }
     }
 
-    preSetMouseOverTitle(contextName, tab.id)
+    preSetMouseOverTitle(contextName, tabTabId)
     return
   }
 
@@ -341,66 +345,75 @@ function resetCookieInformation (tab) {
     contextName = tab.cookieStoreId
   }
 
+  const tabWindowId = tab.windowId
+  const tabTabId = tab.id
+
   if (removedData === undefined) removedData = {}
   if (removedData[contextName] === undefined) removedData[contextName] = {}
-  if (removedData[contextName][tab.windowId] === undefined) removedData[contextName][tab.windowId] = {}
-  removedData[contextName][tab.windowId][tab.id] = { count: 0, domains: {} }
+  if (removedData[contextName][tabWindowId] === undefined) removedData[contextName][tabWindowId] = {}
+  removedData[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
 
   if (permittedData === undefined) permittedData = {}
   if (permittedData[contextName] === undefined) permittedData[contextName] = {}
-  if (permittedData[contextName][tab.windowId] === undefined) permittedData[contextName][tab.windowId] = {}
-  permittedData[contextName][tab.windowId][tab.id] = { count: 0, domains: {} }
+  if (permittedData[contextName][tabWindowId] === undefined) permittedData[contextName][tabWindowId] = {}
+  permittedData[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
 
   if (cookieCount === undefined) cookieCount = {}
   if (cookieCount[contextName] === undefined) cookieCount[contextName] = {}
-  if (cookieCount[contextName][tab.windowId] === undefined) cookieCount[contextName][tab.windowId] = {}
-  cookieCount[contextName][tab.windowId][tab.id] = { count: 0, domains: {} }
+  if (cookieCount[contextName][tabWindowId] === undefined) cookieCount[contextName][tabWindowId] = {}
+  cookieCount[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
 
   if (cookieData === undefined) cookieData = {}
   if (cookieData[contextName] === undefined) cookieData[contextName] = {}
-  if (cookieData[contextName][tab.windowId] === undefined) cookieData[contextName][tab.windowId] = {}
-  cookieData[contextName][tab.windowId][tab.id] = {}
+  if (cookieData[contextName][tabWindowId] === undefined) cookieData[contextName][tabWindowId] = {}
+  cookieData[contextName][tabWindowId][tabTabId] = {}
 }
 
 function increaseCount (contextName, tab, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '')
+  const tabWindowId = tab.windowId
+  const tabTabId = tab.id
 
   if (cookieCount[contextName] === undefined) cookieCount[contextName] = {}
-  if (cookieCount[contextName][tab.windowId] === undefined) cookieCount[contextName][tab.windowId] = {}
-  if (cookieCount[contextName][tab.windowId][tab.id] === undefined) cookieCount[contextName][tab.windowId][tab.id] = { count: 0, domains: {} }
-  if (cookieCount[contextName][tab.windowId][tab.id].domains[strippedDomainURL] === undefined) cookieCount[contextName][tab.windowId][tab.id].domains[strippedDomainURL] = []
+  if (cookieCount[contextName][tabWindowId] === undefined) cookieCount[contextName][tabWindowId] = {}
+  if (cookieCount[contextName][tabWindowId][tabTabId] === undefined) cookieCount[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
+  if (cookieCount[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] === undefined) cookieCount[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] = []
 
-  if (cookieCount[contextName][tab.windowId][tab.id].domains[strippedDomainURL].indexOf(cookieName) === -1) {
-    cookieCount[contextName][tab.windowId][tab.id].domains[strippedDomainURL].push(cookieName)
-    ++cookieCount[contextName][tab.windowId][tab.id].count
+  if (cookieCount[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].indexOf(cookieName) === -1) {
+    cookieCount[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].push(cookieName)
+    ++cookieCount[contextName][tabWindowId][tabTabId].count
   }
 }
 
 function increaseRemoved (contextName, tab, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '')
+  const tabWindowId = tab.windowId
+  const tabTabId = tab.id
 
   if (removedData[contextName] === undefined) removedData[contextName] = {}
-  if (removedData[contextName][tab.windowId] === undefined) removedData[contextName][tab.windowId] = {}
-  if (removedData[contextName][tab.windowId][tab.id] === undefined) removedData[contextName][tab.windowId][tab.id] = { count: 0, domains: {} }
-  if (removedData[contextName][tab.windowId][tab.id].domains[strippedDomainURL] === undefined) removedData[contextName][tab.windowId][tab.id].domains[strippedDomainURL] = []
+  if (removedData[contextName][tabWindowId] === undefined) removedData[contextName][tabWindowId] = {}
+  if (removedData[contextName][tabWindowId][tabTabId] === undefined) removedData[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
+  if (removedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] === undefined) removedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] = []
 
-  if (removedData[contextName][tab.windowId][tab.id].domains[strippedDomainURL].indexOf(cookieName) === -1) {
-    removedData[contextName][tab.windowId][tab.id].domains[strippedDomainURL].push(cookieName)
-    ++removedData[contextName][tab.windowId][tab.id].count
+  if (removedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].indexOf(cookieName) === -1) {
+    removedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].push(cookieName)
+    ++removedData[contextName][tabWindowId][tabTabId].count
   }
 }
 
 function increasePermitted (contextName, tab, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '')
+  const tabWindowId = tab.windowId
+  const tabTabId = tab.id
 
   if (permittedData[contextName] === undefined) permittedData[contextName] = {}
-  if (permittedData[contextName][tab.windowId] === undefined) permittedData[contextName][tab.windowId] = {}
-  if (permittedData[contextName][tab.windowId][tab.id] === undefined) permittedData[contextName][tab.windowId][tab.id] = { count: 0, domains: {} }
-  if (permittedData[contextName][tab.windowId][tab.id].domains[strippedDomainURL] === undefined) permittedData[contextName][tab.windowId][tab.id].domains[strippedDomainURL] = []
+  if (permittedData[contextName][tabWindowId] === undefined) permittedData[contextName][tabWindowId] = {}
+  if (permittedData[contextName][tabWindowId][tabTabId] === undefined) permittedData[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
+  if (permittedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] === undefined) permittedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] = []
 
-  if (permittedData[contextName][tab.windowId][tab.id].domains[strippedDomainURL].indexOf(cookieName) === -1) {
-    permittedData[contextName][tab.windowId][tab.id].domains[strippedDomainURL].push(cookieName)
-    ++permittedData[contextName][tab.windowId][tab.id].count
+  if (permittedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].indexOf(cookieName) === -1) {
+    permittedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].push(cookieName)
+    ++permittedData[contextName][tabWindowId][tabTabId].count
   }
 }
 
@@ -1618,8 +1631,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
+  const tabWindowId = tab.windowId
+
   if (changeInfo.status !== undefined && changeInfo.status === 'loading') {
-    if (openTabData[tab.windowId] === undefined || openTabData[tab.windowId][tabId] === undefined || openTabData[tab.windowId][tabId][0] === undefined) {
+    if (openTabData[tabWindowId] === undefined || openTabData[tabWindowId][tabId] === undefined || openTabData[tabWindowId][tabId][0] === undefined) {
       if (useChrome) chrome.action.disable(tabId)
       else browserActionAPI.disable(tabId)
       resetCookieInformation(tab)
@@ -1646,19 +1661,19 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
       contextName = tab.cookieStoreId
     }
 
-    if (openTabData[tab.windowId] !== undefined && openTabData[tab.windowId][tabId] !== undefined && openTabData[tab.windowId][tabId][0] !== undefined && openTabData[tab.windowId][tabId][0].u !== domainKey) {
-      delete cookieData[contextName][openTabData[tab.windowId][tabId][0].u]
+    if (openTabData[tabWindowId] !== undefined && openTabData[tabWindowId][tabId] !== undefined && openTabData[tabWindowId][tabId][0] !== undefined && openTabData[tabWindowId][tabId][0].u !== domainKey) {
+      delete cookieData[contextName][openTabData[tabWindowId][tabId][0].u]
 
-      if (removedData[tab.windowId] === undefined) removedData[tab.windowId] = {}
-      removedData[tab.windowId][tabId] = { count: 0, domains: {} }
+      if (removedData[tabWindowId] === undefined) removedData[tabWindowId] = {}
+      removedData[tabWindowId][tabId] = { count: 0, domains: {} }
 
-      if (permittedData[tab.windowId] === undefined) permittedData[tab.windowId] = {}
-      permittedData[tab.windowId][tabId] = { count: 0, domains: {} }
+      if (permittedData[tabWindowId] === undefined) permittedData[tabWindowId] = {}
+      permittedData[tabWindowId][tabId] = { count: 0, domains: {} }
 
       if (cookieCount[contextName] === undefined) cookieCount[contextName] = {}
-      cookieCount[contextName][tab.windowId][tabId] = { count: 0, domains: {} }
+      cookieCount[contextName][tabWindowId][tabId] = { count: 0, domains: {} }
 
-      removeTabIdfromDataList(tabId, { windowId: tab.windowId })
+      removeTabIdfromDataList(tabId, { windowId: tabWindowId })
     }
 
     addTabURLtoDataList(tab, { url: domainKey, frameId: 0, parentFrameId: -1, type: 'main_frame' }, domainKey)
@@ -1669,8 +1684,8 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     preSetMouseOverTitle(contextName, tabId)
     setBrowserActionIcon(contextName, domainKey, tabId)
 
-    if (removedData[contextName] !== undefined && removedData[contextName][tab.windowId] !== undefined && removedData[contextName][tab.windowId][tabId] !== undefined) {
-      const countStr = removedData[contextName][tab.windowId][tabId].count.toString()
+    if (removedData[contextName] !== undefined && removedData[contextName][tabWindowId] !== undefined && removedData[contextName][tabWindowId][tabId] !== undefined) {
+      const countStr = removedData[contextName][tabWindowId][tabId].count.toString()
       if (countStr !== '0') {
         const strippedDomainURL = domainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
 
