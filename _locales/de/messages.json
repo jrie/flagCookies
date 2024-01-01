@@ -774,7 +774,7 @@
     "description": "Button text for cookie data export to clipboard"
   },
   "ExportCookieClipboardMessage": {
-    "message": "Cookie informationen in die Zwischenablage exportiert",
+    "message": "Cookie Informationen in die Zwischenablage exportiert",
     "description": "Information that cookie data was succesfully copied to the clipboard"
   },
   "ProfileCookiesTabHelpText": {
