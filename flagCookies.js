@@ -2295,33 +2295,6 @@ function doExportCookiesClipFunc (cookies, exportExpired) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-async function doExportCookiesClipboardFunc (tabs) {
-  const tab = tabs.pop()
-
-  let data = null
-  let exportExpired = false
-
-  if (useChrome) {
-    data = await chrome.storage.local.get()
-  } else {
-    data = await browser.storage.local.get()
-  }
-
-  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
-    exportExpired = true
-  }
-
-  if (useChrome) {
-    const cookies = await chrome.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
-    doExportCookiesClipFunc(cookies, exportExpired)
-    return
-  }
-
-  const cookies = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
-  doExportCookiesClipFunc(cookies, exportExpired)
-}
-
-// --------------------------------------------------------------------------------------------------------------------------------
 async function doExportCookiesTabFunc (tabs) {
   const tab = tabs.pop()
 
@@ -2359,9 +2332,28 @@ function exportCookies () {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-function exportCookiesClipboard () {
-  if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, doExportCookiesClipboardFunc)
-  else browser.tabs.query({ currentWindow: true, active: true }, doExportCookiesClipboardFunc)
+async function exportCookiesClipboard () {
+  let data = null
+  let exportExpired = false
+
+  if (useChrome) {
+    data = await chrome.storage.local.get()
+  } else {
+    data = await browser.storage.local.get()
+  }
+
+  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+    exportExpired = true
+  }
+
+  if (useChrome) {
+    const cookies = await chrome.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
+    doExportCookiesClipFunc(cookies, exportExpired)
+    return
+  }
+
+  const cookies = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
+  doExportCookiesClipFunc(cookies, exportExpired)
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
