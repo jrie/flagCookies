@@ -59,7 +59,7 @@ async function clearCookiesWrapper (action, cookieDetails, currentTab) {
     const cookiesBaseWWW = await browser.cookies.getAll({ domain: 'www.' + cookieDomain, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookiesSec = await browser.cookies.getAll({ domain: cookieDomain, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookies2 = await browser.cookies.getAll({ domain: domainDot, firstPartyDomain: firstPartyIsolate, storeId: contextName })
-    const cookiesSec2 = await browser.cookies.getAll({ domain: domainDot, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName })
+    const cookiesSec2 = await browser.cookies.getAll({ domain: domainDot, secure: true, firstPartyDomain: fgirstPartyIsolate, storeId: contextName })
     const cookies3 = await browser.cookies.getAll({ domain: domainHttp, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookiesSec3 = await browser.cookies.getAll({ domain: domainHttp, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName })
     const cookies4 = await browser.cookies.getAll({ domain: domainHttps, firstPartyDomain: firstPartyIsolate, storeId: contextName })
@@ -359,8 +359,7 @@ function resetCookieInformation (tab) {
   if (cookieData === undefined) cookieData = {}
   if (cookieData[contextName] === undefined) cookieData[contextName] = {}
   if (cookieData[contextName][tab.windowId] === undefined) cookieData[contextName][tab.windowId] = {}
-  if (cookieData[contextName][tab.windowId][tab.id] === undefined) cookieData[contextName][tab.windowId][tab.id] = {}
-  else cookieData[contextName][tab.windowId][tab.id] = {}
+  cookieData[contextName][tab.windowId][tab.id] = {}
 }
 
 function increaseCount (contextName, tab, cookieName, domain) {
@@ -677,12 +676,17 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
+        if (cookie.fgHandled !== undefined) {
+          ++index
+          continue
+        }
+
+        increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
+
         let firstPartyIsolate = null
         if (cookie.firstPartyDomain !== undefined) {
           firstPartyIsolate = cookie.firstPartyDomain
         }
-
-        increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         const isManagedCookieHttp = hasDataContext && data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookieDomainKey] !== undefined && data[contextName]['http://' + cookieDomain][cookieDomainKey][cookie.name] !== undefined
         const isManagedCookieHttps = hasDataContext && data[contextName]['https://' + cookieDomain] !== undefined && data[contextName]['https://' + cookieDomain][cookieDomainKey] !== undefined && data[contextName]['https://' + cookieDomain][cookieDomainKey][cookie.name] !== undefined
@@ -994,13 +998,17 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
+        if (cookie.fgHandled !== undefined) {
+          ++index
+          continue
+        }
+
+        increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
+
         let firstPartyIsolate = null
         if (cookie.firstPartyDomain !== undefined) {
           firstPartyIsolate = cookie.firstPartyDomain
         }
-
-        if (cookie.fgNotPresent !== undefined) delete cookie.fgNotPresent
-        increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         const isManagedCookieHttp = hasDataContext && data[contextName]['http://' + cookieDomain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['http://' + cookieDomain][cookie.domain][cookie.name] !== undefined
         const isManagedCookieHttps = hasDataContext && data[contextName]['https://' + cookieDomain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain] !== undefined && data[contextName]['https://' + cookieDomain][cookie.domain][cookie.name] !== undefined
@@ -1293,6 +1301,11 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][currentTab.windowId][currentTab.id][cookieDomainKey]) {
+        if (cookie.fgHandled !== undefined) {
+          ++index
+          continue
+        }
+
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
@@ -2001,19 +2014,8 @@ function addTabURLtoDataList (tab, details, domain) {
       }
 
       if (openTabData[tabWindowId][tabTabId][0] === undefined) {
-        if (removedData[contextName] === undefined) removedData[contextName] = {}
-        if (removedData[contextName][tabWindowId] === undefined) removedData[contextName][tabWindowId] = {}
-        removedData[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
-
-        if (permittedData[contextName] === undefined) permittedData[contextName] = {}
-        if (permittedData[contextName][tabWindowId] === undefined) permittedData[contextName][tabWindowId] = {}
-        permittedData[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
-
-        if (cookieCount[contextName] === undefined) cookieCount[contextName] = {}
-        if (cookieCount[contextName][tabWindowId] === undefined) cookieCount[contextName][tabWindowId] = {}
-        cookieCount[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
-
         openTabData[tabWindowId][tabTabId][0] = { s: contextName, u: requestURL, d: rootDomain }
+        resetCookieInformation(tab)
         cookieData[contextName][tabWindowId][tabTabId].fgRoot = rootDomain
       }
 
