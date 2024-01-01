@@ -64,11 +64,11 @@ async function initDomainURLandProceed (tabs) {
   let sessionData = {}
 
   if (useChrome) {
-    cookieData = await chrome.runtime.sendMessage({ getCookies: true, windowId: tab.windowId, tabId })
-    sessionData = await chrome.runtime.sendMessage({ getLocalData: true, windowId: tab.windowId, tabId })
+    cookieData = await chrome.runtime.sendMessage({ getCookies: true, windowId, tabId })
+    sessionData = await chrome.runtime.sendMessage({ getLocalData: true, windowId, tabId })
   } else {
-    cookieData = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId: tab.windowId, tabId })
-    sessionData = await browser.runtime.sendMessage({ getLocalData: true, storeId: contextName, windowId: tab.windowId, tabId })
+    cookieData = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
+    sessionData = await browser.runtime.sendMessage({ getLocalData: true, storeId: contextName, windowId, tabId })
   }
 
   if (cookieData === undefined && sessionData === undefined) {
@@ -2312,12 +2312,12 @@ async function doExportCookiesClipboardFunc (tabs) {
   }
 
   if (useChrome) {
-    const cookies = await chrome.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+    const cookies = await chrome.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
     doExportCookiesClipFunc(cookies, exportExpired)
     return
   }
 
-  const cookies = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+  const cookies = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
   doExportCookiesClipFunc(cookies, exportExpired)
 }
 
@@ -2337,10 +2337,10 @@ async function doExportCookiesTabFunc (tabs) {
 
   if (useChrome) {
     data = await chrome.storage.local.get()
-    cookies = await chrome.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+    cookies = await chrome.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
   } else {
     data = await browser.storage.local.get()
-    cookies = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId: tab.windowId, tabId: tab.id })
+    cookies = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
   }
 
   if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
