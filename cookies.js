@@ -1054,7 +1054,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             continue
           }
 
-          if (!hasLogged && hasGlobalProfile) {
+          if ((!hasLogged || isLogged) && hasGlobalProfile) {
             if (isLogEnabled) {
               const msg = getMsg('AllowedGlobalProfileCookieMsg', [action, cookie.name, accountDomain])
               addToLogData(currentTab, msg, timeString, timestamp)
@@ -1146,8 +1146,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           ++index
           continue
         }
-
-        if (cookie.fgHandled === true && cookie.fgDomain !== undefined) continue
 
         if (useChrome) {
           const details = { url: 'https://' + cookieDomain + cookie.path, name: cookie.name }
