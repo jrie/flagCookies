@@ -1899,9 +1899,6 @@ async function onCookieChanged (changeInfo) {
     contextName = currentTab.cookieStoreId
   }
 
-  // if (cookieData[contextName] === undefined) cookieData[contextName] = {}
-  // if (cookieData[contextName][tabWindowId] === undefined) cookieData[contextName][tabWindowId] = {}
-  // if (cookieData[contextName][tabWindowId][tabTabId] === undefined) cookieData[contextName][tabWindowId][tabTabId] = {}
   const tabWindowId = currentTab.windowId
   const tabTabId = currentTab.id
 
@@ -1914,17 +1911,6 @@ async function onCookieChanged (changeInfo) {
 
     for (const cookie of cookieData[contextName][tabWindowId][tabTabId][domain]) {
       if (cookieDetails.name === cookie.name && cookieDetails.domain === cookie.domain) {
-        /*
-        if (cookie.fgProfile !== undefined) delete cookie.fgProfile
-        if (cookie.fgPermitted !== undefined) delete cookie.fgPermitted
-        if (cookie.fgRemoved !== undefined) delete cookie.fgRemoved
-        if (cookie.fgProtected !== undefined) delete cookie.fgProtected
-        if (cookie.fgDomain !== undefined) delete cookie.fgDomain
-        if (cookie.fgLogged !== undefined) delete cookie.fgLogged
-        if (cookie.fgHandled !== undefined) delete cookie.fgHandled
-        if (cookie.fgRemovedDomain !== undefined) delete cookie.fgRemovedDomain
-        */
-
         for (const key of Object.keys(cookie)) {
           if (key.startsWith('fg')) {
             delete cookie[key]
@@ -1938,7 +1924,7 @@ async function onCookieChanged (changeInfo) {
           if (key.startsWith('fg')) {
             continue
           }
-          
+
           updatedCookie[key] = cookieDetails[key]
         }
 
