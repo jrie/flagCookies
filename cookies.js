@@ -1913,6 +1913,12 @@ async function onCookieChanged (changeInfo) {
       if (cookieDetails.name === cookie.name && cookieDetails.domain === cookie.domain) {
         for (const key of Object.keys(cookie)) {
           if (key.startsWith('fg')) {
+            delete cookie[key]
+
+            if (updatedCookie[key] !== undefined) {
+              delete updatedCookie[key]
+            }
+
             continue
           }
 
