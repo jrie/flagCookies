@@ -39,7 +39,7 @@ async function clearCookiesWrapper (action, cookieDetails, currentTab) {
   }
 
   const tabWindowId = currentTab.windowId
-  const tabTabId = currentTab.tabId
+  const tabTabId = currentTab.id
 
   const cookieDomain = currentTab.url.replace(/^(http:|https:)\/\//i, '').replace(/^\./, '').match(/.[^/]*/)[0]
 
@@ -82,9 +82,9 @@ async function clearCookiesWrapper (action, cookieDetails, currentTab) {
     const cookiesRootDot = await chrome.cookies.getAll({ domain: '.' + targetDomain })
     cookieList = [cookiesBase, cookiesRoot, cookiesRootDot]
 
-    if (openTabData !== undefined && openTabData[tabWindowId] !== undefined && openTabData[tabWindowId][currentTab.tabId] !== undefined) {
-      for (const tab of Object.keys(openTabData[tabWindowId][tabTabId])) {
-        const targetURL = openTabData[tabWindowId][tabTabId][tab].d
+    if (openTabData !== undefined && openTabData[tabWindowId] !== undefined && openTabData[tabWindowId][tabTabId] !== undefined) {
+      for (const tabUrl of Object.keys(openTabData[tabWindowId][tabTabId])) {
+        const targetURL = openTabData[tabWindowId][tabTabId][tabUrl].d
         cookieList.push(await chrome.cookies.getAll({ domain: targetURL }))
       }
     }
@@ -247,15 +247,14 @@ function handleMessage (request, sender, sendResponse) {
 
   if (request.local !== undefined && request.session !== undefined) {
     const tab = sender.tab
-
-    const tabWindowId = tab.windowId
-    const tabTabId = tab.id
-
     let contextName = 'default'
 
     if (tab.cookieStoreId !== undefined) {
       contextName = tab.cookieStoreId
     }
+
+    const tabWindowId = tab.windowId
+    const tabTabId = tab.id
 
     if (localStorageData[tabWindowId] === undefined) localStorageData[tabWindowId] = {}
     localStorageData[tabWindowId][tabTabId] = {}
@@ -2305,9 +2304,9 @@ async function clearCookiesOnRequest (details) {
       const cookiesRootDot = await chrome.cookies.getAll({ domain: '.' + targetDomain })
       cookieList = [cookiesBase, cookiesURL, cookiesRoot, cookiesRootDot]
 
-      if (openTabData !== undefined && openTabData[tabWindowId] !== undefined && openTabData[tabWindowId][currentTab.tabId] !== undefined) {
-        for (const tab of Object.keys(openTabData[tabWindowId][tabTabId])) {
-          const targetURL = openTabData[tabWindowId][tabTabId][tab].d
+      if (openTabData !== undefined && openTabData[tabWindowId] !== undefined && openTabData[tabWindowId][tabTabId] !== undefined) {
+        for (const tabUrl of Object.keys(openTabData[tabWindowId][tabTabId])) {
+          const targetURL = openTabData[tabWindowId][tabTabId][tabUrl].d
           cookieList.push(await chrome.cookies.getAll({ domain: targetURL }))
         }
       }
