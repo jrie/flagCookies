@@ -1888,20 +1888,18 @@ async function onCookieChanged (changeInfo) {
   const tabTabId = currentTab.id
 
   let foundCookie = false
-  const updatedCookie = {}
+  let updatedCookie = {}
 
   for (const domain of Object.keys(cookieData[contextName][tabWindowId][tabTabId])) {
     let index = 0
     foundCookie = false
 
     for (const cookie of cookieData[contextName][tabWindowId][tabTabId][domain]) {
+      updatedCookie = {}
+
       if (cookieDetails.name === cookie.name && cookieDetails.domain === cookie.domain) {
         for (const key of Object.keys(cookie)) {
           if (key.startsWith('fg')) {
-            if (updatedCookie[key] !== undefined) {
-              delete updatedCookie[key]
-            }
-
             continue
           }
 
@@ -1909,10 +1907,6 @@ async function onCookieChanged (changeInfo) {
         }
 
         for (const key of Object.keys(cookieDetails)) {
-          if (key.startsWith('fg')) {
-            continue
-          }
-
           updatedCookie[key] = cookieDetails[key]
         }
 
@@ -1930,6 +1924,7 @@ async function onCookieChanged (changeInfo) {
   }
 
   if (!foundCookie) {
+    updatedCookie = {}
     for (const key of Object.keys(cookieDetails)) {
       switch (key) {
         case 'name':
