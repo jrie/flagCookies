@@ -694,11 +694,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        if (cookie.fgHandled !== undefined) {
-          ++index
-          continue
-        }
-
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
@@ -1016,11 +1011,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        if (cookie.fgHandled !== undefined) {
-          ++index
-          continue
-        }
-
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
@@ -1317,11 +1307,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        if (cookie.fgHandled !== undefined) {
-          ++index
-          continue
-        }
-
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
@@ -1913,8 +1898,6 @@ async function onCookieChanged (changeInfo) {
       if (cookieDetails.name === cookie.name && cookieDetails.domain === cookie.domain) {
         for (const key of Object.keys(cookie)) {
           if (key.startsWith('fg')) {
-            delete cookie[key]
-
             if (updatedCookie[key] !== undefined) {
               delete updatedCookie[key]
             }
