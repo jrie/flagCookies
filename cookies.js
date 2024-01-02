@@ -552,18 +552,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
       }
     }
 
-    /*
-    if (cookie.fgHandled !== undefined) delete cookie.fgHandled
-    if (cookie.fgNotPresent !== undefined) delete cookie.fgNotPresent
-    if (cookie.fgDomain !== undefined) delete cookie.fgDomain
-    if (cookie.fgProfile !== undefined) delete cookie.fgProfile
-    if (cookie.fgProtected !== undefined) delete cookie.fgProtected
-    if (cookie.fgLogged !== undefined) delete cookie.fgLogged
-    if (cookie.fgPermitted !== undefined) delete cookie.fgPermitted
-    if (cookie.fgRemoved !== undefined) delete cookie.fgRemoved
-    if (cookie.fgRemovedDomain !== undefined) delete cookie.fgRemovedDomain
-    */
-
     const domainKey = cookie.domain
     const domain = domainKey.replace(/^\./, '')
     let hasHttpProfile = false
