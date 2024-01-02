@@ -694,11 +694,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        if (cookie.fgHandled !== undefined) {
-          ++index
-          continue
-        }
-
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
@@ -1012,15 +1007,11 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
   } else if (globalFlagEnabled) {
     for (const cookieDomainKey of Object.keys(cookieData[contextName][tabWindowId][tabTabId])) {
       if (cookieDomainKey === 'fgRoot') continue
+
       let cookieDomain = cookieDomainKey.replace(/^(http:|https:)\/\//i, '').replace(/^www/i, '').replace(/^\./, '')
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        if (cookie.fgHandled !== undefined) {
-          ++index
-          continue
-        }
-
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
@@ -1317,11 +1308,6 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        if (cookie.fgHandled !== undefined) {
-          ++index
-          continue
-        }
-
         increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
