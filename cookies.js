@@ -367,10 +367,8 @@ function resetCookieInformation (tab) {
   cookieData[contextName][tabWindowId][tabTabId] = {}
 }
 
-function increaseCount (contextName, tab, cookieName, domain) {
+function increaseCount (contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '')
-  const tabWindowId = tab.windowId
-  const tabTabId = tab.id
 
   if (cookieCount[contextName] === undefined) cookieCount[contextName] = {}
   if (cookieCount[contextName][tabWindowId] === undefined) cookieCount[contextName][tabWindowId] = {}
@@ -383,10 +381,8 @@ function increaseCount (contextName, tab, cookieName, domain) {
   }
 }
 
-function isInRemoved (contextName, tab, cookieName, domain) {
+function isInRemoved (contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '')
-  const tabWindowId = tab.windowId
-  const tabTabId = tab.id
 
   if (removedData[contextName] !== undefined && removedData[contextName][tabWindowId] !== undefined && removedData[contextName][tabWindowId][tabTabId] !== undefined && removedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] !== undefined) {
     if (removedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].indexOf(cookieName) !== -1) {
@@ -397,10 +393,8 @@ function isInRemoved (contextName, tab, cookieName, domain) {
   return false
 }
 
-function increaseRemoved (contextName, tab, cookieName, domain) {
+function increaseRemoved (contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '')
-  const tabWindowId = tab.windowId
-  const tabTabId = tab.id
 
   if (removedData[contextName] === undefined) removedData[contextName] = {}
   if (removedData[contextName][tabWindowId] === undefined) removedData[contextName][tabWindowId] = {}
@@ -413,10 +407,8 @@ function increaseRemoved (contextName, tab, cookieName, domain) {
   }
 }
 
-function increasePermitted (contextName, tab, cookieName, domain) {
+function increasePermitted (contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '')
-  const tabWindowId = tab.windowId
-  const tabTabId = tab.id
 
   if (permittedData[contextName] === undefined) permittedData[contextName] = {}
   if (permittedData[contextName][tabWindowId] === undefined) permittedData[contextName][tabWindowId] = {}
@@ -692,7 +684,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
+        increaseCount(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
         if (cookie.firstPartyDomain !== undefined) {
@@ -717,10 +709,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (isLogged) {
             if (isLogEnabled) {
               const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, cookieDomainKey])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
 
-            increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+            increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgPermitted = true
             cookie.fgDomain = strippedRootDomain
             cookie.fgProfile = true
@@ -737,10 +729,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if ((hasLogged && isLogged) || !hasLogged) {
             if (isLogEnabled) {
               const msg = getMsg('AllowedGlobalProfileCookieMsg', [action, cookie.name, strippedRootDomain])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
 
-            increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+            increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgPermitted = true
             cookie.fgDomain = strippedRootDomain
             cookie.fgAllowed = true
@@ -764,10 +756,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === false) {
           if (isLogEnabled) {
             const msg = getMsg('PermittedCookieMsg', [action, cookie.name, strippedRootDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
           cookie.fgAllowed = true
@@ -782,10 +774,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         } else if (hasLogged && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) {
           if (isLogEnabled) {
             const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, strippedRootDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
           cookie.fgAllowed = true
@@ -800,10 +792,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         } else if (!isManagedCookie && accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === false) {
           if (isLogEnabled) {
             const msg = getMsg('PermittedCookieMsg', [action, cookie.name, accountDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = accountDomain
           cookie.fgAllowed = true
@@ -814,7 +806,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         }
 
         if (cookie.fgDomain !== undefined) {
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
           cookie.fgAllowed = true
@@ -824,7 +816,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         }
 
         if (cookie.fgProtected === true) {
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
           cookie.fgAllowed = true
@@ -850,14 +842,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (isLogEnabled) {
               if (hasDataContext && ((data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === true))) {
                 const msg = getMsg('DeletedCookieMsg', [action, cookie.name, cookieDomain])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               } else {
                 const msg = getMsg('DeletedCookieMsgAutoFlag', [action, cookie.name, cookieDomain])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookieDomainKey] !== undefined && data[contextName][cookieDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -875,14 +867,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (isLogEnabled) {
               if (hasDataContext && ((data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === true))) {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, 'http://'])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               } else {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttpsAutoFlag', [action, cookie.name, cookieDomain, 'http://'])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookieDomainKey] !== undefined && data[contextName][cookieDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -891,7 +883,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           }
 
           if (cookie.fgRemoved === undefined) {
-            if (!isInRemoved(contextName, currentTab, cookie.name, cookieDomainKey)) {
+            if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
               cookie.fgNotPresent = true
               cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
             }
@@ -930,14 +922,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (isLogEnabled) {
               if (hasDataContext && ((data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === true))) {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               } else {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttpsAutoFlag', [action, cookie.name, cookieDomain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookieDomainKey] !== undefined && data[contextName][cookieDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -971,14 +963,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (isLogEnabled) {
               if (hasDataContext && ((data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === true))) {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               } else {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttpsAutoFlag', [action, cookie.name, cookieDomain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookieDomainKey] !== undefined && data[contextName][cookieDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -990,7 +982,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         }
 
         if (cookie.fgRemoved === undefined) {
-          if (!isInRemoved(contextName, currentTab, cookie.name, cookieDomainKey)) {
+          if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
             cookie.fgNotPresent = true
             cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
           }
@@ -1006,7 +998,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
+        increaseCount(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
         if (cookie.firstPartyDomain !== undefined) {
@@ -1029,10 +1021,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (isLogged) {
             if (isLogEnabled) {
               const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, accountDomain])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
 
-            increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+            increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgPermitted = true
             cookie.fgDomain = accountDomain
             cookie.fgProtected = true
@@ -1046,10 +1038,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (!hasLogged && hasGlobalProfile) {
             if (isLogEnabled) {
               const msg = getMsg('AllowedGlobalProfileCookieMsg', [action, cookie.name, accountDomain])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
 
-            increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+            increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgPermitted = true
             cookie.fgDomain = accountDomain
             cookie.fgProfile = true
@@ -1058,12 +1050,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
               delete cookie.fgProtected
               cookie.fgLogged = true
             }
-            console.log(cookieData)
-            console.log(tabWindowId)
-            console.log(tabTabId)
-            console.log(cookieDomainKey)
-            console.log(index)
-            console.log(cookieData[contextName][tabWindowId][tabTabId])
+
             cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
             ++index
             continue
@@ -1072,10 +1059,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
             if (isLogEnabled) {
               const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, accountDomain])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
 
-            increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+            increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgPermitted = true
             cookie.fgDomain = accountDomain
 
@@ -1090,10 +1077,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookie.domain] !== undefined && data[contextName][strippedRootDomain][cookie.domain][cookie.name] === false) {
           if (isLogEnabled) {
             const msg = getMsg('PermittedCookieMsg', [action, cookie.name, strippedRootDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
 
@@ -1107,10 +1094,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         } else if (hasLogged && isManagedCookie) {
           if (isLogEnabled) {
             const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, strippedRootDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
 
@@ -1124,10 +1111,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         } else if (!isManagedCookie && accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookie.domain] !== undefined && data[contextName][accountDomain][cookie.domain][cookie.name] === false) {
           if (isLogEnabled) {
             const msg = getMsg('PermittedCookieMsg', [action, cookie.name, accountDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = accountDomain
 
@@ -1149,14 +1136,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (isLogEnabled) {
               if (hasDataContext && ((data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === true))) {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, 'https://'])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               } else {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttpsGlobalFlag', [action, cookie.name, cookieDomain, 'https://'])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (accountDomain !== null && hasDataContext && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = accountDomain
@@ -1172,14 +1159,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (chrome.cookies.remove(details2) !== null) {
             if (isLogEnabled) {
               const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, 'http://'])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             } else {
               const msg = getMsg('DeletedCookieMsgHttpAndHttpsGlobalFlag', [action, cookie.name, cookieDomain, 'http://'])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
           }
 
-          increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+          increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgRemoved = true
 
           if (hasDataContext && data[contextName][cookieDomain] !== undefined && data[contextName][cookieDomain][cookieDomainKey] !== undefined && data[contextName][cookieDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -1219,14 +1206,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (isLogEnabled) {
               if (hasDataContext && ((data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookie.domain] !== undefined && data[contextName][strippedRootDomain][cookie.domain][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookie.domain] !== undefined && data[contextName][accountDomain][cookie.domain][cookie.name] === true))) {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               } else {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttpsGlobalFlag', [action, cookie.name, cookieDomain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookie.domain] !== undefined && data[contextName][strippedRootDomain][cookie.domain][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -1260,14 +1247,14 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (isLogEnabled) {
               if (hasDataContext && ((data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookie.domain] !== undefined && data[contextName][strippedRootDomain][cookie.domain][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookie.domain] !== undefined && data[contextName][accountDomain][cookie.domain][cookie.name] === true))) {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookie.domain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               } else {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttpsGlobalFlag', [action, cookie.name, cookie.domain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookie.domain] !== undefined && data[contextName][strippedRootDomain][cookie.domain][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -1279,7 +1266,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         }
 
         if (cookie.fgRemoved === undefined) {
-          if (!isInRemoved(contextName, currentTab, cookie.name, cookieDomainKey)) {
+          if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
             cookie.fgNotPresent = true
             cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
           }
@@ -1295,7 +1282,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
       let index = 0
       for (const cookie of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-        increaseCount(contextName, currentTab, cookie.name, cookieDomainKey)
+        increaseCount(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
 
         let firstPartyIsolate = null
         if (cookie.firstPartyDomain !== undefined) {
@@ -1330,10 +1317,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (hasLogged && data.flagCookies_logged[contextName][accountDomain] !== undefined && data.flagCookies_logged[contextName][accountDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][accountDomain][cookieDomainKey][cookie.name] !== undefined) {
             if (isLogEnabled) {
               const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, accountDomain])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
 
-            increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+            increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgPermitted = true
             cookie.fgDomain = accountDomain
             cookie.fgProtected = true
@@ -1350,10 +1337,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (isEmptyProfile && cookie.fgProfile !== undefined && cookie.fgProtected === undefined) {
               if (isLogEnabled) {
                 const msg = getMsg('AllowedGlobalProfileCookieMsg', [action, cookie.name, accountDomain])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
 
-              increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+              increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
               cookie.fgPermitted = true
               cookie.fgDomain = strippedRootDomain
 
@@ -1371,10 +1358,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
               if (isLogEnabled) {
                 const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, accountDomain])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
 
-              increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+              increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
               cookie.fgPermitted = true
               cookie.fgDomain = strippedRootDomain
 
@@ -1395,10 +1382,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === false) {
           if (isLogEnabled) {
             const msg = getMsg('PermittedCookieMsg', [action, cookie.name, strippedRootDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
 
@@ -1408,10 +1395,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         } else if (hasLogged && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) {
           if (isLogEnabled) {
             const msg = getMsg('AllowedProfileCookieMsg', [action, cookie.name, strippedRootDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
 
@@ -1421,10 +1408,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         } else if (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === false) {
           if (isLogEnabled) {
             const msg = getMsg('PermittedCookieMsg', [action, cookie.name, accountDomain])
-            addToLogData(currentTab, msg, timeString, timestamp)
+            addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
           }
 
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = accountDomain
 
@@ -1434,13 +1421,13 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         }
 
         if (!isManagedCookie && accountDomain === null && hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === undefined) {
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
           ++index
           continue
         } else if (!isManagedCookie && hasDataContext && (data[contextName][accountDomain] === undefined || data[contextName][accountDomain][cookieDomainKey] === undefined || data[contextName][accountDomain][cookieDomainKey][cookie.name] === undefined)) {
-          increasePermitted(contextName, currentTab, cookie.name, cookieDomainKey)
+          increasePermitted(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
           cookie.fgPermitted = true
           cookie.fgDomain = strippedRootDomain
           ++index
@@ -1461,10 +1448,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (chrome.cookies.remove(details) !== null) {
             if (isLogEnabled) {
               const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, 'https://'])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -1480,10 +1467,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (chrome.cookies.remove(details2) !== null) {
             if (isLogEnabled) {
               const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, 'http://'])
-              addToLogData(currentTab, msg, timeString, timestamp)
+              addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
             }
 
-            increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+            increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
             cookie.fgRemoved = true
 
             if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -1493,7 +1480,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           }
 
           if (cookie.fgRemoved === undefined) {
-            if (!isInRemoved(contextName, currentTab, cookie.name, cookieDomainKey)) {
+            if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
               cookie.fgNotPresent = true
               cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
             }
@@ -1531,10 +1518,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (hasDataContext && ((data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === true))) {
               if (isLogEnabled) {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomain, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
 
-              increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+              increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
               cookie.fgRemoved = true
 
               if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -1569,10 +1556,10 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
             if (hasDataContext && ((data[contextName][rootDomain] !== undefined && data[contextName][rootDomain][cookieDomainKey] !== undefined && data[contextName][rootDomain][cookieDomainKey][cookie.name] === true) || (accountDomain !== null && data[contextName][accountDomain] !== undefined && data[contextName][accountDomain][cookieDomainKey] !== undefined && data[contextName][accountDomain][cookieDomainKey][cookie.name] === true))) {
               if (isLogEnabled) {
                 const msg = getMsg('DeletedCookieMsgHttpAndHttps', [action, cookie.name, cookieDomainKey, modifier])
-                addToLogData(currentTab, msg, timeString, timestamp)
+                addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp)
               }
 
-              increaseRemoved(contextName, currentTab, cookie.name, cookieDomainKey)
+              increaseRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
               cookie.fgRemoved = true
 
               if (hasDataContext && data[contextName][strippedRootDomain] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined) cookie.fgRemovedDomain = cookie.domain
@@ -1585,7 +1572,7 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         }
 
         if (cookie.fgRemoved === undefined) {
-          if (!isInRemoved(contextName, currentTab, cookie.name, cookieDomainKey)) {
+          if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
             cookie.fgNotPresent = true
             cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
           }
@@ -1802,13 +1789,7 @@ function clearDomainLog (currentTab, details) {
   }
 }
 
-function addToLogData (currentTab, msg, timeString, timestamp) {
-  let contextName = 'default'
-  if (currentTab.cookieStoreId !== undefined) contextName = currentTab.cookieStoreId
-
-  const tabWindowId = currentTab.windowId
-  const tabTabId = currentTab.id
-
+function addToLogData (contextName, tabWindowId, tabTabId, msg, timeString, timestamp) {
   if (logData[contextName] === undefined) logData[contextName] = {}
   if (logData[contextName][tabWindowId] === undefined) logData[contextName][tabWindowId] = {}
   if (logData[contextName][tabWindowId][tabTabId] === undefined) logData[contextName][tabWindowId][tabTabId] = []
