@@ -564,18 +564,13 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
     }
 
     if (hasHttpProfile || hasHttpsProfile) {
-      let cookieDomainString = ''
-
-      if (hasHttpProfile) cookieDomainString = 'http://' + domain
-      else if (hasHttpsProfile) cookieDomainString = 'https://' + domain
-
       for (const cookieDomainKey of Object.keys(cookieData[contextName][tabWindowId][tabTabId])) {
         let index = 0
         for (const cookieEntry of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
           if (cookieEntry.name === cookie.name && cookieEntry.domain === cookieDomainKey) {
             foundCookie = true
 
-            if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][cookieDomainString][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][cookieDomainString][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookieEntry.name] === true) {
+            if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookieEntry.name] === true) {
               cookie.fgProfile = true
               cookie.fgAllowed = true
               cookie.fgProtected = true
