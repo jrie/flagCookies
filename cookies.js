@@ -2,6 +2,7 @@ const logData = {} // The log data we seen as a report to the settings view
 const logTime = {}
 const cookieData = {} // Storage for cookie shadow, for the interface only!
 const removedData = {}
+const removedByDomain = {}
 const permittedData = {}
 const openTabData = {}
 const cookieCount = {}
@@ -165,7 +166,6 @@ async function handleTabChange (activeInfo) {
 }
 
 function setTabForClearCookies (tab) {
-  // TODO: Add translation for log message in locales
   clearCookiesWrapper(getMsg('ActionDomainClearByButton'), null, tab)
 }
 
@@ -206,13 +206,12 @@ async function clearByDomainJob (request, sender, sendResponse) {
 
 function handleMessage (request, sender, sendResponse) {
   if (request.clearOnActivation !== undefined && request.tabId !== undefined) {
-    // TODO: Bugfix clearing on demand.. only disable for bugfix release
     if (useChrome) {
-      // chrome.tabs.get(request.tabId).then(setTabForClearCookies)
+      chrome.tabs.get(request.tabId).then(setTabForClearCookies)
       return
     }
 
-    // browser.tabs.get(request.tabId).then(setTabForClearCookies)
+    browser.tabs.get(request.tabId).then(setTabForClearCookies)
     return
   }
 
@@ -362,6 +361,10 @@ function resetCookieInformation (tab) {
   if (cookieCount[contextName][tabWindowId] === undefined) cookieCount[contextName][tabWindowId] = {}
   cookieCount[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
 
+  if (removedByDomain[contextName] === undefined) removedByDomain[contextName] = {}
+  if (removedByDomain[contextName][tabWindowId] === undefined) removedByDomain[contextName][tabWindowId] = {}
+  removedByDomain[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
+
   if (cookieData[contextName] === undefined) cookieData[contextName] = {}
   if (cookieData[contextName][tabWindowId] === undefined) cookieData[contextName][tabWindowId] = {}
   cookieData[contextName][tabWindowId][tabTabId] = {}
@@ -391,6 +394,20 @@ function isInRemoved (contextName, tabWindowId, tabTabId, cookieName, domain) {
   }
 
   return false
+}
+
+function addRemovedByDomain (contextName, tabWindowId, tabTabId, cookieName, domain) {
+  const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '')
+
+  if (removedByDomain[contextName] === undefined) removedByDomain[contextName] = {}
+  if (removedByDomain[contextName][tabWindowId] === undefined) removedByDomain[contextName][tabWindowId] = {}
+  if (removedByDomain[contextName][tabWindowId][tabTabId] === undefined) removedByDomain[contextName][tabWindowId][tabTabId] = { count: 0, domains: {} }
+  if (removedByDomain[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] === undefined) removedByDomain[contextName][tabWindowId][tabTabId].domains[strippedDomainURL] = []
+
+  if (removedByDomain[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].indexOf(cookieName) === -1) {
+    removedByDomain[contextName][tabWindowId][tabTabId].domains[strippedDomainURL].push(cookieName)
+    ++removedByDomain[contextName][tabWindowId][tabTabId].count
+  }
 }
 
 function increaseRemoved (contextName, tabWindowId, tabTabId, cookieName, domain) {
@@ -490,9 +507,9 @@ function setMouseOverTitle (contextName, tabWindowId, tabId) {
   }
 
   let countStr = '0'
-
   const hasRemove = removedData[contextName] !== undefined && removedData[contextName][tabWindowId] !== undefined && removedData[contextName][tabWindowId][tabId] !== undefined && removedData[contextName][tabWindowId][tabId].count !== 0
   const hasPermit = permittedData[contextName] !== undefined && permittedData[contextName][tabWindowId] !== undefined && permittedData[contextName][tabWindowId][tabId] !== undefined && permittedData[contextName][tabWindowId][tabId].count !== 0
+  const hasDomainRemoved = removedByDomain[contextName] !== undefined && removedByDomain[contextName][tabWindowId] !== undefined && removedByDomain[contextName][tabWindowId][tabId] !== undefined && removedByDomain[contextName][tabWindowId][tabId].count !== 0
 
   if (hasRemove) {
     countStr = removedData[contextName][tabWindowId][tabId].count.toString()
@@ -501,6 +518,10 @@ function setMouseOverTitle (contextName, tabWindowId, tabId) {
 
   if (hasPermit) {
     titleString += '\n' + getMsg('PermittedCookiesMsg', permittedData[contextName][tabWindowId][tabId].count.toString())
+  }
+
+  if (hasDomainRemoved) {
+    titleString += '\n' + getMsg('RemovedByDomainCookiesMsg', removedByDomain[contextName][tabWindowId][tabId].count.toString())
   }
 
   if (!hasRemove && !hasPermit && !msgsAdded) {
@@ -880,6 +901,8 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (cookie.fgRemoved === undefined) {
             if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
               cookie.fgNotPresent = true
+              addRemovedByDomain(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
+
               cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
             }
           }
@@ -979,6 +1002,8 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         if (cookie.fgRemoved === undefined) {
           if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
             cookie.fgNotPresent = true
+            addRemovedByDomain(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
+
             cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
           }
         }
@@ -1263,6 +1288,8 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         if (cookie.fgRemoved === undefined) {
           if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
             cookie.fgNotPresent = true
+            addRemovedByDomain(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
+
             cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
           }
         }
@@ -1477,6 +1504,8 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
           if (cookie.fgRemoved === undefined) {
             if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
               cookie.fgNotPresent = true
+              addRemovedByDomain(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
+
               cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
             }
           }
@@ -1569,6 +1598,8 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
         if (cookie.fgRemoved === undefined) {
           if (!isInRemoved(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)) {
             cookie.fgNotPresent = true
+            addRemovedByDomain(contextName, tabWindowId, tabTabId, cookie.name, cookieDomainKey)
+
             cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie
           }
         }
@@ -1616,13 +1647,20 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     if (openTabData[tabWindowId] !== undefined && openTabData[tabWindowId][tabId] !== undefined && openTabData[tabWindowId][tabId][0] !== undefined && openTabData[tabWindowId][tabId][0].u !== domainKey) {
       delete cookieData[contextName][openTabData[tabWindowId][tabId][0].u]
 
-      if (removedData[tabWindowId] === undefined) removedData[tabWindowId] = {}
-      removedData[tabWindowId][tabId] = { count: 0, domains: {} }
+      if (removedData[contextName] === undefined) removedData[contextName] = {}
+      if (removedData[contextName][tabWindowId] === undefined) removedData[contextName][tabWindowId] = {}
+      removedData[contextName][tabWindowId][tabId] = { count: 0, domains: {} }
 
-      if (permittedData[tabWindowId] === undefined) permittedData[tabWindowId] = {}
-      permittedData[tabWindowId][tabId] = { count: 0, domains: {} }
+      if (removedByDomain[contextName] === undefined) removedByDomain[contextName] = {}
+      if (removedByDomain[contextName][tabWindowId] === undefined) removedByDomain[contextName][tabWindowId] = {}
+      removedByDomain[tabWindowId][tabId] = 0
+
+      if (permittedData[contextName] === undefined) permittedData[contextName] = {}
+      if (permittedData[contextName][tabWindowId] === undefined) permittedData[contextName][tabWindowId] = {}
+      permittedData[contextName][tabWindowId][tabId] = { count: 0, domains: {} }
 
       if (cookieCount[contextName] === undefined) cookieCount[contextName] = {}
+      if (cookieCount[contextName][tabWindowId] === undefined) cookieCount[contextName][tabWindowId] = {}
       cookieCount[contextName][tabWindowId][tabId] = { count: 0, domains: {} }
 
       removeTabIdfromDataList(tabId, { windowId: tabWindowId })
