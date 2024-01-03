@@ -580,7 +580,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
               if (!isHandledCookie && cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) {
                 if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie.fgRemovedDomain])
-              } else if (cookie.fgDomain !== undefined && pCookieDomainMessage === '' && cookie.fgHandled) {
+              } else if (cookie.fgDomain !== undefined && pCookieDomainMessage === '') {
                 pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie.fgDomain])
               }
 
@@ -592,7 +592,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
             }
 
             p.appendChild(pCookieValueElm)
-            if (cookie.fgHandled && !cookie.fgRemoved && !cookie.fgAllowed) {
+            if (!cookie.fgRemoved && !cookie.fgAllowed) {
               li.title = getMsg('CookieHelpTextSecureMightNotHandled')
               li.classList.add('unremoved-secure-cookie')
             }
