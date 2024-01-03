@@ -286,6 +286,18 @@
       }
     }
   },
+  "RemovedByDomainCookiesMsg": {
+    "message": "Entfernt von Website: $count$",
+    "description": "Icon title for cookies removed by domain",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "0"
+      }
+    }
+  },
+
+  
 
   "GlobalFlagState": {
     "message": "Globaler Modus",
