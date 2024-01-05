@@ -569,9 +569,9 @@ async function updateUIData (data, cookieData, logData, sessionData) {
             const pCookieKeySecMessage = document.createTextNode(getMsg('SecureCookieMsg'))
             pCookieKeySecMessageElm.className = 'secure-cookie'
             pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
-
             pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
           }
+
           if (cookie.fgRoot === undefined && (cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined)) {
             const pCookieDomainMessageElm = document.createElement('span')
 
