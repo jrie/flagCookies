@@ -6,7 +6,7 @@ const removedByDomain = {}
 const permittedData = {}
 const openTabData = {}
 const cookieCount = {}
-
+let removedByUser = 0
 const localStorageData = {}
 const sessionStorageData = {}
 
@@ -210,7 +210,9 @@ async function clearByDomainJob (request, sender, sendResponse) {
       if (await chrome.cookies.get(details) === null && await chrome.cookies.get(details2) === null) {
         --cookieCount
         if (cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared !== undefined) {
-          delete cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared
+          // delete cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared
+          ++index
+          continue
         }
       } else if (await chrome.cookies.remove(details) !== null || await chrome.cookies.remove(details2) !== null) {
         ++removedCookies
@@ -220,7 +222,9 @@ async function clearByDomainJob (request, sender, sendResponse) {
       if (await browser.cookies.get(details) === null && await browser.cookies.get(details2) === null) {
         --cookieCount
         if (cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared !== undefined) {
-          delete cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared
+          // delete cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared
+          ++index
+          continue
         }
       } else if ((await browser.cookies.remove(details) !== null && await browser.cookies.get(details) === null) || (await browser.cookies.remove(details2) !== null && await browser.cookies.get(details2) === null)) {
         ++removedCookies
@@ -234,6 +238,8 @@ async function clearByDomainJob (request, sender, sendResponse) {
   if (removedCookies === cookieCount || removedCookies !== 0) {
     // TODO: Add option to remove cookies from visible list if domain is cleared by user on dumpster
     // delete cookieData[contextName][windowId][tabId][cookieDomain]
+    removedByUser += removedCookies
+    preSetMouseOverTitle(contextName, tabId)
     return true
   }
 
@@ -550,6 +556,10 @@ function setMouseOverTitle (contextName, tabWindowId, tabId) {
   if (hasRemove) {
     countStr = removedData[contextName][tabWindowId][tabId].count.toString()
     titleString += '\n' + getMsg('DeletedCookiesMsg', countStr)
+  }
+
+  if (removedByUser !== 0) {
+    titleString += '\n' + getMsg('DeletedByUserMsg', removedByUser.toString())
   }
 
   if (hasPermit) {
