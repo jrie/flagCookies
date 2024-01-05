@@ -600,7 +600,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
             p.appendChild(pCookieValueElm)
             if (!cookie.fgRemoved && !cookie.fgAllowed) {
-              li.title = getMsg('CookieHelpTextSecureMightNotHandled')
+              // TODO: Check if we really need this fallback
+              // li.title = getMsg('CookieHelpTextSecureMightNotHandled')
               li.classList.add('unremoved-secure-cookie')
             }
           } else {
@@ -633,7 +634,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
             p.appendChild(pCookieValueElm)
             if (!cookie.fgRemoved && !cookie.fgAllowed) {
-              li.title = getMsg('CookieHelpTextSecureMightNotHandled')
+              // TODO: Check if we really need this fallback
+              // li.title = getMsg('CookieHelpTextSecureMightNotHandled')
               li.classList.add('unremoved-secure-cookie')
             }
           }
@@ -871,7 +873,7 @@ function buildHelpIndex () {
 }
 
 /*
-// Note: Legacy for temporary containers compatibility
+// NOTE: Legacy for temporary containers compatibility
 function getTempContainerStatus (contextName) {
   browser.runtime.sendMessage('{c607c8df-14a7-4f28-894f-29e8722976af}', { method: 'isTempContainer', cookieStoreId: contextName }).then(function (isTmp) {
     if (isTmp === true) {
