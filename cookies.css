@@ -334,6 +334,8 @@ li.cookieEntry:hover .secure-cookie,
 li.cookieEntry:hover .cookie-domain li.cookieEntrySublist:hover .secure-cookie,
 li.cookieEntry:hover .nonpresent-cookie,
 li.cookieEntry:hover .cookie-domain li.cookieEntrySublist:hover .nonpresent-cookie,
+li.cookieEntry:hover .cleareduser-cookie,
+li.cookieEntry:hover .cookie-domain li.cookieEntrySublist:hover .cleareduser-cookie,
 li.cookieEntry:hover .expired-cookie,
 li.cookieEntry:hover .cookie-domain li.cookieEntrySublist:hover .expired-cookie,
 li.cookieEntrySublist:hover .cookie-domain {
@@ -343,10 +345,12 @@ li.cookieEntrySublist:hover .cookie-domain {
 
 .dark li.cookieEntry:hover .secure-cookie,
 .dark li.cookieEntry:hover .nonpresent-cookie,
+.dark li.cookieEntry:hover .cleareduser-cookie,
 .dark li.cookieEntry:hover .expired-cookie,
 .dark li.cookieEntry:hover .cookie-domain,
 .dark li.cookieEntrySublist:hover .secure-cookie,
 .dark li.cookieEntrySublist:hover .nonpresent-cookie,
+.dark li.cookieEntrySublist:hover .cleareduser-cookie,
 .dark li.cookieEntrySublist:hover .expired-cookie,
 .dark li.cookieEntrySublist:hover .cookie-domain {
   color: #ff8020;
@@ -362,7 +366,8 @@ li.cookieEntrySublist.unremoved-secure-cookie {
 .cookieKey,
 .cookieValue,
 .secure-cookie,
-.nonpresent-cookie {
+.nonpresent-cookie,
+.cleareduser-cookie {
   transition-property: color;
   transition-duration: 170ms;
 }
@@ -381,7 +386,8 @@ li.cookieEntrySublist.unremoved-secure-cookie {
 .secure-cookie,
 .cookie-domain,
 .expired-cookie,
-.nonpresent-cookie {
+.nonpresent-cookie,
+.cleareduser-cookie {
   color: #9a0000;
   display: inline-block;
   margin-left: 6px;
@@ -392,7 +398,8 @@ li.cookieEntrySublist.unremoved-secure-cookie {
 .chrome .secure-cookie,
 .chrome .cookie-domain,
 .chrome .expired-cookie,
-.chrome .nonpresent-cookie {
+.chrome .nonpresent-cookie,
+.chrome .cleareduser-cookie {
   margin-left: 6px;
 }
 
