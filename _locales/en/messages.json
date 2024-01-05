@@ -125,6 +125,10 @@
     "message": "Inactive cookie",
     "description": "Cookie is inactive display in UI"
   },
+  "CookieWasClearedText": {
+    "message": "removed by interaction",
+    "description": "Cookie is removed by user display in UI"
+  },
   "CookieIsAutoFlaggedHelpText": {
     "message": "This cookie is auto-flagged and will be removed.",
     "description": "Cookie auto-flagged help text"
@@ -824,6 +828,14 @@
   "CookieNotPresentMsg": {
     "message": "(removed by website)",
     "description": "Information that the cookie is removed already by website and could not be cleared"
+  },
+  "CookieWasClearedMsg": {
+    "message": "(removed by user)",
+    "description": "Information that the cookie was removed through the user on the dumpster icon for the domain"
+  },
+  "CookieWasClearedByUserText": {
+    "message": "Cookie was removed on-demand ",
+    "description": "Title information that the cookie was removed through the user for the domain"
   },
   "NoCookieDataExportMsg": {
     "message": "No cookie data to export",
