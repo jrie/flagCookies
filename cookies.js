@@ -174,30 +174,66 @@ async function clearByDomainJob (request, sender, sendResponse) {
   const windowId = request.windowId
   const contextName = request.contextName
   const cookieDomain = request.cookieDomain
+  const rootDomain = request.rootDomain
+
   let cookieCount = cookieData[contextName][windowId][tabId][cookieDomain].length
   let removedCookies = 0
 
+  let data = null
+  if (useChrome) {
+    data = await chrome.storage.local.get()
+  } else {
+    data = await browser.storage.local.get()
+  }
+
+  const hasGlobalProfile = data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] === true
+
+  if (hasGlobalProfile) {
+    return false
+  }
+
+  const hasLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined
+
+  let index = 0
   for (const cookie of cookieData[contextName][windowId][tabId][cookieDomain]) {
+    if (hasLogged && data.flagCookies_logged[contextName][rootDomain][cookieDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true) {
+      ++index
+      continue
+    } else {
+      cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true
+    }
+
     const details = { url: 'https://' + cookieDomain + cookie.path, name: cookie.name }
     const details2 = { url: 'http://' + cookieDomain + cookie.path, name: cookie.name }
 
     if (useChrome) {
       if (await chrome.cookies.get(details) === null && await chrome.cookies.get(details2) === null) {
         --cookieCount
+        if (cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared !== undefined) {
+          delete cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared
+        }
       } else if (await chrome.cookies.remove(details) !== null || await chrome.cookies.remove(details2) !== null) {
         ++removedCookies
+        cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true
       }
     } else {
       if (await browser.cookies.get(details) === null && await browser.cookies.get(details2) === null) {
         --cookieCount
+        if (cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared !== undefined) {
+          delete cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared
+        }
       } else if ((await browser.cookies.remove(details) !== null && await browser.cookies.get(details) === null) || (await browser.cookies.remove(details2) !== null && await browser.cookies.get(details2) === null)) {
         ++removedCookies
+        cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true
       }
     }
+
+    ++index
   }
 
-  if (removedCookies === cookieCount) {
-    delete cookieData[contextName][windowId][tabId][cookieDomain]
+  if (removedCookies === cookieCount || removedCookies !== 0) {
+    // TODO: Add option to remove cookies from visible list if domain is cleared by user on dumpster
+    // delete cookieData[contextName][windowId][tabId][cookieDomain]
     return true
   }
 

@@ -299,9 +299,9 @@ async function clearCookiesByDomain (evt) {
 
   let clearResult = false
   if (useChrome) {
-    clearResult = await chrome.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName })
+    clearResult = await chrome.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain })
   } else {
-    clearResult = await browser.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName })
+    clearResult = await browser.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain })
   }
 
   if (clearResult) {
@@ -486,11 +486,17 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
         const sortedCookies = sortObjectByKey(cookieData[cookieDomain], 'name', true)
         const hasEmptyProfile = data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined || data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined || Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length === 0
+        const hasLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined
 
         for (const cookie of sortedCookies) {
           let cookieIsLogged = false
+          let cookieWasCleared = false
           if (!hasEmptyProfile) {
-            cookieIsLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true
+            cookieIsLogged = hasLogged && data.flagCookies_logged[contextName][rootDomain][cookieDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true
+          }
+
+          if (cookie.fgCleared !== undefined && cookie.fgCleared === true) {
+            cookieWasCleared = true
           }
 
           activeCookies = true
@@ -521,20 +527,20 @@ async function updateUIData (data, cookieData, logData, sessionData) {
               if (data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
                 checkMark.className = 'checkmark flagged'
                 checkMark.title = getMsg('CookieIsFlaggedHelpText')
-                addCookieToList('cookie-list-flagged', cookie.name, cookie.value, cookie.domain, false)
+                addCookieToList('cookie-list-flagged', cookie.name, cookie.value, cookie.domain, false, cookieWasCleared)
                 ++countList['#flaggedCookies']
                 isHandledCookie = true
               } else if (data[contextName][rootDomain][cookie.domain][cookie.name] === false) {
                 checkMark.className = 'checkmark permit'
                 checkMark.title = getMsg('CookieIsPermittedHelpText')
-                addCookieToList('cookie-list-permitted', cookie.name, cookie.value, cookie.domain, false)
+                addCookieToList('cookie-list-permitted', cookie.name, cookie.value, cookie.domain, false, cookieWasCleared)
                 ++countList['#permittedCookies']
                 isHandledCookie = true
               }
             }
           }
 
-          if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+          if (hasLogged && data.flagCookies_logged[contextName][rootDomain][cookie.domain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] === true) {
             lockSwitch.classList.add('locked')
 
             lockSwitch.title = getMsg('CookieIsLockedProfileCookieHelpText')
@@ -552,6 +558,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
           const pCookieValueElm = document.createElement('span')
           const pCookieValue = document.createTextNode(cookie.value)
+
           pCookieValueElm.className = 'cookieValue'
           pCookieValueElm.appendChild(pCookieValue)
 
@@ -625,6 +632,10 @@ async function updateUIData (data, cookieData, logData, sessionData) {
             }
 
             p.appendChild(pCookieValueElm)
+            if (!cookie.fgRemoved && !cookie.fgAllowed) {
+              li.title = getMsg('CookieHelpTextSecureMightNotHandled')
+              li.classList.add('unremoved-secure-cookie')
+            }
           }
 
           const timestampNow = Math.floor(Date.now() * 0.001)
@@ -643,6 +654,18 @@ async function updateUIData (data, cookieData, logData, sessionData) {
             pCookieKeySecMessageElm.className = 'nonpresent-cookie'
             pCookieKeySecMessageElm.appendChild(pCookieKeySecMessage)
             pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
+          }
+
+          if (cookieWasCleared) {
+            const pCookieClearMessageElm = document.createElement('span')
+            const pCookieClearMessage = document.createTextNode(getMsg('CookieWasClearedMsg'))
+            pCookieClearMessageElm.className = 'cleareduser-cookie'
+
+            li.classList.add('inactive-cookie')
+            li.title = getMsg('CookieWasClearedByUserText')
+
+            pCookieClearMessageElm.appendChild(pCookieClearMessage)
+            pCookieKeyElm.appendChild(pCookieClearMessageElm)
           }
 
           li.appendChild(checkMark)
@@ -697,12 +720,12 @@ async function updateUIData (data, cookieData, logData, sessionData) {
       for (const cookieKey of Object.keys(domainData[cookieDomain])) {
         if (domainData[cookieDomain][cookieKey] === true) {
           if (!isDomainCookieInList('#cookie-list-flagged', cookieKey, cookieDomain)) {
-            addCookieToList('cookie-list-flagged', cookieKey, '', cookieDomain, true)
+            addCookieToList('cookie-list-flagged', cookieKey, '', cookieDomain, true, false)
             ++countList['#flaggedCookies']
           }
         } else if (domainData[cookieDomain][cookieKey] === false) {
           if (!isDomainCookieInList('#cookie-list-permitted', cookieKey, cookieDomain)) {
-            addCookieToList('cookie-list-permitted', cookieKey, '', cookieDomain, true)
+            addCookieToList('cookie-list-permitted', cookieKey, '', cookieDomain, true, false)
             ++countList['#permittedCookies']
           }
         }
@@ -903,14 +926,14 @@ function isDomainCookieInList (targetList, cookieKey, cookieDomain) {
   return false
 }
 
-function addCookieToList (targetList, name, value, domain, inactiveCookie) {
+function addCookieToList (targetList, name, value, domain, inactiveCookie, cookieWasCleared) {
   const targetCookieList = document.getElementById(targetList)
   const li = document.createElement('li')
   li.classList.add('cookieEntry')
   li.dataset.name = name
   li.dataset.domain = domain
 
-  if (inactiveCookie) li.classList.add('inactive-cookie')
+  if (inactiveCookie || cookieWasCleared) li.classList.add('inactive-cookie')
 
   const checkMark = document.createElement('button')
 
@@ -943,7 +966,14 @@ function addCookieToList (targetList, name, value, domain, inactiveCookie) {
   pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
 
   const pCookieValueElm = document.createElement('span')
-  const pCookieValue = document.createTextNode(value === '' ? getMsg('CookieIsInactiveText') : value)
+  let pCookieValue = null
+
+  if (cookieWasCleared) {
+    pCookieValue = document.createTextNode(value === '' ? getMsg('CookieWasClearedText') : value)
+  } else {
+    pCookieValue = document.createTextNode(value === '' ? getMsg('CookieIsInactiveText') : value)
+  }
+
   pCookieValueElm.className = 'cookieValue'
   pCookieValueElm.appendChild(pCookieValue)
   p.appendChild(pCookieValueElm)
@@ -1121,18 +1151,19 @@ async function cookieFlagSwitchNeutral (data, evt) {
 
   const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined
   const hasCookie = data[contextName][rootDomain][cookieDomain][cookieName] !== undefined
+  const cookieWasCleared = hasCookie && data[contextName][rootDomain][cookieDomain][cookieName].fgCleared !== undefined && data[contextName][rootDomain][cookieDomain][cookieName].fgCleared === true
 
   if (!hasCookie || (hasAutoFlag && (hasCookie && data[contextName][rootDomain][cookieDomain][cookieName] !== true && data[contextName][rootDomain][cookieDomain][cookieName] !== false))) {
     data[contextName][rootDomain][cookieDomain][cookieName] = true
     evt.target.className = 'checkmark flagged'
     evt.target.title = getMsg('CookieIsFlaggedHelpText')
-    addCookieToList('cookie-list-flagged', cookieName, cookieValue, cookieDomain, false)
+    addCookieToList('cookie-list-flagged', cookieName, cookieValue, cookieDomain, false, cookieWasCleared)
     ++countList['#flaggedCookies']
   } else if (data[contextName][rootDomain][cookieDomain][cookieName] === true) {
     data[contextName][rootDomain][cookieDomain][cookieName] = false
     evt.target.className = 'checkmark permit'
     evt.target.title = getMsg('CookieIsPermittedHelpText')
-    addCookieToList('cookie-list-permitted', cookieName, cookieValue, cookieDomain, false)
+    addCookieToList('cookie-list-permitted', cookieName, cookieValue, cookieDomain, false, cookieWasCleared)
     ++countList['#permittedCookies']
 
     // Remove from flagged list if present
