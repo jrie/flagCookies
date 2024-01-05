@@ -281,6 +281,16 @@
       }
     }
   },
+  "DeletedByUserMsg": {
+    "message": "Removed through interaction: $count$",
+    "description": "Icon title for deleted cookies by domain dumpster clearing in tab",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "0"
+      }
+    }
+  },
   "PermittedCookiesMsg": {
     "message": "Permitted cookies: $count$",
     "description": "Icon title for allowed cookies in tab",
