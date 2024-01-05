@@ -740,7 +740,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
   }
 
   if (data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true) {
-    flagGlobalAuto()
+    document.querySelector('#global-flag').classList.add('active')
+    switchAutoFlagGlobal(true, '#cookie-list')
   }
 
   document.querySelector('#activeCookies').className = 'active'
@@ -750,7 +751,8 @@ async function updateUIData (data, cookieData, logData, sessionData) {
   }
 
   if (data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
-    flagAutoSwitch()
+    document.querySelector('#auto-flag').classList.add('active')
+    switchAutoFlag(true, '#cookie-list')
   }
 
   if (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined) {
