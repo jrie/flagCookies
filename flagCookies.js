@@ -913,9 +913,18 @@ async function updateUI () {
     doDebug = true
   }
 
+  if (data.flagCookies_doDebug !== undefined && data.flagCookies_doDebug === true) {
+    document.querySelector('#confirmDoDebug').classList.add('active')
+    doDebug = true
+  }
+
   if (data.flagCookies_unfoldByDefault !== undefined && data.flagCookies_unfoldByDefault === true) {
     document.querySelector('#confirmUnfolding').classList.add('active')
     unfoldByDefault = true
+  }
+
+  if (data.flagCookies_updateNotifications !== undefined && data.flagCookies_updateNotifications === true) {
+    document.querySelector('#confirmUpdateNotifications').classList.add('active')
   }
 
   for (const key of Object.keys(countList)) {
@@ -1957,6 +1966,29 @@ async function toggleDarkTheme (evt) {
   await browser.storage.local.set(data)
 }
 
+async function toggleUpdateNotifications (evt) {
+  let doSwitchOn = false
+
+  if (!evt.target.classList.contains('active')) {
+    evt.target.classList.add('active')
+    doSwitchOn = true
+  } else {
+    evt.target.classList.remove('active')
+    doSwitchOn = false
+  }
+
+  if (useChrome) {
+    const data = await chrome.storage.local.get(null)
+    data.flagCookies_updateNotifications = doSwitchOn
+    await chrome.storage.local.set(data)
+    return
+  }
+
+  const data = await browser.storage.local.get(null)
+  data.flagCookies_updateNotifications = doSwitchOn
+  await browser.storage.local.set(data)
+}
+
 async function toggleNotifications (evt) {
   let doSwitchOn = false
 
@@ -2625,6 +2657,7 @@ document.querySelector('#confirmSettingsClearing').addEventListener('click', tog
 document.querySelector('#confirmLoggingEnable').addEventListener('click', toggleLogging)
 document.querySelector('#confirmDomainClearing').addEventListener('click', toggleClearing)
 document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
+document.querySelector('#confirmUpdateNotifications').addEventListener('click', toggleUpdateNotifications)
 document.querySelector('#confirmDoDebug').addEventListener('click', toggleDebug)
 document.querySelector('#confirmUnfolding').addEventListener('click', toggleUnfoldDefault)
 document.querySelector('#confirmDarkTheme').addEventListener('click', toggleDarkTheme)

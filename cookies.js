@@ -2543,9 +2543,20 @@ function mergeData (existingData, data) {
   return existingData
 }
 
-function onInstallNotification (details) {
-  let installType = ''
+async function onInstallNotification (details) {
+  let data = false
 
+  if (useChrome) {
+    data = await chrome.storage.local.get('flagCookies_updateNotifications')
+  } else {
+    data = await browser.storage.local.get('flagCookies_updateNotifications')
+  }
+
+  if (data.flagCookies_updateNotifications !== undefined && data.flagCookies_updateNotifications === false) {
+    return
+  }
+
+  let installType = ''
   switch (details.reason) {
     case 'update':
       installType = getMsg('UpdatedInstallationString')
