@@ -107,8 +107,10 @@ function resetStorageCounts (sourceName) {
   sessionDataList.children[1].replaceChildren()
 
   const toggleButton = document.querySelector('#session-data-list li[data-name="' + targetStorage + '"] button.collapseToggle')
-  if (toggleButton !== null && !toggleButton.classList.contains('active')) {
-    toggleButton.dispatchEvent(new window.Event('click'))
+  if (toggleButton !== null) {
+    if (unfoldByDefault && !toggleButton.classList.contains('active')) {
+      toggleButton.dispatchEvent(new window.Event('click'))
+    }
   }
 
   updateCookieCount()
@@ -920,7 +922,7 @@ async function updateUI () {
     const existingBubble = document.querySelector(key + ' > .cookieCount')
 
     if (existingBubble !== null) {
-      document.replaceChild(existingBubble.parentNode, existingBubble)
+      existingBubble.parentNode.removeChild(existingBubble)
     }
 
     const bubble = document.createElement('span')
