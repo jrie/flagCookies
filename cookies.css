@@ -978,7 +978,10 @@ textarea#log {
 }
 
 #settings-notification,
-#settings-use-dark {
+#settings-doDebug,
+#settings-unfolding,
+#settings-use-dark,
+#settings-remove-user-deleted {
   margin-bottom: 25px;
 }
 
@@ -987,9 +990,12 @@ textarea#log {
 #logging-enable span,
 #domain-confirm-clear span,
 #settings-notification span,
+#settings-unfolding span,
+#settings-doDebug span,
 #settings-all-export span,
 #settings-all-import span,
-#settings-use-dark span {
+#settings-use-dark span,
+#settings-remove-user-deleted span {
   position: relative;
   top: 0.65em;
   font-weight: bold;
@@ -1171,7 +1177,10 @@ textarea#log {
 .chrome #domain-confirm-clear span,
 .chrome #cookies-action-export-expired span,
 .chrome #settings-use-dark span,
+.chrome #settings-remove-user-deleted span,
 .chrome #settings-notification span,
+.chrome #settings-unfolding span,
+.chrome #settings-doDebug span,
 .chrome #settings-all-import span {
   top: 0.25em;
 }
