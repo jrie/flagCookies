@@ -169,6 +169,10 @@
     "message": "Browser storage area has been cleared",
     "description": "Notication title browser storage area cleared"
   },
+  "BrowserCookieExportHeadline": {
+    "message": "Browser cookie export to clipboard",
+    "description": "Notication title browser cookies exported to clipboard"
+  },
   "BrowserLocaleStorageClearedText": {
     "message": "Browser 'Local Storage' was cleared",
     "description": "Notication text session storage area was cleared"
@@ -623,13 +627,33 @@
     "message": "Dark color theme",
     "description": "Label for usage of dark theme"
   },
+  "RemoveUserLabelText": {
+    "message": "Remove dumped domain cookies",
+    "description": "Label for removal of removed cookies by dumpster click"
+  },
+  "UnfoldByDefaultLabelText": {
+    "message": "Unfold all domains by default",
+    "description": "Label for unfold all domain entries by default"
+  },
   "SettingsUseDarkHelpText": {
     "message": "Enable dark color theme",
     "description": "Button text to enable dark theme"
   },
+  "SettingsRemoveUserHelpText": {
+    "message": "Remove manual removed domain cookies instead of display them inactive",
+    "description": "Button help text for cookie removal"
+  },
+  "SettingsUnfoldByDefaultHelpText": {
+    "message": "Unfold all domains when opening instead of only first domain entry",
+    "description": "Button help text for domain unfolding on opening"
+  },
   "DisplayNotificationsLabelText": {
     "message": "Display notifications",
     "description": "Shown in settings, display notifications label"
+  },
+  "DoDebugLabelText": {
+    "message": "Show browser console debug-informationen",
+    "description": "Shown in settings, display browser console log output label"
   },
   "DeleteStoredSettingsText": {
     "message": "Delete all stored settings",
@@ -803,6 +827,10 @@
     "message": "Succesfully exported cookie data to clipboard",
     "description": "Information that cookie data was succesfully copied to the clipboard"
   },
+  "ExportCookieJSONMessage": {
+    "message": "Downloaded cookie informationen as JSON file.",
+    "description": "Information that cookie data was succesfully downloaded as JSON file"
+  },
   "ProfileCookiesTabHelpText": {
     "message": "Logged in profile mode cookies, 'keyed' coookies.",
     "description": "Displayed help text for profile mode cookies"
@@ -813,11 +841,15 @@
   },
   "SettingsNotificationsHelpText": {
     "message": "Enable or disable browser notifications.",
-    "description": "Displayed help text for action log"
+    "description": "Displayed help text for active or inactive notifications"
+  },
+  "SettingsDoDebugHelpText": {
+    "message": "Activate or deactivate debug-Log display in browser developer tools",
+    "description": "Displayed help text for debug log switch"
   },
   "SettingsConfirmClearCheckboxHelpText": {
     "message": "Please check the box to confirm storage clearing.",
-    "description": "Displayed help text for action log"
+    "description": "Displayed help text for removal of all settings"
   },
   "SettingsConfirmExpiredCheckboxHelpText": {
     "message": "Also add expired cookies into export",

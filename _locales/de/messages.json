@@ -171,6 +171,10 @@
     "message": "Browser Daten geleert",
     "description": "Notication title browser storage area cleared"
   },
+  "BrowserCookieExportHeadline": {
+      "message": "Browser Cookie Export in Zwischenablage",
+      "description": "Notication title browser cookies exported to clipboard"
+  },
   "BrowserLocaleStorageClearedText": {
     "message": "Browser 'Local Storage' wurde geleert",
     "description": "Notication text session storage area was cleared"
@@ -611,6 +615,14 @@
     "message": "FlagCookies Einstellungen importieren",
     "description": "Shown in import settings, add-on import label"
   },
+  "RemoveUserLabelText": {
+    "message": "Gelöschte Domain Cookies direkt entfernen",
+    "description": "Label for removal of removed cookies by dumpster click"
+  },
+  "UnfoldByDefaultLabelText": {
+    "message": "Domains standardmäßig ausklappen",
+    "description": "Label for unfold all domain entries by default"
+  },
   "UseDarkLabelText": {
     "message": "Dunkles Farbschema",
     "description": "Label for usage of dark theme"
@@ -619,9 +631,21 @@
     "message": "Dunkles Farbschema aktivieren",
     "description": "Button text to enable dark theme"
   },
+  "SettingsRemoveUserHelpText": {
+    "message": "Manuell gelöschte Domain Cookies entfernen anstatt als inaktiv anzuzeigen",
+    "description": "Button help text for cookie removal"
+  },
+  "SettingsUnfoldByDefaultHelpText": {
+    "message": "Alle Domains automatisch erweitern, anstelle des ersten Eintrags",
+    "description": "Button help text for domain unfolding on opening"
+  },
   "DisplayNotificationsLabelText": {
     "message": "Zeige Benachrichtigungen",
     "description": "Shown in settings, display notifications label"
+  },
+  "DoDebugLabelText": {
+    "message": "Browser Konsole Debug-Informationen",
+    "description": "Shown in settings, display browser console log output label"
   },
   "DeleteStoredSettingsText": {
     "message": "Lösche alle Einstellungen",
@@ -803,21 +827,29 @@
     "message": "Cookie Informationen in die Zwischenablage exportiert",
     "description": "Information that cookie data was succesfully copied to the clipboard"
   },
+  "ExportCookieJSONMessage": {
+    "message": "Cookie Informationen als JSON gespeichert.",
+    "description": "Information that cookie data was succesfully downloaded as JSON file"
+  },
   "ProfileCookiesTabHelpText": {
     "message": "Eingeloggter Zustand, Profil Cookes",
     "description": "Displayed help text for profile mode cookies"
   },
   "GeneralAndGlobalSettingsHelpText": {
     "message": "Flag Cookies allgemeine und globale Einstellungen",
-    "description": "Displayed help text for action log"
+    "description": "Displayed help text for settings text"
   },
   "SettingsNotificationsHelpText": {
     "message": "Aktivierte oder deaktivierte Browser Benachrichtungen",
-    "description": "Displayed help text for action log"
+    "description": "Displayed help text for active or inactive notifications"
+  },
+  "SettingsDoDebugHelpText": {
+    "message": "Aktiviere oder deaktiviere Debug-Log in Browser Entwicklerkonsole",
+    "description": "Displayed help text for debug log switch"
   },
   "SettingsConfirmClearCheckboxHelpText": {
-    "message": "Bitte besätigen Sie das Löschen aller Einstellungen",
-    "description": "Displayed help text for action log"
+    "message": "Bitte bestätigen Sie das Löschen aller Einstellungen",
+    "description": "Displayed help text for removal of all settings"
   },
   "SettingsConfirmExpiredCheckboxHelpText": {
     "message": "Abgelaufene Cookies mit in den Export aufnehmen",
