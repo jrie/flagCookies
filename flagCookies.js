@@ -17,6 +17,8 @@ let windowId = 0
 let rootDomain = ''
 let contextName = 'default'
 let isBrowserPage = false
+let doDebug = false
+let unfoldByDefault = false
 
 // Localization
 const getMsg = useChrome ? getChromeMessage : getFirefoxMessage
@@ -73,11 +75,11 @@ async function initDomainURLandProceed (tabs) {
 
   if (cookieData === undefined && sessionData === undefined) {
     rootDomain = null
-    updateUIData(data, null, null, null)
   } else {
     rootDomain = cookieData.rootDomain
-    updateUIData(data, cookieData.cookies, cookieData.logData, sessionData)
   }
+
+  updateUI()
 }
 
 function sortObjectByKey (ObjectElements, keyName, doReverse) {
@@ -306,20 +308,14 @@ async function clearCookiesByDomain (evt) {
 
   if (clearResult) {
     let data = null
-    let cookieData = {}
-    let sessionData = {}
 
     if (useChrome) {
-      data = await chrome.storage.local.get()
-      cookieData = await chrome.runtime.sendMessage({ getCookies: true, windowId, tabId })
-      sessionData = await chrome.runtime.sendMessage({ getLocalData: true, windowId, tabId })
+      data = await chrome.storage.local.get('flagCookies_notifications')
     } else {
-      data = await browser.storage.local.get()
-      cookieData = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
-      sessionData = await browser.runtime.sendMessage({ getLocalData: true, storeId: contextName, windowId, tabId })
+      data = await browser.storage.local.get('flagCookies_notifications')
     }
 
-    updateUIData(data, cookieData.cookies, cookieData.logData, sessionData)
+    updateUI()
 
     if (useChrome) {
       if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
@@ -331,8 +327,138 @@ async function clearCookiesByDomain (evt) {
   }
 }
 
-async function updateUIData (data, cookieData, logData, sessionData) {
+async function updateCookieDataForUI (updateData, targetDomain) {
+  let cookieStore = {}
+
+  if (useChrome) {
+    cookieStore = await chrome.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId, targetDomain })
+  } else {
+    cookieStore = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId, targetDomain })
+  }
+
+  if (cookieStore.cookies === null) {
+    if (doDebug) {
+      console.log('Update cookie data for UI: no cookies to update')
+    }
+    return
+  }
+
+  const cookiesToUpdate = cookieStore.cookies
+
+  for (const key of Object.keys(updateData)) {
+    switch (key) {
+      case 'fgProfile':
+        if (updateData[key] !== null) {
+          updateData.fgDomain = targetDomain !== null ? targetDomain : cookieStore.rootDomain
+        } else {
+          updateData.fgDomain = null
+          updateData.fgProtected = null
+          updateData.fgAllowed = null
+        }
+
+        break
+      default:
+        break
+    }
+  }
+
+  if (doDebug) {
+    console.log('updateData: ', updateData)
+  }
+
+  if (targetDomain === null) {
+    for (const domainKey of Object.keys(cookiesToUpdate)) {
+      let index = 0
+      for (const cookie of cookiesToUpdate[domainKey]) {
+        for (const key of Object.keys(updateData)) {
+          switch (updateData[key]) {
+            case null:
+              if (cookie[key] !== undefined) delete cookie[key]
+              break
+            case true:
+            case false:
+              cookie[key] = updateData[key]
+              break
+            default:
+              cookie[key] = updateData[key]
+              break
+          }
+        }
+
+        cookiesToUpdate[domainKey][index] = cookie
+        ++index
+      }
+    }
+  } else {
+    if (cookiesToUpdate[targetDomain] === undefined) {
+      if (doDebug) {
+        console.log('Update cookie data for UI: targetDomain not present')
+      }
+
+      return
+    }
+
+    let index = 0
+    for (const cookie of cookiesToUpdate[targetDomain]) {
+      for (const key of Object.keys(updateData)) {
+        switch (updateData[key]) {
+          case null:
+            if (cookie[key] !== undefined) delete cookie[key]
+            break
+          case true:
+          case false:
+            cookie[key] = updateData[key]
+            break
+          default:
+            cookie[key] = updateData[key]
+            break
+        }
+      }
+
+      cookiesToUpdate[targetDomain][index] = cookie
+      ++index
+    }
+  }
+
+  let updateResult = {}
+  if (useChrome) {
+    updateResult = await chrome.runtime.sendMessage({ updateCookies: true, cookies: cookiesToUpdate, targetDomain, storeId: contextName, windowId, tabId })
+  } else {
+    updateResult = await browser.runtime.sendMessage({ updateCookies: true, cookies: cookiesToUpdate, targetDomain, storeId: contextName, windowId, tabId })
+  }
+
+  if (doDebug) {
+    if (updateResult.updateStatus === false) {
+      console.log('Update cookie data for UI: cookies could not be updated')
+    } else {
+      console.log('Update cookie data for UI: cookies succesfully updated')
+    }
+  }
+
+  updateUI()
+}
+
+async function updateUI () {
   // set the header of the panel
+
+  let data = null
+  let cookieStore = null
+  let sessionStore = null
+
+  if (useChrome) {
+    data = await chrome.storage.local.get()
+    cookieStore = await chrome.runtime.sendMessage({ getCookies: true, windowId, tabId })
+    sessionStore = await chrome.runtime.sendMessage({ getLocalData: true, windowId, tabId })
+  } else {
+    data = await browser.storage.local.get()
+    cookieStore = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId })
+    sessionStore = await browser.runtime.sendMessage({ getLocalData: true, storeId: contextName, windowId, tabId })
+  }
+
+  const cookieData = cookieStore.cookies
+  const logData = cookieStore.logData
+  const sessionData = sessionStore
+
   const activeTabUrl = document.querySelector('#header-title')
   activeTabUrl.replaceChildren()
 
@@ -341,6 +467,12 @@ async function updateUIData (data, cookieData, logData, sessionData) {
   countList['#flaggedCookies'] = 0
 
   document.querySelector('#header-title').replaceChildren()
+  document.querySelector('#cookie-list').replaceChildren()
+  document.querySelector('#cookie-list-flagged').replaceChildren()
+  document.querySelector('#cookie-list-permitted').replaceChildren()
+  document.querySelector('#session-data-list').replaceChildren()
+  document.querySelector('#help-view').replaceChildren()
+  document.querySelector('#donate-view').replaceChildren()
 
   const introSpan = document.createElement('span')
   introSpan.className = 'intro'
@@ -485,7 +617,12 @@ async function updateUIData (data, cookieData, logData, sessionData) {
         if (hasHeader && cookie.isAdded !== undefined) continue
 
         const sortedCookies = sortObjectByKey(cookieData[cookieDomain], 'name', true)
-        const hasEmptyProfile = data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined || data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined || Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length === 0
+        let hasEmptyProfile = data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined || data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined || Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length === 0
+
+        if (hasEmptyProfile && cookieDomain !== rootDomain && data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined) {
+          hasEmptyProfile = false
+        }
+
         const hasLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined
 
         for (const cookie of sortedCookies) {
@@ -588,7 +725,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
 
             if (!isHandledCookie && cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) {
               if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie.fgRemovedDomain])
-            } else if (cookie.fgDomain !== undefined && pCookieDomainMessage === '') {
+            } else if (cookie.fgDomain !== undefined && isHandledCookie) {
               pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie.fgDomain])
             }
 
@@ -650,7 +787,7 @@ async function updateUIData (data, cookieData, logData, sessionData) {
         }
       }
 
-      if (!hasUnlockedCookie) {
+      if (!hasUnlockedCookie && lockSwitchDomain !== null) {
         lockSwitchDomain.classList.add('locked')
       }
     }
@@ -753,6 +890,9 @@ async function updateUIData (data, cookieData, logData, sessionData) {
   if (data.flagCookies_darkTheme !== undefined && data.flagCookies_darkTheme === true) {
     document.querySelector('#confirmDarkTheme').classList.add('active')
   }
+  if (data.flagCookies_removeUserDeleted !== undefined && data.flagCookies_removeUserDeleted === true) {
+    document.querySelector('#confirmRemoveByUser').classList.add('active')
+  }
 
   if (data.flagCookies_logEnabled !== undefined && data.flagCookies_logEnabled === true) {
     document.querySelector('#confirmLoggingEnable').classList.add('active')
@@ -766,7 +906,23 @@ async function updateUIData (data, cookieData, logData, sessionData) {
     document.querySelector('#confirmExportExpired').classList.add('active')
   }
 
+  if (data.flagCookies_doDebug !== undefined && data.flagCookies_doDebug === true) {
+    document.querySelector('#confirmDoDebug').classList.add('active')
+    doDebug = true
+  }
+
+  if (data.flagCookies_unfoldByDefault !== undefined && data.flagCookies_unfoldByDefault === true) {
+    document.querySelector('#confirmUnfolding').classList.add('active')
+    unfoldByDefault = true
+  }
+
   for (const key of Object.keys(countList)) {
+    const existingBubble = document.querySelector(key + ' > .cookieCount')
+
+    if (existingBubble !== null) {
+      document.replaceChild(existingBubble.parentNode, existingBubble)
+    }
+
     const bubble = document.createElement('span')
     bubble.className = 'cookieCount'
     bubble.dataset.key = key
@@ -791,12 +947,18 @@ async function updateUIData (data, cookieData, logData, sessionData) {
   // TODO: Check if we can make easier acces if unfolded by default?
   for (const collapse of document.querySelectorAll('.collapseToggle')) {
     collapse.addEventListener('click', toggleCollapse)
+
+    if (unfoldByDefault) {
+      collapse.dispatchEvent(new window.Event('click'))
+    }
   }
 
-  const firstToogle = document.querySelector('.collapseToggle')
-  if (firstToogle !== null) firstToogle.click()
+  if (!unfoldByDefault) {
+    const firstToogle = document.querySelector('.collapseToggle')
+    if (firstToogle !== null) firstToogle.click()
 
-  // if (!useChrome) getTempContainerStatus(contextName)
+    // if (!useChrome) getTempContainerStatus(contextName)
+  }
 }
 
 function toggleCollapse (evt) {
@@ -1745,6 +1907,29 @@ async function toggleLogging (evt) {
   await browser.storage.local.set(data)
 }
 
+async function toggleRemovedByUser (evt) {
+  let doSwitchOn = false
+
+  if (!evt.target.classList.contains('active')) {
+    evt.target.classList.add('active')
+    doSwitchOn = true
+  } else {
+    evt.target.classList.remove('active')
+    doSwitchOn = false
+  }
+
+  if (useChrome) {
+    const data = await chrome.storage.local.get(null)
+    data.flagCookies_removeUserDeleted = doSwitchOn
+    await chrome.storage.local.set(data)
+    return
+  }
+
+  const data = await browser.storage.local.get(null)
+  data.flagCookies_removeUserDeleted = doSwitchOn
+  await browser.storage.local.set(data)
+}
+
 async function toggleDarkTheme (evt) {
   let doSwitchOn = false
 
@@ -1788,13 +1973,13 @@ async function toggleNotifications (evt) {
   }
 
   if (useChrome) {
-    const data = await chrome.storage.local.get(null)
+    const data = await chrome.storage.local.get()
     data.flagCookies_notifications = doSwitchOn
     await chrome.storage.local.set(data)
     return
   }
 
-  const data = await browser.storage.local.get(null)
+  const data = await browser.storage.local.get()
   data.flagCookies_notifications = doSwitchOn
   await browser.storage.local.set(data)
 }
@@ -1857,13 +2042,53 @@ async function toggleExportExpired (evt) {
   if (useChrome) {
     const data = await chrome.storage.local.get()
     data.flagCookies_expiredExport = doSwitchOn
-    await chrome.storage.local.set(data)
+    chrome.storage.local.set(data)
     return
   }
 
   const data = await browser.storage.local.get()
   data.flagCookies_expiredExport = doSwitchOn
-  await browser.storage.local.set(data)
+  browser.storage.local.set(data)
+}
+
+async function toggleUnfoldDefault (evt) {
+  evt.target.classList.toggle('active')
+  let doSwitchOn = false
+
+  if (evt.target.classList.contains('active')) {
+    doSwitchOn = true
+  }
+
+  if (useChrome) {
+    const data = await chrome.storage.local.get()
+    data.flagCookies_unfoldByDefault = doSwitchOn
+    chrome.storage.local.set(data)
+    return
+  }
+
+  const data = await browser.storage.local.get()
+  data.flagCookies_unfoldByDefault = doSwitchOn
+  browser.storage.local.set(data)
+}
+
+async function toggleDebug (evt) {
+  evt.target.classList.toggle('active')
+  let doSwitchOn = false
+
+  if (evt.target.classList.contains('active')) {
+    doSwitchOn = true
+  }
+
+  if (useChrome) {
+    const data = await chrome.storage.local.get()
+    data.flagCookies_doDebug = doSwitchOn
+    chrome.storage.local.set(data)
+    return
+  }
+
+  const data = await browser.storage.local.get()
+  data.flagCookies_doDebug = doSwitchOn
+  browser.storage.local.set(data)
 }
 
 function resetUI () {
@@ -1874,6 +2099,7 @@ function resetUI () {
 
   document.body.classList.remove('dark')
   document.querySelector('#confirmDarkTheme').classList.remove('active')
+  document.querySelector('#confirmRemoveByUser').classList.remove('active')
   document.querySelector('#confirmLoggingEnable').classList.add('active')
 
   // Reset cookie list
@@ -2070,15 +2296,14 @@ async function dumpProfileCookieNeutral (data, evt) {
 
 // Switch profile/account mode
 async function accountModeSwitch (evt) {
+  let data = null
+
   if (useChrome) {
-    accountModeSwitchNeutral(await chrome.storage.local.get(), evt)
-    return
+    data = await chrome.storage.local.get()
+  } else {
+    data = await browser.storage.local.get()
   }
 
-  accountModeSwitchNeutral(await browser.storage.local.get(), evt)
-}
-
-async function accountModeSwitchNeutral (data, evt) {
   if (evt.target.classList.contains('active')) {
     if (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined) {
       delete data.flagCookies_accountMode[contextName][rootDomain]
@@ -2096,18 +2321,20 @@ async function accountModeSwitchNeutral (data, evt) {
 
     if (useChrome) await chrome.storage.local.set(data)
     else await browser.storage.local.set(data)
-    evt.target.removeAttribute('class')
+    evt.target.classList.remove('active')
 
     // Account mode icon removal
     if (useChrome) chrome.action.setIcon({ tabId, path: { 16: 'icons/fc16.png', 48: 'icons/fc48.png', 128: 'icons/fc128.png' } })
     else browserActionAPI.setIcon({ tabId, path: { 48: 'icons/flagcookies_icon.svg', 64: 'icons/flagcookies_icon.svg', 96: 'icons/flagcookies_icon.svg', 128: 'icons/flagcookies_icon.svg' } })
+
+    updateCookieDataForUI({ fgProfile: null }, null)
     return
   }
 
   if (data.flagCookies_accountMode === undefined) data.flagCookies_accountMode = {}
   if (data.flagCookies_accountMode[contextName] === undefined) data.flagCookies_accountMode[contextName] = {}
   data.flagCookies_accountMode[contextName][rootDomain] = true
-  evt.target.className = 'active'
+  evt.target.classList.add('active')
 
   if (useChrome) await chrome.storage.local.set(data)
   else await browser.storage.local.set(data)
@@ -2115,6 +2342,8 @@ async function accountModeSwitchNeutral (data, evt) {
   // Account mode icon
   if (useChrome) chrome.action.setIcon({ tabId, path: { 16: 'icons/fc16p.png', 48: 'icons/fc48p.png', 128: 'icons/fc128p.png' } })
   else browserActionAPI.setIcon({ tabId, path: { 48: 'icons/flagcookies_profil_icon.svg', 64: 'icons/flagcookies_profil_icon.svg', 96: 'icons/flagcookies_profil_icon.svg', 128: 'icons/flagcookies_profil_icon.svg' } })
+
+  updateCookieDataForUI({ fgProfile: true }, null)
 }
 
 function loadHelp (currentLocal) {
@@ -2219,7 +2448,12 @@ function doExportCookiesFunc (cookies, exportExpired) {
   else if (cookies.cookies === undefined) return
 
   if (cookies.cookies === null) {
-    window.alert(getMsg('NoCookieDataExportMsg'))
+    if (useChrome) {
+      chrome.notifications.create('notification_cookie_data_export', { type: 'basic', message: getMsg('NoCookieDataExportMsg'), title: getMsg('BrowserCookieExportHeadline'), iconUrl: 'icons/fc128.png' })
+    } else {
+      browser.notifications.create('notification_cookie_data_export', { type: 'basic', message: getMsg('NoCookieDataExportMsg'), title: getMsg('BrowserCookieExportHeadline'), iconUrl: 'icons/flagcookies_icon.svg' })
+    }
+
     return
   }
 
@@ -2254,6 +2488,12 @@ function doExportCookiesFunc (cookies, exportExpired) {
     dlLink.click()
     dlLink.parentNode.removeChild(dlLink)
     URL.revokeObjectURL(dlLink.href)
+
+    if (useChrome) {
+      chrome.notifications.create('notification_cookie_data_export', { type: 'basic', message: getMsg('ExportCookieJSONMessage'), title: getMsg('BrowserCookieExportHeadline'), iconUrl: 'icons/fc128.png' })
+    } else {
+      browser.notifications.create('notification_cookie_data_export', { type: 'basic', message: getMsg('ExportCookieJSONMessage'), title: getMsg('BrowserCookieExportHeadline'), iconUrl: 'icons/flagcookies_icon.svg' })
+    }
   }
 }
 
@@ -2264,7 +2504,11 @@ function doExportCookiesClipFunc (cookies, exportExpired) {
   else if (cookies.cookies === undefined) return
 
   if (cookies.cookies === null) {
-    window.alert(getMsg('NoCookieDataExportMsg'))
+    if (useChrome) {
+      chrome.notifications.create('notification_cookie_data_export', { type: 'basic', message: getMsg('NoCookieDataExportMsg'), title: getMsg('BrowserCookieExportHeadline'), iconUrl: 'icons/fc128.png' })
+    } else {
+      browser.notifications.create('notification_cookie_data_export', { type: 'basic', message: getMsg('NoCookieDataExportMsg'), title: getMsg('BrowserCookieExportHeadline'), iconUrl: 'icons/flagcookies_icon.svg' })
+    }
     return
   }
 
@@ -2290,7 +2534,13 @@ function doExportCookiesClipFunc (cookies, exportExpired) {
     }
 
     navigator.clipboard.writeText(JSON.stringify(jsonData)).then(
-      function () { window.alert(getMsg('ExportCookieClipboardMessage')) }
+      function () {
+        if (useChrome) {
+          chrome.notifications.create('notification_cookie_data_export', { type: 'basic', message: getMsg('ExportCookieClipboardMessage'), title: getMsg('BrowserCookieExportHeadline'), iconUrl: 'icons/fc128.png' })
+        } else {
+          browser.notifications.create('notification_cookie_data_export', { type: 'basic', message: getMsg('ExportCookieClipboardMessage'), title: getMsg('BrowserCookieExportHeadline'), iconUrl: 'icons/flagcookies_icon.svg' })
+        }
+      }
     )
   }
 }
@@ -2373,7 +2623,10 @@ document.querySelector('#confirmSettingsClearing').addEventListener('click', tog
 document.querySelector('#confirmLoggingEnable').addEventListener('click', toggleLogging)
 document.querySelector('#confirmDomainClearing').addEventListener('click', toggleClearing)
 document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
+document.querySelector('#confirmDoDebug').addEventListener('click', toggleDebug)
+document.querySelector('#confirmUnfolding').addEventListener('click', toggleUnfoldDefault)
 document.querySelector('#confirmDarkTheme').addEventListener('click', toggleDarkTheme)
+document.querySelector('#confirmRemoveByUser').addEventListener('click', toggleRemovedByUser)
 document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
 document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
 document.querySelector('#confirmExportExpired').addEventListener('click', toggleExportExpired)
