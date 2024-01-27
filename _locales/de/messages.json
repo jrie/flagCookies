@@ -643,6 +643,10 @@
     "message": "Zeige Benachrichtigungen",
     "description": "Shown in settings, display notifications label"
   },
+  "DisplayUpdateNotificationsLabelText": {
+    "message": "Zeige Update-Benachrichtigungen",
+    "description": "Shown in settings, display update notifications label"
+  },
   "DoDebugLabelText": {
     "message": "Browser Konsole Debug-Informationen",
     "description": "Shown in settings, display browser console log output label"
@@ -840,8 +844,12 @@
     "description": "Displayed help text for settings text"
   },
   "SettingsNotificationsHelpText": {
-    "message": "Aktivierte oder deaktivierte Browser Benachrichtungen",
+    "message": "Aktivier oder deaktiviere Browser Benachrichtungen",
     "description": "Displayed help text for active or inactive notifications"
+  },
+  "SettingsUpdateNotificationsHelpText": {
+    "message": "Aktivier oder deaktivier Update Browser Benachrichtungen",
+    "description": "Displayed help text for active or inactive update and install notifications"
   },
   "SettingsDoDebugHelpText": {
     "message": "Aktiviere oder deaktiviere Debug-Log in Browser Entwicklerkonsole",

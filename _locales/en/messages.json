@@ -651,6 +651,10 @@
     "message": "Display notifications",
     "description": "Shown in settings, display notifications label"
   },
+  "DisplayUpdateNotificationsLabelText": {
+    "message": "Display update notifications",
+    "description": "Shown in settings, display update notifications label"
+  },
   "DoDebugLabelText": {
     "message": "Show browser console debug-informationen",
     "description": "Shown in settings, display browser console log output label"
@@ -842,6 +846,10 @@
   "SettingsNotificationsHelpText": {
     "message": "Enable or disable browser notifications.",
     "description": "Displayed help text for active or inactive notifications"
+  },
+  "SettingsUpdateNotificationsHelpText": {
+    "message": "Enable or disable install and or update notifications",
+    "description": "Displayed help text for active or inactive update and install notifications"
   },
   "SettingsDoDebugHelpText": {
     "message": "Activate or deactivate debug-Log display in browser developer tools",
