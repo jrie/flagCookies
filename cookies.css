@@ -980,6 +980,8 @@ textarea#log {
 #settings-notification,
 #settings-doDebug,
 #settings-unfolding,
+#settings-notification,
+#settings-updateNotification,
 #settings-use-dark,
 #settings-remove-user-deleted {
   margin-bottom: 25px;
@@ -991,6 +993,7 @@ textarea#log {
 #domain-confirm-clear span,
 #settings-notification span,
 #settings-unfolding span,
+#settings-updateNotification span,
 #settings-doDebug span,
 #settings-all-export span,
 #settings-all-import span,
@@ -1180,6 +1183,7 @@ textarea#log {
 .chrome #settings-remove-user-deleted span,
 .chrome #settings-notification span,
 .chrome #settings-unfolding span,
+.chrome #settings-updateNotification span,
 .chrome #settings-doDebug span,
 .chrome #settings-all-import span {
   top: 0.25em;
