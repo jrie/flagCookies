@@ -193,13 +193,16 @@ async function clearByDomainJob (request, sender, sendResponse) {
   }
 
   const hasLogged = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined
+  const doRemoveByUser = data.flagCookies_removeUserDeleted !== undefined && data.flagCookies_removeUserDeleted === true
 
   let index = 0
-  for (const cookie of cookieData[contextName][windowId][tabId][cookieDomain]) {
+  const cookiesCopy = Array.from(cookieData[contextName][windowId][tabId][cookieDomain])
+
+  for (const cookie of cookiesCopy) {
     if (hasLogged && data.flagCookies_logged[contextName][rootDomain][cookieDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true) {
       ++index
       continue
-    } else {
+    } else if (!doRemoveByUser) {
       cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true
     }
 
@@ -209,25 +212,37 @@ async function clearByDomainJob (request, sender, sendResponse) {
     if (useChrome) {
       if (await chrome.cookies.get(details) === null && await chrome.cookies.get(details2) === null) {
         --cookieCount
-        if (cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared !== undefined) {
-          // delete cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared
-          ++index
+
+        if (doRemoveByUser) {
+          cookieData[contextName][windowId][tabId][cookieDomain].splice(index, 1)
           continue
         }
       } else if (await chrome.cookies.remove(details) !== null || await chrome.cookies.remove(details2) !== null) {
         ++removedCookies
+
+        if (doRemoveByUser) {
+          cookieData[contextName][windowId][tabId][cookieDomain].splice(index, 1)
+          continue
+        }
+
         cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true
       }
     } else {
       if (await browser.cookies.get(details) === null && await browser.cookies.get(details2) === null) {
         --cookieCount
-        if (cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared !== undefined) {
-          // delete cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared
-          ++index
+
+        if (doRemoveByUser) {
+          cookieData[contextName][windowId][tabId][cookieDomain].splice(index, 1)
           continue
         }
       } else if ((await browser.cookies.remove(details) !== null && await browser.cookies.get(details) === null) || (await browser.cookies.remove(details2) !== null && await browser.cookies.get(details2) === null)) {
         ++removedCookies
+
+        if (doRemoveByUser) {
+          cookieData[contextName][windowId][tabId][cookieDomain].splice(index, 1)
+          continue
+        }
+
         cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true
       }
     }
@@ -323,6 +338,28 @@ function handleMessage (request, sender, sendResponse) {
     return
   }
 
+  if (request.updateCookies !== undefined && request.cookies !== undefined && request.targetDomain !== undefined && request.windowId !== undefined && request.tabId !== undefined && request.storeId !== undefined) {
+    // TODO: Add action if targetDomain !== null
+
+    if (cookieData[request.storeId] !== undefined && cookieData[request.storeId][request.windowId] !== undefined && cookieData[request.storeId][request.windowId][request.tabId] !== undefined) {
+      // console.log('cookieData before\n', cookieData[request.storeId][request.windowId][request.tabId])
+      if (request.targetDomain === null) {
+        for (const domainKey of Object.keys(request.cookies)) {
+          cookieData[request.storeId][request.windowId][request.tabId][domainKey] = request.cookies[domainKey]
+        }
+      }
+      if (request.targetDomain !== null && cookieData[request.storeId][request.windowId][request.tabId][request.targetDomain] !== undefined) {
+        // cookieData[request.storeId][request.windowId][request.tabId][request.targetDomain][request.updateCookies] = request.updateCookies
+      }
+
+      sendResponse({ updateStatus: true })
+      return
+    }
+
+    sendResponse({ updateStatus: false })
+    return
+  }
+
   if (request.getCookies !== undefined && request.windowId !== undefined && request.tabId !== undefined) {
     const cookieDataDomain = {}
 
@@ -331,6 +368,8 @@ function handleMessage (request, sender, sendResponse) {
       contextName = request.storeId
     }
 
+    // console.log('cookieData:', cookieData)
+
     if (cookieData[contextName] === undefined || cookieData[contextName][request.windowId] === undefined || cookieData[contextName][request.windowId][request.tabId] === undefined) {
       sendResponse({ sessionData: null, cookies: null, rootDomain: null, msg: getMsg('UnknownDomain'), logData: null })
       return
@@ -338,12 +377,10 @@ function handleMessage (request, sender, sendResponse) {
 
     const rootDomain = cookieData[contextName][request.windowId][request.tabId].fgRoot
 
-    for (const cookieDomainKey of Object.keys(cookieData[contextName][request.windowId][request.tabId])) {
-      if (cookieDomainKey === 'fgRoot') continue
-
-      if (cookieDataDomain[cookieDomainKey] === undefined) cookieDataDomain[cookieDomainKey] = []
-
-      for (const cookie of cookieData[contextName][request.windowId][request.tabId][cookieDomainKey]) {
+    if (request.targetDomain !== undefined && request.targetDomain !== null) {
+      for (const cookie of cookieData[contextName][request.windowId][request.tabId][request.targetDomain]) {
+        if (cookieDataDomain[request.targetDomain] === undefined) cookieDataDomain[request.targetDomain] = []
+        console.log(cookie)
         for (const key of Object.keys(cookie)) {
           if (key.startsWith('fg')) {
             continue
@@ -366,7 +403,39 @@ function handleMessage (request, sender, sendResponse) {
           }
         }
 
-        cookieDataDomain[cookieDomainKey].push(cookie)
+        cookieDataDomain[request.targetDomain].push(cookie)
+      }
+    } else {
+      for (const cookieDomainKey of Object.keys(cookieData[contextName][request.windowId][request.tabId])) {
+        if (cookieDomainKey === 'fgRoot') continue
+
+        if (cookieDataDomain[cookieDomainKey] === undefined) cookieDataDomain[cookieDomainKey] = []
+
+        for (const cookie of cookieData[contextName][request.windowId][request.tabId][cookieDomainKey]) {
+          for (const key of Object.keys(cookie)) {
+            if (key.startsWith('fg')) {
+              continue
+            }
+
+            switch (key) {
+              case 'name':
+              case 'value':
+              case 'domain':
+              case 'path':
+              case 'secure':
+              case 'expirationDate':
+              case 'firstPartyDomain':
+              case 'partitionKey':
+                // case 'storeId':
+                continue
+              default:
+                delete cookie[key]
+                continue
+            }
+          }
+
+          cookieDataDomain[cookieDomainKey].push(cookie)
+        }
       }
     }
 
