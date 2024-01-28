@@ -711,7 +711,7 @@ async function updateUI () {
             pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
           }
 
-          if (cookie.fgRoot === undefined && (cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined)) {
+          if (cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined) {
             const pCookieDomainMessageElm = document.createElement('span')
 
             let pCookieDomainMessage = ''
