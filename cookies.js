@@ -342,12 +342,16 @@ function handleMessage (request, sender, sendResponse) {
     // TODO: Add action if targetDomain !== null
 
     if (cookieData[request.storeId] !== undefined && cookieData[request.storeId][request.windowId] !== undefined && cookieData[request.storeId][request.windowId][request.tabId] !== undefined) {
-      // console.log('cookieData before\n', cookieData[request.storeId][request.windowId][request.tabId])
       if (request.targetDomain === null) {
         for (const domainKey of Object.keys(request.cookies)) {
+          if (domainKey === 'fgRoot') {
+            continue
+          }
+
           cookieData[request.storeId][request.windowId][request.tabId][domainKey] = request.cookies[domainKey]
         }
       }
+
       if (request.targetDomain !== null && cookieData[request.storeId][request.windowId][request.tabId][request.targetDomain] !== undefined) {
         // cookieData[request.storeId][request.windowId][request.tabId][request.targetDomain][request.updateCookies] = request.updateCookies
       }
