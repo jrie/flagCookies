@@ -711,33 +711,6 @@ async function updateUI () {
             pCookieKeyElm.appendChild(pCookieKeySecMessageElm)
           }
 
-          if (cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined) {
-            const pCookieDomainMessageElm = document.createElement('span')
-
-            let pCookieDomainMessage = ''
-            if (cookie.fgPermitted !== undefined && cookie.fgProfile === undefined && cookie.fgProtected === undefined) {
-              pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie.fgDomain])
-            } else if (cookie.fgLogged !== undefined) {
-              pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie.fgDomain])
-            } else if (cookie.fgProtected !== undefined || (!hasEmptyProfile && cookieIsLogged)) {
-              pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainProtected', [cookie.fgDomain])
-            } else if (cookie.fgProfile !== undefined && hasEmptyProfile) {
-              pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainGlobalProtected', [cookie.fgDomain])
-            }
-
-            if (!isHandledCookie && cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) {
-              if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie.fgRemovedDomain])
-            } else if (cookie.fgDomain !== undefined && isHandledCookie) {
-              pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie.fgDomain])
-            }
-
-            if (pCookieDomainMessage !== '') {
-              pCookieDomainMessageElm.className = 'secure-cookie'
-              pCookieDomainMessageElm.appendChild(document.createTextNode(pCookieDomainMessage))
-              pCookieKeyElm.appendChild(pCookieDomainMessageElm)
-            }
-          }
-
           p.appendChild(pCookieValueElm)
           if (!cookie.fgRemoved && !cookie.fgAllowed) {
             // TODO: Check if we really need this fallback
@@ -773,6 +746,33 @@ async function updateUI () {
 
             pCookieClearMessageElm.appendChild(pCookieClearMessage)
             pCookieKeyElm.appendChild(pCookieClearMessageElm)
+          }
+
+          if ((cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined)) {
+            const pCookieDomainMessageElm = document.createElement('span')
+
+            let pCookieDomainMessage = ''
+            if (cookie.fgPermitted !== undefined && cookie.fgProfile === undefined && cookie.fgProtected === undefined) {
+              pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie.fgDomain])
+            } else if (cookie.fgLogged !== undefined) {
+              pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie.fgDomain])
+            } else if (cookie.fgProtected !== undefined || (!hasEmptyProfile && cookieIsLogged)) {
+              pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainProtected', [cookie.fgDomain])
+            } else if (cookie.fgProfile !== undefined && hasEmptyProfile) {
+              pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainGlobalProtected', [cookie.fgDomain])
+            }
+
+            if (!isHandledCookie && cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) {
+              if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie.fgRemovedDomain])
+            } else if (cookie.fgDomain !== undefined && isHandledCookie) {
+              pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie.fgDomain])
+            }
+
+            if (pCookieDomainMessage !== '') {
+              pCookieDomainMessageElm.className = 'secure-cookie'
+              pCookieDomainMessageElm.appendChild(document.createTextNode(pCookieDomainMessage))
+              pCookieKeyElm.appendChild(pCookieDomainMessageElm)
+            }
           }
 
           li.appendChild(checkMark)
