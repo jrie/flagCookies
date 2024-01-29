@@ -353,7 +353,6 @@ async function updateCookieDataForUI (updateData, targetDomain) {
         if (updateData[key] !== null) {
           updateData.fgDomain = targetDomain !== null ? targetDomain : cookieStore.rootDomain
         } else {
-          updateData.fgDomain = null
           updateData.fgProtected = null
           updateData.fgAllowed = null
         }
