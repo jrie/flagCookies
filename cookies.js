@@ -384,7 +384,7 @@ function handleMessage (request, sender, sendResponse) {
     if (request.targetDomain !== undefined && request.targetDomain !== null) {
       for (const cookie of cookieData[contextName][request.windowId][request.tabId][request.targetDomain]) {
         if (cookieDataDomain[request.targetDomain] === undefined) cookieDataDomain[request.targetDomain] = []
-        console.log(cookie)
+
         for (const key of Object.keys(cookie)) {
           if (key.startsWith('fg')) {
             continue
