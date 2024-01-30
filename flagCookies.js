@@ -2271,15 +2271,12 @@ async function resetUIDomain (data) {
 
 // Chrome + Firefox: Dump cookie from profile
 async function dumpProfileCookie (evt) {
+  let data = null
   if (useChrome) {
-    dumpProfileCookieNeutral(await chrome.storage.local.get(), evt)
-    return
+    data = await chrome.storage.local.get()
+  } else {
+    data = await browser.storage.local.get()
   }
-
-  dumpProfileCookieNeutral(await browser.storage.local.get(), evt)
-}
-
-async function dumpProfileCookieNeutral (data, evt) {
   const cookieSrc = evt.target.dataset.src
   const cookieName = evt.target.dataset.name
   const cookieDomain = evt.target.dataset.domain
