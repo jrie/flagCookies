@@ -1895,127 +1895,81 @@ function toggleClearing (evt) {
   else evt.target.classList.remove('active')
 }
 
-async function toggleLogging (evt) {
-  let doSwitchOn = false
+function toggleSwitchAndUpdateData (evt) {
+  let doSwitch = false
 
   if (!evt.target.classList.contains('active')) {
     evt.target.classList.add('active')
-    doSwitchOn = true
+    doSwitch = true
   } else {
     evt.target.classList.remove('active')
-    doSwitchOn = false
+    doSwitch = false
   }
 
-  if (useChrome) {
-    const data = await chrome.storage.local.get()
-    data.flagCookies_logEnabled = doSwitchOn
-    await chrome.storage.local.set(data)
-    return
-  }
-
-  const data = await browser.storage.local.get()
-  data.flagCookies_logEnabled = doSwitchOn
-  await browser.storage.local.set(data)
+  toggleOptionById(evt, doSwitch)
 }
 
-async function toggleRemovedByUser (evt) {
-  let doSwitchOn = false
-
-  if (!evt.target.classList.contains('active')) {
-    evt.target.classList.add('active')
-    doSwitchOn = true
+async function toggleOptionById (evt, doSwitch) {
+  let data = null
+  if (useChrome) {
+    data = await chrome.storage.local.get()
   } else {
-    evt.target.classList.remove('active')
-    doSwitchOn = false
+    data = await browser.storage.local.get()
+  }
+
+  switch (evt.target.id) {
+    case 'confirmRemoveByUser':
+      data.flagCookies_removeUserDeleted = doSwitch
+      break
+    case 'confirmLoggingEnable':
+      data.flagCookies_logEnabled = doSwitch
+      break
+    case 'confirmDarkTheme':
+      data.flagCookies_darkTheme = doSwitch
+
+      if (doSwitch) {
+        document.body.classList.add('dark')
+      } else {
+        document.body.classList.remove('dark')
+      }
+      break
+    case 'confirmUpdateNotifications':
+      data.flagCookies_updateNotifications = doSwitch
+      break
+    case 'confirmExportExpired':
+      data.flagCookies_expiredExport = doSwitch
+      break
+    case 'confirmUnfolding':
+      data.flagCookies_unfoldByDefault = doSwitch
+      break
+    case 'confirmDoDebug':
+      data.flagCookies_doDebug = doSwitch
+      break
+    case 'confirmNotifications':
+      data.flagCookies_notifications = doSwitch
+
+      if (doSwitch) {
+        if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/fc128.png' })
+        else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' })
+      } else {
+        if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/fc128.png' })
+        else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' })
+      }
+
+      break
+    default:
+      if (doDebug) {
+        console.log('Option with target id not present, was? => "' + evt.target.id + '" value set: ' + doSwitch)
+      }
+
+      return
   }
 
   if (useChrome) {
-    const data = await chrome.storage.local.get(null)
-    data.flagCookies_removeUserDeleted = doSwitchOn
     await chrome.storage.local.set(data)
-    return
-  }
-
-  const data = await browser.storage.local.get(null)
-  data.flagCookies_removeUserDeleted = doSwitchOn
-  await browser.storage.local.set(data)
-}
-
-async function toggleDarkTheme (evt) {
-  let doSwitchOn = false
-
-  if (!evt.target.classList.contains('active')) {
-    evt.target.classList.add('active')
-    doSwitchOn = true
-    document.body.classList.add('dark')
   } else {
-    evt.target.classList.remove('active')
-    doSwitchOn = false
-    document.body.classList.remove('dark')
+    await browser.storage.local.set(data)
   }
-
-  if (useChrome) {
-    const data = await chrome.storage.local.get(null)
-    data.flagCookies_darkTheme = doSwitchOn
-    await chrome.storage.local.set(data)
-    return
-  }
-
-  const data = await browser.storage.local.get(null)
-  data.flagCookies_darkTheme = doSwitchOn
-  await browser.storage.local.set(data)
-}
-
-async function toggleUpdateNotifications (evt) {
-  let doSwitchOn = false
-
-  if (!evt.target.classList.contains('active')) {
-    evt.target.classList.add('active')
-    doSwitchOn = true
-  } else {
-    evt.target.classList.remove('active')
-    doSwitchOn = false
-  }
-
-  if (useChrome) {
-    const data = await chrome.storage.local.get(null)
-    data.flagCookies_updateNotifications = doSwitchOn
-    await chrome.storage.local.set(data)
-    return
-  }
-
-  const data = await browser.storage.local.get(null)
-  data.flagCookies_updateNotifications = doSwitchOn
-  await browser.storage.local.set(data)
-}
-
-async function toggleNotifications (evt) {
-  let doSwitchOn = false
-
-  if (!evt.target.classList.contains('active')) {
-    evt.target.classList.add('active')
-    doSwitchOn = true
-
-    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/fc128.png' })
-    else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' })
-  } else {
-    evt.target.classList.remove('active')
-    doSwitchOn = false
-
-    if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/fc128.png' })
-    else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' })
-  }
-
-  if (useChrome) {
-    const data = await chrome.storage.local.get()
-    data.flagCookies_notifications = doSwitchOn
-    await chrome.storage.local.set(data)
-    return
-  }
-
-  const data = await browser.storage.local.get()
-  data.flagCookies_notifications = doSwitchOn
-  await browser.storage.local.set(data)
 }
 
 // Chrome + Firefox
@@ -2063,66 +2017,6 @@ async function clearDomain (evt) {
   const data = await browser.storage.local.get()
   if (resetUIDomain(data)) log.textContent = getMsg('DomainDataClearedInfoMsg')
   else log.textContent = getMsg('ErrorDomainDataClearingInfoMsg')
-}
-
-async function toggleExportExpired (evt) {
-  evt.target.classList.toggle('active')
-  let doSwitchOn = false
-
-  if (evt.target.classList.contains('active')) {
-    doSwitchOn = true
-  }
-
-  if (useChrome) {
-    const data = await chrome.storage.local.get()
-    data.flagCookies_expiredExport = doSwitchOn
-    chrome.storage.local.set(data)
-    return
-  }
-
-  const data = await browser.storage.local.get()
-  data.flagCookies_expiredExport = doSwitchOn
-  browser.storage.local.set(data)
-}
-
-async function toggleUnfoldDefault (evt) {
-  evt.target.classList.toggle('active')
-  let doSwitchOn = false
-
-  if (evt.target.classList.contains('active')) {
-    doSwitchOn = true
-  }
-
-  if (useChrome) {
-    const data = await chrome.storage.local.get()
-    data.flagCookies_unfoldByDefault = doSwitchOn
-    chrome.storage.local.set(data)
-    return
-  }
-
-  const data = await browser.storage.local.get()
-  data.flagCookies_unfoldByDefault = doSwitchOn
-  browser.storage.local.set(data)
-}
-
-async function toggleDebug (evt) {
-  evt.target.classList.toggle('active')
-  let doSwitchOn = false
-
-  if (evt.target.classList.contains('active')) {
-    doSwitchOn = true
-  }
-
-  if (useChrome) {
-    const data = await chrome.storage.local.get()
-    data.flagCookies_doDebug = doSwitchOn
-    chrome.storage.local.set(data)
-    return
-  }
-
-  const data = await browser.storage.local.get()
-  data.flagCookies_doDebug = doSwitchOn
-  browser.storage.local.set(data)
 }
 
 function resetUI () {
@@ -2651,17 +2545,17 @@ document.querySelector('#global-flag').addEventListener('click', flagGlobalAuto)
 document.querySelector('#account-mode').addEventListener('click', accountModeSwitch)
 document.querySelector('#searchBar').addEventListener('keyup', searchContent)
 document.querySelector('#confirmSettingsClearing').addEventListener('click', toggleClearing)
-document.querySelector('#confirmLoggingEnable').addEventListener('click', toggleLogging)
+document.querySelector('#confirmLoggingEnable').addEventListener('click', toggleSwitchAndUpdateData)
 document.querySelector('#confirmDomainClearing').addEventListener('click', toggleClearing)
-document.querySelector('#confirmNotifications').addEventListener('click', toggleNotifications)
-document.querySelector('#confirmUpdateNotifications').addEventListener('click', toggleUpdateNotifications)
-document.querySelector('#confirmDoDebug').addEventListener('click', toggleDebug)
-document.querySelector('#confirmUnfolding').addEventListener('click', toggleUnfoldDefault)
-document.querySelector('#confirmDarkTheme').addEventListener('click', toggleDarkTheme)
-document.querySelector('#confirmRemoveByUser').addEventListener('click', toggleRemovedByUser)
+document.querySelector('#confirmNotifications').addEventListener('click', toggleSwitchAndUpdateData)
+document.querySelector('#confirmUpdateNotifications').addEventListener('click', toggleSwitchAndUpdateData)
+document.querySelector('#confirmDoDebug').addEventListener('click', toggleSwitchAndUpdateData)
+document.querySelector('#confirmUnfolding').addEventListener('click', toggleSwitchAndUpdateData)
+document.querySelector('#confirmDarkTheme').addEventListener('click', toggleSwitchAndUpdateData)
+document.querySelector('#confirmRemoveByUser').addEventListener('click', toggleSwitchAndUpdateData)
 document.querySelector('#settings-action-clear').addEventListener('click', clearSettings)
 document.querySelector('#domain-action-clear').addEventListener('click', clearDomain)
-document.querySelector('#confirmExportExpired').addEventListener('click', toggleExportExpired)
+document.querySelector('#confirmExportExpired').addEventListener('click', toggleSwitchAndUpdateData)
 document.querySelector('#settings-action-all-export').addEventListener('click', exportSettings)
 document.querySelector('#cookies-action-all-export').addEventListener('click', exportCookies)
 document.querySelector('#cookies-action-all-export-clipboard').addEventListener('click', exportCookiesClipboard)
