@@ -355,6 +355,7 @@ async function updateCookieDataForUI (updateData, targetDomain) {
         } else {
           updateData.fgProtected = null
           updateData.fgAllowed = null
+          updateData.fgDomain = null
         }
 
         break
@@ -545,11 +546,11 @@ async function updateUI () {
   } else if (rootDomain !== null && rootDomain !== undefined) {
     const sortedCookieDomains = Object.keys(cookieData).sort()
 
+    // TODO: Check sorting of domains, pushing root and root related to the top?
     for (const cookieDomain of sortedCookieDomains) {
       let hasHeader = false
       let cookieIndex = 0
-      // Check sorting of domains, pushing root and root related to the top
-      // console.log(cookieDomain)
+
       let lockSwitchDomain = null
       let hasUnlockedCookie = false
 
