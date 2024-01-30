@@ -713,7 +713,7 @@ async function updateUI () {
 
           p.appendChild(pCookieValueElm)
           if (!cookie.fgRemoved && !cookie.fgAllowed) {
-            // TODO: Check if we really need this fallback
+            // TODO: Check if we really need this fallback anymore, since secure cookies are handeld accordingly!
             // li.title = getMsg('CookieHelpTextSecureMightNotHandled')
             li.classList.add('unremoved-secure-cookie')
           }
