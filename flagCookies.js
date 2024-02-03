@@ -220,6 +220,8 @@ function createSessionStorageDataView (name, storageData, title, targetList) {
   const subCollapse = document.createElement('button')
   subCollapse.textContent = '+'
   subCollapse.className = 'collapseToggle active'
+  subCollapse.addEventListener('click', toggleCollapse)
+
   menuItemsDiv.appendChild(subCollapse)
   cookieSub.appendChild(menuItemsDiv)
 
@@ -293,6 +295,12 @@ function createSessionStorageDataView (name, storageData, title, targetList) {
     } else if (name === 'SessionStorage') {
       ++countList['#sessionData'].session
     }
+  }
+
+  if (unfoldByDefault) {
+    subCollapse.parentNode.parentNode.parentNode.lastChild.classList.remove('hidden')
+    subCollapse.classList.remove('active')
+    subCollapse.textContent = '-'
   }
 
   countList['#sessionData'].total = countList['#sessionData'].local + countList['#sessionData'].session
@@ -461,15 +469,22 @@ async function updateUI () {
   const logData = cookieStore.logData
   const sessionData = sessionStore
 
-  const activeTabUrl = document.querySelector('#header-title')
-  activeTabUrl.replaceChildren()
+  const activeTabUrlOrg = document.querySelector('#header-title')
+  const activeTabUrl = activeTabUrlOrg.cloneNode(false)
 
   countList['#activeCookies'] = 0
   countList['#permittedCookies'] = 0
   countList['#flaggedCookies'] = 0
 
-  document.querySelector('#header-title').replaceChildren()
-  document.querySelector('#cookie-list').replaceChildren()
+  const cookieListOrg = document.querySelector('#cookie-list')
+  const loggedInCookieListOrg = document.querySelector('#loggedInCookies')
+
+  const cookieList = cookieListOrg.cloneNode(false)
+  const loggedInCookieList = loggedInCookieListOrg.cloneNode(false)
+
+  const infoDisplay = document.querySelector('#infoDisplay')
+
+  // NOTE: Clear only data and lists which are not by default visible when opening UI
   document.querySelector('#cookie-list-flagged').replaceChildren()
   document.querySelector('#cookie-list-permitted').replaceChildren()
   document.querySelector('#session-data-list').replaceChildren()
@@ -481,6 +496,7 @@ async function updateUI () {
 
   const intro = document.createTextNode(getMsg('CookiesForDomainText'))
   introSpan.appendChild(intro)
+
   const introUrl = document.createElement('span')
   introUrl.className = 'domainurl'
 
@@ -498,14 +514,53 @@ async function updateUI () {
       const tabURL = tab.url.toLowerCase()
       if (tabURL.startsWith('chrome:') || tabURL.startsWith('about:') || tabURL.startsWith('edge:')) {
         isBrowserPage = true
+        document.querySelector('#header-title').replaceChildren()
+        document.querySelector('#cookie-list').replaceChildren()
+        document.querySelector('#cookie-list-flagged').replaceChildren()
+        document.querySelector('#cookie-list-permitted').replaceChildren()
+        document.querySelector('#session-data-list').replaceChildren()
+        document.querySelector('#help-view').replaceChildren()
+        document.querySelector('#donate-view').replaceChildren()
+
+        const introSpanStore = document.createElement('span')
+        introSpanStore.className = 'intro'
+        introUrl.appendChild(document.createTextNode(getMsg('BrowserDomainTitle')))
+        activeTabUrl.appendChild(introSpan)
+        activeTabUrl.appendChild(introUrl)
+
+        const introStore = document.createTextNode(getMsg('ActiveContainerGroupText') + ' ' + contextName)
+        introSpanStore.appendChild(introStore)
+        activeTabUrl.appendChild(introSpanStore)
+
+        let contentText = getMsg('NoCookiesForInternalBrowserPage')
+        if (!useChrome) {
+          const priviligedPages = ['accounts-static.cdn.mozilla.net', 'accounts.firefox.com', 'addons.cdn.mozilla.net', 'addons.mozilla.org', 'api.accounts.firefox.com', 'content.cdn.mozilla.net', 'content.cdn.mozilla.net', 'discovery.addons.mozilla.org', 'input.mozilla.org', 'install.mozilla.org', 'oauth.accounts.firefox.com', 'profile.accounts.firefox.com', 'support.mozilla.org', 'sync.services.mozilla.com', 'testpilot.firefox.com']
+          for (const page of priviligedPages) {
+            if (tabURL.indexOf(page) !== -1) {
+              contentText = getMsg('PriviligedDomainText')
+              break
+            }
+          }
+        }
+
+        infoDisplay.children[0].textContent = contentText
+        infoDisplay.removeAttribute('class')
+        cookieList.removeAttribute('class')
+
+        document.querySelector('#profileNoData').removeAttribute('class')
+        activeTabUrlOrg.replaceWith(activeTabUrl)
+        cookieListOrg.replaceWith(cookieList)
+        loggedInCookieListOrg.replaceWith(loggedInCookieList)
+        return
       }
     }
+  }
 
-    if (isBrowserPage) {
-      introUrl.appendChild(document.createTextNode(getMsg('BrowserDomainTitle')))
-    } else {
-      introUrl.appendChild(document.createTextNode(getMsg('UnknownDomain')))
-    }
+  if (rootDomain === undefined || rootDomain === null) {
+    introUrl.appendChild(document.createTextNode(getMsg('UnknownDomain')))
+    const contentText = getMsg('NoActiveDomainCookiesText')
+    infoDisplay.children[0].textContent = contentText
+    infoDisplay.removeAttribute('class')
   } else {
     introUrl.appendChild(document.createTextNode(rootDomain))
   }
@@ -520,30 +575,7 @@ async function updateUI () {
   introSpanStore.appendChild(introStore)
   activeTabUrl.appendChild(introSpanStore)
 
-  const cookieList = document.querySelector('#cookie-list')
-  const loggedInCookieList = document.querySelector('#loggedInCookies')
-
-  cookieList.replaceChildren()
-  loggedInCookieList.replaceChildren()
-
-  let activeCookies = false
-
-  if (rootDomain === null || rootDomain === undefined || cookieData === null || Object.keys(cookieData).length === 0) {
-    const infoDisplay = document.querySelector('#infoDisplay')
-    let contentText = getMsg('NoActiveDomainCookiesText')
-    if (!useChrome && rootDomain !== null && rootDomain !== undefined) {
-      const priviligedPages = ['accounts-static.cdn.mozilla.net', 'accounts.firefox.com', 'addons.cdn.mozilla.net', 'addons.mozilla.org', 'api.accounts.firefox.com', 'content.cdn.mozilla.net', 'content.cdn.mozilla.net', 'discovery.addons.mozilla.org', 'input.mozilla.org', 'install.mozilla.org', 'oauth.accounts.firefox.com', 'profile.accounts.firefox.com', 'support.mozilla.org', 'sync.services.mozilla.com', 'testpilot.firefox.com']
-      for (const page of priviligedPages) {
-        if (rootDomain.indexOf(page) !== -1) {
-          contentText = getMsg('PriviligedDomainText')
-          break
-        }
-      }
-    }
-
-    infoDisplay.children[0].textContent = contentText
-    infoDisplay.removeAttribute('class')
-  } else if (rootDomain !== null && rootDomain !== undefined) {
+  if (rootDomain !== null && rootDomain !== undefined) {
     const sortedCookieDomains = Object.keys(cookieData).sort()
 
     // TODO: Check sorting of domains, pushing root and root related to the top?
@@ -638,7 +670,6 @@ async function updateUI () {
             cookieWasCleared = true
           }
 
-          activeCookies = true
           ++countList['#activeCookies']
 
           const li = document.createElement('li')
@@ -795,31 +826,6 @@ async function updateUI () {
     }
   }
 
-  const infoDisplay = document.querySelector('#infoDisplay')
-  if (isBrowserPage) {
-    infoDisplay.children[0].textContent = getMsg('NoCookiesForInternalBrowserPage')
-  } else if (!activeCookies) {
-    if (!useChrome && rootDomain !== null) {
-      const priviligedPages = ['accounts-static.cdn.mozilla.net', 'accounts.firefox.com', 'addons.cdn.mozilla.net', 'addons.mozilla.org', 'api.accounts.firefox.com', 'content.cdn.mozilla.net', 'content.cdn.mozilla.net', 'discovery.addons.mozilla.org', 'input.mozilla.org', 'install.mozilla.org', 'oauth.accounts.firefox.com', 'profile.accounts.firefox.com', 'support.mozilla.org', 'sync.services.mozilla.com', 'testpilot.firefox.com']
-      for (const page of priviligedPages) {
-        if (rootDomain.indexOf(page) !== -1) {
-          infoDisplay.children[0].textContent = getMsg('PriviligedDomainText')
-          break
-        }
-      }
-    } else {
-      infoDisplay.children[0].textContent = getMsg('NoActiveDomainCookiesText')
-    }
-  }
-
-  infoDisplay.removeAttribute('class')
-  cookieList.removeAttribute('class')
-
-  if (isBrowserPage) {
-    document.querySelector('#profileNoData').removeAttribute('class')
-    return
-  }
-
   if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined) {
     const domainData = data[contextName][rootDomain]
     for (const cookieDomain of Object.keys(domainData)) {
@@ -851,23 +857,6 @@ async function updateUI () {
 
   if (loggedInCookieList.children.length !== 0) loggedInCookieList.removeAttribute('class')
   else document.querySelector('#profileNoData').removeAttribute('class')
-
-  countList['#sessionData'].local = 0
-  countList['#sessionData'].session = 0
-  countList['#sessionData'].total = 0
-
-  if (sessionData !== null) {
-    const sessionDataList = document.querySelector('#session-data-list')
-    sessionDataList.replaceChildren()
-
-    if (Object.keys(sessionData.local).length !== 0) {
-      createSessionStorageDataView('LocalStorage', sessionData.local, getMsg('LocalStorageTitle'), sessionDataList)
-    }
-
-    if (Object.keys(sessionData.session).length !== 0) {
-      createSessionStorageDataView('SessionStorage', sessionData.session, getMsg('SessionStorageTitle'), sessionDataList)
-    }
-  }
 
   if (data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true) {
     document.querySelector('#global-flag').classList.add('active')
@@ -927,6 +916,23 @@ async function updateUI () {
     document.querySelector('#confirmUpdateNotifications').classList.add('active')
   }
 
+  countList['#sessionData'].local = 0
+  countList['#sessionData'].session = 0
+  countList['#sessionData'].total = 0
+
+  if (sessionData !== null) {
+    const sessionDataList = document.querySelector('#session-data-list')
+    sessionDataList.replaceChildren()
+
+    if (Object.keys(sessionData.local).length !== 0) {
+      createSessionStorageDataView('LocalStorage', sessionData.local, getMsg('LocalStorageTitle'), sessionDataList)
+    }
+
+    if (Object.keys(sessionData.session).length !== 0) {
+      createSessionStorageDataView('SessionStorage', sessionData.session, getMsg('SessionStorageTitle'), sessionDataList)
+    }
+  }
+
   for (const key of Object.keys(countList)) {
     const existingBubble = document.querySelector(key + ' > .cookieCount')
 
@@ -955,21 +961,32 @@ async function updateUI () {
     document.querySelector('#searchBar').dispatchEvent(new Event('keyup'))
   }
 
-  // TODO: Check if we can make easier acces if unfolded by default?
-  for (const collapse of document.querySelectorAll('.collapseToggle')) {
+  for (const child of cookieList.children) {
+    const collapse = child.children[0].children[0].children[0]
     collapse.addEventListener('click', toggleCollapse)
 
     if (unfoldByDefault) {
-      collapse.dispatchEvent(new window.Event('click'))
+      collapse.parentNode.parentNode.parentNode.lastChild.classList.remove('hidden')
+      collapse.classList.remove('active')
+      collapse.textContent = '-'
     }
   }
 
+  activeTabUrlOrg.replaceWith(activeTabUrl)
+  cookieListOrg.replaceWith(cookieList)
+  loggedInCookieListOrg.replaceWith(loggedInCookieList)
+
+  // TODO: Check if we can make easier acces if unfolded by default?
   if (!unfoldByDefault) {
     const firstToogle = document.querySelector('.collapseToggle')
     if (firstToogle !== null) firstToogle.click()
 
     // if (!useChrome) getTempContainerStatus(contextName)
   }
+
+  infoDisplay.removeAttribute('class')
+  cookieList.classList.remove('hidden')
+  activeTabUrl.removeAttribute('class')
 }
 
 function toggleCollapse (evt) {
@@ -980,8 +997,8 @@ function toggleCollapse (evt) {
     return
   }
 
-  evt.target.classList.add('active')
   evt.target.parentNode.parentNode.parentNode.lastChild.classList.add('hidden')
+  evt.target.classList.add('active')
   evt.target.textContent = '+'
 }
 
@@ -1588,6 +1605,8 @@ function switchView (evt) {
     if (child !== evt.target) child.removeAttribute('class')
   }
 
+  const infoDisplay = document.querySelector('#infoDisplay')
+
   const prefs = document.querySelector('#prefs')
   let prefsActive = false
   if (prefs !== evt.target) prefs.classList.remove('active')
@@ -1602,6 +1621,10 @@ function switchView (evt) {
     helpActive = true
   } else if (help === evt.target) {
     useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage())
+
+    evt.target.classList.add('active')
+    list.removeAttribute('class')
+    return
   }
 
   const donate = document.querySelector('#donate')
@@ -1613,22 +1636,21 @@ function switchView (evt) {
     donateActive = true
   } else if (donate === evt.target) {
     useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage())
-  }
 
-  evt.target.classList.add('active')
-
-  if (!prefsActive && !helpActive && !donateActive) {
+    evt.target.classList.add('active')
     list.removeAttribute('class')
     return
   }
 
-  if (list.children.length === 0) {
-    const infoDisplay = document.querySelector('#infoDisplay')
+  evt.target.classList.add('active')
 
+  if (list.children.length === 0) {
     let contentText = getMsg('NoActiveDomainCookiesText')
 
-    if (isBrowserPage) {
+    if (isBrowserPage && evt.target.dataset.target === 'cookie-list') {
       contentText = getMsg('NoCookiesForInternalBrowserPage')
+    } else if (evt.target.dataset.target === 'cookie-list') {
+      contentText = getMsg('NoActiveDomainCookiesText')
     } else if (evt.target.dataset.target === 'cookie-list-flagged') {
       contentText = getMsg('NoFlaggedCookiesForDomain')
     } else if (evt.target.dataset.target === 'cookie-list-permitted') {
@@ -1639,11 +1661,13 @@ function switchView (evt) {
 
     infoDisplay.children[0].textContent = contentText
     infoDisplay.removeAttribute('class')
-  } else {
-    list.removeAttribute('class')
   }
 
-  if (prefsActive || helpActive || donateActive) document.querySelector('#activeCookies').click()
+  list.removeAttribute('class')
+
+  if (prefsActive || helpActive || donateActive) {
+    document.querySelector('#activeCookies').click()
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -2042,9 +2066,7 @@ function resetUI () {
 
   for (const child of clearLists) {
     const parent = document.getElementById(child)
-    for (const childElement of parent.children) {
-      parent.removeChild(childElement)
-    }
+    parent.replaceChildren()
 
     parent.className = 'hidden'
   }
