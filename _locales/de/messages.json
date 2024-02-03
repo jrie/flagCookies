@@ -535,7 +535,7 @@
     }
   },
   "InstalledAddonMessage": {
-    "message": "Vielen Dank. Bitte betrachte auch 'Spenden'.",
+    "message": "Vielen Dank. Bitte betrachte auch den 'Spenden' Tab.",
     "description": "Displayed notification body for FlagCookies installation/update"
   },
 
