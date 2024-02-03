@@ -844,11 +844,11 @@
     "description": "Displayed help text for settings text"
   },
   "SettingsNotificationsHelpText": {
-    "message": "Aktivier oder deaktiviere Browser Benachrichtungen",
+    "message": "Aktiviere oder deaktiviere Browser Benachrichtungen",
     "description": "Displayed help text for active or inactive notifications"
   },
   "SettingsUpdateNotificationsHelpText": {
-    "message": "Aktivier oder deaktivier Update Browser Benachrichtungen",
+    "message": "Aktiviere oder deaktiviere Update Browser Benachrichtungen",
     "description": "Displayed help text for active or inactive update and install notifications"
   },
   "SettingsDoDebugHelpText": {
