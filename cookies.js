@@ -463,6 +463,7 @@ function resetCookieInformation (tab) {
 
   const tabWindowId = tab.windowId
   const tabTabId = tab.id
+  removedByUser = 0
 
   if (removedData[contextName] === undefined) removedData[contextName] = {}
   if (removedData[contextName][tabWindowId] === undefined) removedData[contextName][tabWindowId] = {}
@@ -647,13 +648,15 @@ function setMouseOverTitle (contextName, tabWindowId, tabId) {
     titleString += '\n' + getMsg('NoActionOnPage')
   }
 
+  const totalRemoved = (parseInt(countStr) + removedByUser).toString()
+
   if (useChrome) {
-    if (countStr !== '0') chrome.action.setBadgeText({ text: countStr, tabId })
+    if (totalRemoved !== '0') chrome.action.setBadgeText({ text: totalRemoved, tabId })
     else chrome.action.setBadgeText({ text: '', tabId })
 
     chrome.action.setTitle({ title: titleString, tabId })
   } else {
-    if (countStr !== '0') browserActionAPI.setBadgeText({ text: countStr, tabId })
+    if (totalRemoved !== '0') browserActionAPI.setBadgeText({ text: totalRemoved, tabId })
     else browserActionAPI.setBadgeText({ text: '', tabId })
 
     browserActionAPI.setTitle({ title: titleString, tabId })
