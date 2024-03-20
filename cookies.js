@@ -2569,10 +2569,14 @@ async function onInstallNotification (details) {
       installType = getMsg('UpdatedInstallationString')
       break
     case 'install':
-    default:
       installType = getMsg('NewInstallationString')
       break
+    case 'browser_update':
+    case 'chrome_update':
+    default:
+      return
   }
+
   if (useChrome) {
     chrome.notifications.create('installedAddonMessage', { type: 'basic', message: getMsg('InstalledAddonMessage'), title: getMsg('InstalledAddonMessageTitle', installType), iconUrl: 'icons/fc128.png' })
   } else {
