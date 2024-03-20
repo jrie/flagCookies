@@ -457,10 +457,6 @@ li.cookieEntrySublist.unremoved-secure-cookie {
 }
 
 .collapseToggle.active {
-  text-indent: -0.35em;
-}
-
-.chrome .collapseToggle.active {
   text-indent: -0.25em;
 }
 
