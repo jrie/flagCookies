@@ -1775,7 +1775,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
       if (removedByDomain[contextName] === undefined) removedByDomain[contextName] = {}
       if (removedByDomain[contextName][tabWindowId] === undefined) removedByDomain[contextName][tabWindowId] = {}
-      removedByDomain[tabWindowId][tabId] = 0
+      removedByDomain[contextName][tabWindowId][tabId] = 0
 
       if (permittedData[contextName] === undefined) permittedData[contextName] = {}
       if (permittedData[contextName][tabWindowId] === undefined) permittedData[contextName][tabWindowId] = {}
@@ -2399,6 +2399,10 @@ async function clearCookiesOnRequest (details) {
 
       if (openTabData !== undefined && openTabData[tabWindowId] !== undefined && openTabData[tabWindowId][tabTabId] !== undefined) {
         for (const tabUrl of Object.keys(openTabData[tabWindowId][tabTabId])) {
+          if (openTabData[tabWindowId][tabTabId][tabUrl].d === undefined) {
+            continue
+          }
+
           const targetURL = openTabData[tabWindowId][tabTabId][tabUrl].d
           cookieList.push(await chrome.cookies.getAll({ domain: targetURL }))
         }
