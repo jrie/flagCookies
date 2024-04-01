@@ -563,7 +563,7 @@ async function preSetMouseOverTitle (contextName, tabId) {
     tab = await browser.tabs.get(tabId);
   }
 
-  if (tab === null || tab === undefined) {
+  if (tab === null || tab === undefined || tab.id === undefined) {
     return;
   }
 
