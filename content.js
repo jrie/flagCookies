@@ -1,46 +1,46 @@
-const useChrome = typeof (browser) === 'undefined'
+const useChrome = typeof (browser) === 'undefined';
 
 function handleMessage (message) {
   if (message.getStorageData !== undefined && message.getStorageData === true) {
-    const localStorageData = {}
-    const sessionStorageData = {}
+    const localStorageData = {};
+    const sessionStorageData = {};
 
     for (const key of Object.keys(window.localStorage)) {
-      localStorageData[key] = window.localStorage.getItem(key)
+      localStorageData[key] = window.localStorage.getItem(key);
     }
 
     for (const key of Object.keys(window.sessionStorage)) {
-      sessionStorageData[key] = window.localStorage.getItem(key)
+      sessionStorageData[key] = window.localStorage.getItem(key);
     }
 
     if (useChrome) {
-      chrome.runtime.sendMessage({ local: localStorageData, session: sessionStorageData })
+      chrome.runtime.sendMessage({ local: localStorageData, session: sessionStorageData });
     } else {
-      browser.runtime.sendMessage({ local: localStorageData, session: sessionStorageData })
+      browser.runtime.sendMessage({ local: localStorageData, session: sessionStorageData });
     }
 
-    return
+    return;
   }
 
   if (message.clearStorage !== undefined) {
     if (message.clearStorage === 'local') {
-      window.localStorage.clear()
+      window.localStorage.clear();
     } else if (message.clearStorage === 'session') {
-      window.sessionStorage.clear()
+      window.sessionStorage.clear();
     }
 
-    storageWindowHandler(null)
+    storageWindowHandler(null);
   }
 }
 
 function storageWindowHandler () {
-  handleMessage({ getStorageData: true })
+  handleMessage({ getStorageData: true });
 }
 
 if (useChrome) {
-  chrome.runtime.onMessage.addListener(handleMessage)
+  chrome.runtime.onMessage.addListener(handleMessage);
 } else {
-  browser.runtime.onMessage.addListener(handleMessage)
+  browser.runtime.onMessage.addListener(handleMessage);
 }
 
-window.addEventListener('storage', storageWindowHandler)
+window.addEventListener('storage', storageWindowHandler);
