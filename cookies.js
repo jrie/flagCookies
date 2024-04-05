@@ -623,9 +623,9 @@ function setMouseOverTitle (contextName, tabWindowId, tabId) {
   }
 
   let countStr = '0';
-  const hasRemove = removedData[contextName] !== undefined && removedData[contextName][tabWindowId] !== undefined && removedData[contextName][tabWindowId][tabId] !== undefined && removedData[contextName][tabWindowId][tabId].count !== 0;
-  const hasPermit = permittedData[contextName] !== undefined && permittedData[contextName][tabWindowId] !== undefined && permittedData[contextName][tabWindowId][tabId] !== undefined && permittedData[contextName][tabWindowId][tabId].count !== 0;
-  const hasDomainRemoved = removedByDomain[contextName] !== undefined && removedByDomain[contextName][tabWindowId] !== undefined && removedByDomain[contextName][tabWindowId][tabId] !== undefined && removedByDomain[contextName][tabWindowId][tabId].count !== 0;
+  const hasRemove = removedData[contextName] !== undefined && removedData[contextName][tabWindowId] !== undefined && removedData[contextName][tabWindowId][tabId] !== undefined && removedData[contextName][tabWindowId][tabId].count !== undefined && removedData[contextName][tabWindowId][tabId].count !== 0;
+  const hasPermit = permittedData[contextName] !== undefined && permittedData[contextName][tabWindowId] !== undefined && permittedData[contextName][tabWindowId][tabId] !== undefined && permittedData[contextName][tabWindowId][tabId].count !== undefined && permittedData[contextName][tabWindowId][tabId].count !== 0;
+  const hasDomainRemoved = removedByDomain[contextName] !== undefined && removedByDomain[contextName][tabWindowId] !== undefined && removedByDomain[contextName][tabWindowId][tabId] !== undefined && removedByDomain[contextName][tabWindowId][tabId].count !== undefined && removedByDomain[contextName][tabWindowId][tabId].count !== 0;
 
   if (hasRemove) {
     countStr = removedData[contextName][tabWindowId][tabId].count.toString();
