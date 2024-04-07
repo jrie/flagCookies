@@ -954,12 +954,6 @@ async function updateUI () {
     document.querySelector('#confirmExportExpired').classList.add('active');
   }
 
-  doDebug = false;
-  if (data.flagCookies_doDebug !== undefined && data.flagCookies_doDebug === true) {
-    document.querySelector('#confirmDoDebug').classList.add('active');
-    doDebug = true;
-  }
-
   if (data.flagCookies_doDebug !== undefined && data.flagCookies_doDebug === true) {
     document.querySelector('#confirmDoDebug').classList.add('active');
     doDebug = true;
