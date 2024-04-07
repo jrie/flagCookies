@@ -20,6 +20,8 @@ const getMsg = useChrome ? getChromeMessage : getFirefoxMessage;
 let browserActionAPI;
 if (!useChrome) {
   browserActionAPI = typeof (browser.action) === 'undefined' ? browser.browserAction : browser.action;
+} else {
+  browserActionAPI = typeof (chrome.action) === 'undefined' ? chrome.browserAction : chrome.action;
 }
 
 function getChromeMessage (messageName, params) {
@@ -33,6 +35,10 @@ function getFirefoxMessage (messageName, params) {
 }
 
 async function clearCookiesWrapper (action, cookieDetails, currentTab) {
+  if (currentTab === undefined || currentTab.url === undefined) {
+    return;
+  }
+
   let contextName = 'default';
 
   if (currentTab.cookieStoreId !== undefined) {
@@ -42,7 +48,13 @@ async function clearCookiesWrapper (action, cookieDetails, currentTab) {
   const tabWindowId = currentTab.windowId;
   const tabTabId = currentTab.id;
 
-  const cookieDomain = currentTab.url.replace(/^(http:|https:)\/\//i, '').replace(/^\./, '').match(/.[^/]*/)[0];
+  const cookieDomainDetected = currentTab.url.replace(/^(http:|https:)\/\//i, '').replace(/^\./, '').match(/.[^/]*/);
+
+  if (cookieDomainDetected === null) {
+    return;
+  }
+
+  const cookieDomain = cookieDomainDetected[0];
 
   let firstPartyIsolate = null;
   if (cookieDetails !== null && cookieDetails.firstPartyDomain !== undefined) {
@@ -202,8 +214,6 @@ async function clearByDomainJob (request, sender, sendResponse) {
     if (hasLogged && data.flagCookies_logged[contextName][rootDomain][cookieDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true) {
       ++index;
       continue;
-    } else if (!doRemoveByUser) {
-      cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true;
     }
 
     const details = { url: 'https://' + cookieDomain + cookie.path, name: cookie.name };
@@ -219,13 +229,12 @@ async function clearByDomainJob (request, sender, sendResponse) {
         }
       } else if (await chrome.cookies.remove(details) !== null || await chrome.cookies.remove(details2) !== null) {
         ++removedCookies;
+        cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true;
 
         if (doRemoveByUser) {
           cookieData[contextName][windowId][tabId][cookieDomain].splice(index, 1);
           continue;
         }
-
-        cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true;
       }
     } else {
       if (await browser.cookies.get(details) === null && await browser.cookies.get(details2) === null) {
@@ -237,13 +246,12 @@ async function clearByDomainJob (request, sender, sendResponse) {
         }
       } else if ((await browser.cookies.remove(details) !== null && await browser.cookies.get(details) === null) || (await browser.cookies.remove(details2) !== null && await browser.cookies.get(details2) === null)) {
         ++removedCookies;
+        cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true;
 
         if (doRemoveByUser) {
           cookieData[contextName][windowId][tabId][cookieDomain].splice(index, 1);
           continue;
         }
-
-        cookieData[contextName][windowId][tabId][cookieDomain][index].fgCleared = true;
       }
     }
 
@@ -254,7 +262,7 @@ async function clearByDomainJob (request, sender, sendResponse) {
     // TODO: Add option to remove cookies from visible list if domain is cleared by user on dumpster
     // delete cookieData[contextName][windowId][tabId][cookieDomain]
     removedByUser += removedCookies;
-    preSetMouseOverTitle(contextName, tabId);
+    await preSetMouseOverTitle(contextName, tabId);
     return true;
   }
 
@@ -350,10 +358,11 @@ function handleMessage (request, sender, sendResponse) {
 
           cookieData[request.storeId][request.windowId][request.tabId][domainKey] = request.cookies[domainKey];
         }
-      }
-
-      if (request.targetDomain !== null && cookieData[request.storeId][request.windowId][request.tabId][request.targetDomain] !== undefined) {
-        // cookieData[request.storeId][request.windowId][request.tabId][request.targetDomain][request.updateCookies] = request.updateCookies
+      } else if (cookieData[request.storeId][request.windowId][request.tabId][request.targetDomain] !== undefined) {
+        cookieData[request.storeId][request.windowId][request.tabId][request.targetDomain] = request.cookies[request.targetDomain];
+      } else {
+        sendResponse({ updateStatus: false });
+        return;
       }
 
       sendResponse({ updateStatus: true });
@@ -649,18 +658,13 @@ function setMouseOverTitle (contextName, tabWindowId, tabId) {
   }
 
   const totalRemoved = (parseInt(countStr) + removedByUser).toString();
-
-  if (useChrome) {
-    if (totalRemoved !== '0') chrome.action.setBadgeText({ text: totalRemoved, tabId });
-    else chrome.action.setBadgeText({ text: '', tabId });
-
-    chrome.action.setTitle({ title: titleString, tabId });
+  if (totalRemoved !== '0') {
+    browserActionAPI.setBadgeText({ text: totalRemoved, tabId });
   } else {
-    if (totalRemoved !== '0') browserActionAPI.setBadgeText({ text: totalRemoved, tabId });
-    else browserActionAPI.setBadgeText({ text: '', tabId });
-
-    browserActionAPI.setTitle({ title: titleString, tabId });
+    browserActionAPI.setBadgeText({ text: '', tabId });
   }
+
+  browserActionAPI.setTitle({ title: titleString, tabId });
 }
 
 // Clear the cookies which are enabled for the domain in browser storage
@@ -1740,21 +1744,20 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
   if (changeInfo.status !== undefined && changeInfo.status === 'loading') {
     if (openTabData[tabWindowId] === undefined || openTabData[tabWindowId][tabId] === undefined || openTabData[tabWindowId][tabId][0] === undefined) {
-      if (useChrome) chrome.action.disable(tabId);
-      else browserActionAPI.disable(tabId);
+      browserActionAPI.disable(tabId);
       resetCookieInformation(tab);
     } else {
-      if (useChrome) chrome.action.enable(tabId);
-      else browserActionAPI.enable(tabId);
+      // TODO: Check if we can remove this call
+      browserActionAPI.enable(tabId);
     }
 
+    // TODO: Check if we can remove this call
     clearCookiesWrapper(getMsg('ActionDocumentLoad'), null, tab);
     return;
   }
 
   if (changeInfo.status !== undefined && changeInfo.status === 'complete') {
-    if (useChrome) chrome.action.enable(tabId);
-    else browserActionAPI.enable(tabId);
+    browserActionAPI.enable(tabId);
 
     let domainKey = '';
     const urlMatch = tab.url.match(/^(http:|https:)\/\/.[^/]*/i);
@@ -1790,8 +1793,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
     addTabURLtoDataList(tab, { url: domainKey, frameId: 0, parentFrameId: -1, type: 'main_frame' }, domainKey);
 
-    if (useChrome) chrome.action.enable(tabId);
-    else browserActionAPI.enable(tabId);
+    browserActionAPI.enable(tabId);
 
     preSetMouseOverTitle(contextName, tabId);
     setBrowserActionIcon(contextName, domainKey, tabId);
@@ -1869,7 +1871,7 @@ async function setBrowserActionIcon (contextName, tabDomain, tabId) {
 
   if (inAccountMode) {
     if (useChrome) {
-      chrome.action.setIcon({
+      browserActionAPI.setIcon({
         tabId,
         path: {
           16: 'icons/fc16p.png',
@@ -1895,7 +1897,7 @@ async function setBrowserActionIcon (contextName, tabDomain, tabId) {
   }
 
   if (useChrome) {
-    chrome.action.setIcon({
+    browserActionAPI.setIcon({
       tabId,
       path: {
         16: 'icons/fc16.png',
@@ -2601,8 +2603,6 @@ if (useChrome) {
   chrome.cookies.onChanged.addListener(onCookieChanged);
   chrome.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, { urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest'] });
   chrome.runtime.onInstalled.addListener(onInstallNotification);
-  chrome.action.setBadgeBackgroundColor({ color: '#FF0000' });
-  chrome.action.setBadgeTextColor({ color: '#FFFFFF' });
 } else {
   browser.tabs.onRemoved.addListener(clearCookiesOnLeave);
   browser.tabs.onUpdated.addListener(clearCookiesOnUpdate);
@@ -2613,6 +2613,7 @@ if (useChrome) {
   browser.windows.onRemoved.addListener(removeTabIdfromDataList);
   browser.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, { urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest'] });
   browser.runtime.onInstalled.addListener(onInstallNotification);
-  browserActionAPI.setBadgeBackgroundColor({ color: '#FF0000' });
-  browserActionAPI.setBadgeTextColor({ color: '#FFFFFF' });
 }
+
+browserActionAPI.setBadgeBackgroundColor({ color: '#FF0000' });
+browserActionAPI.setBadgeTextColor({ color: '#FFFFFF' });

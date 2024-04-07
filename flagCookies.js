@@ -3,6 +3,8 @@ const useChrome = typeof (browser) === 'undefined';
 let browserActionAPI;
 if (!useChrome) {
   browserActionAPI = typeof (browser.action) === 'undefined' ? browser.browserAction : browser.action;
+} else {
+  browserActionAPI = typeof (chrome.action) === 'undefined' ? chrome.browserAction : chrome.action;
 }
 
 const countList = {
@@ -312,32 +314,25 @@ function createSessionStorageDataView (name, storageData, title, targetList) {
 async function clearCookiesByDomain (evt) {
   const cookieDomain = evt.target.dataset.cookieDomain;
 
-  let clearResult = false;
   if (useChrome) {
-    clearResult = await chrome.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain });
-  } else {
-    clearResult = await browser.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain });
-  }
-
-  if (clearResult) {
-    let data = null;
-
-    if (useChrome) {
-      data = await chrome.storage.local.get('flagCookies_notifications');
-    } else {
-      data = await browser.storage.local.get('flagCookies_notifications');
-    }
-
-    if (useChrome) {
+    chrome.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain }).then(async function () {
+      const data = await chrome.storage.local.get('flagCookies_notifications');
       if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
         chrome.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/fc128.png' });
       }
-    } else if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
-      browser.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/flagcookies_icon.svg' });
-    }
-  }
 
-  updateUI();
+      updateCookieDataForUI({ fgCleared: true, isAdded: false }, cookieDomain);
+    });
+  } else {
+    browser.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain }).then(async function () {
+      const data = await browser.storage.local.get('flagCookies_notifications');
+      if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
+        browser.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/flagcookies_icon.svg' });
+      }
+
+      updateCookieDataForUI({ fgCleared: true, isAdded: false }, cookieDomain);
+    });
+  }
 }
 
 async function updateCookieDataForUI (updateData, targetDomain) {
@@ -647,7 +642,6 @@ async function updateUI () {
     }
 
     // ------------------------------------------------------------------------------------------------------------
-
     // TODO: Check sorting of domains, pushing root and root related to the top?
     for (const cookieDomain of sortedCookieDomains) {
       let hasHeader = false;
@@ -656,8 +650,10 @@ async function updateUI () {
       let lockSwitchDomain = null;
       let hasUnlockedCookie = false;
 
-      for (const cookie of cookieData[cookieDomain]) {
-        if (cookie.isAdded) continue;
+      for (const cookieEntry of cookieData[cookieDomain]) {
+        if (cookieEntry.isAdded) {
+          continue;
+        }
 
         const splittedDomain = cookieDomain.split('.');
         const domainPart = splittedDomain.splice(splittedDomain.length - 2, 2).join('.');
@@ -692,7 +688,7 @@ async function updateUI () {
 
           let subName = null;
           if (cookieDomain !== null) subName = document.createTextNode(cookieDomain);
-          else subName = document.createTextNode(cookie);
+          else subName = document.createTextNode(cookieEntry);
           cookieSub.appendChild(cookieSubSpan);
           cookieSub.appendChild(subName);
           cookieSubDiv.appendChild(cookieSub);
@@ -716,9 +712,7 @@ async function updateUI () {
 
           cookieList.appendChild(cookieSubDiv);
           hasHeader = true;
-        }
-
-        if (hasHeader && cookie.isAdded !== undefined) continue;
+        } else if (cookieEntry.isAdded !== undefined) continue;
 
         const sortedCookies = sortObjectByKey(cookieData[cookieDomain], 'name', true);
 
@@ -960,6 +954,7 @@ async function updateUI () {
     document.querySelector('#confirmExportExpired').classList.add('active');
   }
 
+  doDebug = false;
   if (data.flagCookies_doDebug !== undefined && data.flagCookies_doDebug === true) {
     document.querySelector('#confirmDoDebug').classList.add('active');
     doDebug = true;
@@ -2349,13 +2344,19 @@ async function accountModeSwitch (evt) {
       }
     }
 
-    if (useChrome) await chrome.storage.local.set(data);
-    else await browser.storage.local.set(data);
+    if (useChrome) {
+      await chrome.storage.local.set(data);
+    } else {
+      await browser.storage.local.set(data);
+    }
     evt.target.classList.remove('active');
 
     // Account mode icon removal
-    if (useChrome) chrome.action.setIcon({ tabId, path: { 16: 'icons/fc16.png', 48: 'icons/fc48.png', 128: 'icons/fc128.png' } });
-    else browserActionAPI.setIcon({ tabId, path: { 48: 'icons/flagcookies_icon.svg', 64: 'icons/flagcookies_icon.svg', 96: 'icons/flagcookies_icon.svg', 128: 'icons/flagcookies_icon.svg' } });
+    if (useChrome) {
+      browserActionAPI.setIcon({ tabId, path: { 16: 'icons/fc16.png', 48: 'icons/fc48.png', 128: 'icons/fc128.png' } });
+    } else {
+      browserActionAPI.setIcon({ tabId, path: { 48: 'icons/flagcookies_icon.svg', 64: 'icons/flagcookies_icon.svg', 96: 'icons/flagcookies_icon.svg', 128: 'icons/flagcookies_icon.svg' } });
+    }
 
     updateCookieDataForUI({ fgProfile: null }, null);
   } else {
@@ -2364,17 +2365,21 @@ async function accountModeSwitch (evt) {
     data.flagCookies_accountMode[contextName][rootDomain] = true;
     evt.target.classList.add('active');
 
-    if (useChrome) await chrome.storage.local.set(data);
-    else await browser.storage.local.set(data);
+    if (useChrome) {
+      await chrome.storage.local.set(data);
+    } else {
+      await browser.storage.local.set(data);
+    }
 
     // Account mode icon
-    if (useChrome) chrome.action.setIcon({ tabId, path: { 16: 'icons/fc16p.png', 48: 'icons/fc48p.png', 128: 'icons/fc128p.png' } });
-    else browserActionAPI.setIcon({ tabId, path: { 48: 'icons/flagcookies_profil_icon.svg', 64: 'icons/flagcookies_profil_icon.svg', 96: 'icons/flagcookies_profil_icon.svg', 128: 'icons/flagcookies_profil_icon.svg' } });
+    if (useChrome) {
+      browserActionAPI.setIcon({ tabId, path: { 16: 'icons/fc16p.png', 48: 'icons/fc48p.png', 128: 'icons/fc128p.png' } });
+    } else {
+      browserActionAPI.setIcon({ tabId, path: { 48: 'icons/flagcookies_profil_icon.svg', 64: 'icons/flagcookies_profil_icon.svg', 96: 'icons/flagcookies_profil_icon.svg', 128: 'icons/flagcookies_profil_icon.svg' } });
+    }
 
     updateCookieDataForUI({ fgProfile: true }, null);
   }
-
-  updateUI();
 }
 
 function loadHelp (currentLocal) {
@@ -2442,8 +2447,11 @@ function generateZip (rawData) {
 // --------------------------------------------------------------------------------------------------------------------------------
 
 async function exportSettings () {
-  if (useChrome) chrome.storage.local.get(null, generateZip);
-  else generateZip(await browser.storage.local.get());
+  if (useChrome) {
+    chrome.storage.local.get(null, generateZip);
+  } else {
+    generateZip(await browser.storage.local.get());
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -2608,8 +2616,11 @@ async function doExportCookiesTabFunc (tabs) {
 // --------------------------------------------------------------------------------------------------------------------------------
 
 function exportCookies () {
-  if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, doExportCookiesTabFunc);
-  else browser.tabs.query({ currentWindow: true, active: true }, doExportCookiesTabFunc);
+  if (useChrome) {
+    chrome.tabs.query({ currentWindow: true, active: true }, doExportCookiesTabFunc);
+  } else {
+    browser.tabs.query({ currentWindow: true, active: true }, doExportCookiesTabFunc);
+  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -2670,9 +2681,15 @@ document.querySelector('#cookies-action-all-export-clipboard').addEventListener(
 if (useChrome) document.querySelector('label[for="importFile"]').addEventListener('click', shadowInputChrome)
 else document.querySelector('#importFile').addEventListener('click', triggerImport)
 */
-if (useChrome) document.querySelector('#settings-action-all-import').addEventListener('click', shadowInputChrome);
-else document.querySelector('#settings-action-all-import').addEventListener('click', triggerImport);
+if (useChrome) {
+  document.querySelector('#settings-action-all-import').addEventListener('click', shadowInputChrome);
+} else {
+  document.querySelector('#settings-action-all-import').addEventListener('click', triggerImport);
+}
 
 // document.querySelector('#confirmImportOverwrite').addEventListener('click', toggleImportOverwrite)
-if (useChrome) chrome.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed);
-else browser.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed);
+if (useChrome) {
+  chrome.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed);
+} else {
+  browser.tabs.query({ currentWindow: true, active: true }, initDomainURLandProceed);
+}
