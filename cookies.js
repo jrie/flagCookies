@@ -259,10 +259,25 @@ async function clearByDomainJob (request, sender, sendResponse) {
   }
 
   if (removedCookies === cookieCount || removedCookies !== 0) {
-    // TODO: Add option to remove cookies from visible list if domain is cleared by user on dumpster
-    // delete cookieData[contextName][windowId][tabId][cookieDomain]
+    console.log('cookieData[contextName][windowId][tabId][cookieDomain]', cookieData[contextName][windowId][tabId][cookieDomain]);
+    if (cookieData[contextName][windowId][tabId][cookieDomain].length === 0) {
+      delete cookieData[contextName][windowId][tabId][cookieDomain];
+
+      if (Object.keys(cookieData[contextName][windowId][tabId]).length === 1 && cookieData[contextName][windowId][tabId].fgRoot !== undefined) {
+        delete cookieData[contextName][windowId][tabId];
+
+        if (Object.keys(cookieData[contextName][windowId]).length === 0) {
+          delete cookieData[contextName][windowId];
+
+          if (Object.keys(cookieData[contextName]).length === 0) {
+            delete cookieData[contextName];
+          }
+        }
+      }
+    }
+
     removedByUser += removedCookies;
-    await preSetMouseOverTitle(contextName, tabId);
+    preSetMouseOverTitle(contextName, tabId);
     return true;
   }
 
@@ -1742,7 +1757,11 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   const tabWindowId = tab.windowId;
 
-  if (changeInfo.status !== undefined && changeInfo.status === 'loading') {
+  if (changeInfo.status === undefined) {
+    return;
+  }
+
+  if (changeInfo.status === 'loading') {
     if (openTabData[tabWindowId] === undefined || openTabData[tabWindowId][tabId] === undefined || openTabData[tabWindowId][tabId][0] === undefined) {
       browserActionAPI.disable(tabId);
       resetCookieInformation(tab);
@@ -1752,11 +1771,12 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
     }
 
     // TODO: Check if we can remove this call
-    clearCookiesWrapper(getMsg('ActionDocumentLoad'), null, tab);
+    // TODO: Temporary disabled
+    // clearCookiesWrapper(getMsg('ActionDocumentLoad'), null, tab);
     return;
   }
 
-  if (changeInfo.status !== undefined && changeInfo.status === 'complete') {
+  if (changeInfo.status === 'complete') {
     browserActionAPI.enable(tabId);
 
     let domainKey = '';
