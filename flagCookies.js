@@ -321,7 +321,7 @@ async function clearCookiesByDomain (evt) {
         chrome.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/fc128.png' });
       }
 
-      updateCookieDataForUI({ fgCleared: true, isAdded: false }, cookieDomain);
+      await updateCookieDataForUI({ fgCleared: true, isAdded: false }, cookieDomain);
     });
   } else {
     browser.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain }).then(async function () {
@@ -330,7 +330,7 @@ async function clearCookiesByDomain (evt) {
         browser.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/flagcookies_icon.svg' });
       }
 
-      updateCookieDataForUI({ fgCleared: true, isAdded: false }, cookieDomain);
+      await updateCookieDataForUI({ fgCleared: true, isAdded: false }, cookieDomain);
     });
   }
 }
@@ -343,11 +343,13 @@ async function updateCookieDataForUI (updateData, targetDomain) {
   } else {
     cookieStore = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId, targetDomain });
   }
-
-  if (cookieStore.cookies === null) {
+  // console.log(cookieStore);
+  if (cookieStore.cookies === undefined || cookieStore.cookies === null) {
     if (doDebug) {
       console.log('Update cookie data for UI: no cookies to update');
     }
+
+    updateUI();
     return;
   }
 
@@ -1406,8 +1408,12 @@ async function cookieFlagSwitch (evt) {
         delete data[contextName][rootDomain];
 
         if (Object.keys(data[contextName]).length === 0) {
-          if (useChrome) await chrome.storage.local.remove(contextName);
-          else await browser.storage.local.remove(contextName);
+          if (useChrome) {
+            await chrome.storage.local.remove(contextName);
+          } else {
+            await browser.storage.local.remove(contextName);
+          }
+
           delete data[contextName];
         }
       }
@@ -1425,8 +1431,12 @@ async function cookieFlagSwitch (evt) {
         delete data[contextName][rootDomain];
 
         if (Object.keys(data[contextName]).length === 0) {
-          if (useChrome) await chrome.storage.local.remove(contextName);
-          else await browser.storage.local.remove(contextName);
+          if (useChrome) {
+            await chrome.storage.local.remove(contextName);
+          } else {
+            await browser.storage.local.remove(contextName);
+          }
+
           delete data[contextName];
         }
       }
@@ -1444,8 +1454,12 @@ async function cookieFlagSwitch (evt) {
         delete data[contextName][rootDomain];
 
         if (Object.keys(data[contextName]).length === 0) {
-          if (useChrome) await chrome.storage.local.remove(contextName);
-          else await browser.storage.local.remove(contextName);
+          if (useChrome) {
+            await chrome.storage.local.remove(contextName);
+          } else {
+            await browser.storage.local.remove(contextName);
+          }
+
           delete data[contextName];
         }
       }
@@ -1469,8 +1483,11 @@ async function cookieFlagSwitch (evt) {
 
   updateCookieCount();
 
-  if (useChrome) chrome.storage.local.set(data);
-  else await browser.storage.local.set(data);
+  if (useChrome) {
+    chrome.storage.local.set(data);
+  } else {
+    await browser.storage.local.set(data);
+  }
 }
 
 function updateCookieCount () {
@@ -1519,8 +1536,12 @@ async function cookieLockSwitchByDomain (evt) {
               delete data.flagCookies_logged[contextName];
 
               if (Object.keys(data.flagCookies_logged).length === 0) {
-                if (useChrome) await chrome.storage.local.remove('flagCookies_logged');
-                else await browser.storage.local.remove('flagCookies_logged');
+                if (useChrome) {
+                  await chrome.storage.local.remove('flagCookies_logged');
+                } else {
+                  await browser.storage.local.remove('flagCookies_logged');
+                }
+
                 delete data.flagCookies_logged;
               }
             }
@@ -1543,8 +1564,11 @@ async function cookieLockSwitchByDomain (evt) {
       document.querySelector('#profileNoData').removeAttribute('class');
     }
 
-    if (useChrome) await chrome.storage.local.set(data);
-    else await browser.storage.local.set(data);
+    if (useChrome) {
+      await chrome.storage.local.set(data);
+    } else {
+      await browser.storage.local.set(data);
+    }
   } else {
     for (const cookie of cookieData.cookies[cookieDomain]) {
       data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] = true;
@@ -1553,8 +1577,11 @@ async function cookieLockSwitchByDomain (evt) {
       loggedInCookieList.removeAttribute('class');
     }
 
-    if (useChrome) await chrome.storage.local.set(data);
-    else await browser.storage.local.set(data);
+    if (useChrome) {
+      await chrome.storage.local.set(data);
+    } else {
+      await browser.storage.local.set(data);
+    }
 
     document.querySelector('#profileNoData').className = 'hidden';
     evt.target.classList.add('locked');
@@ -1601,16 +1628,23 @@ async function cookieLockSwitch (evt) {
             delete data.flagCookies_logged[contextName];
 
             if (Object.keys(data.flagCookies_logged).length === 0) {
-              if (useChrome) await chrome.storage.local.remove('flagCookies_logged');
-              else await browser.storage.local.remove('flagCookies_logged');
+              if (useChrome) {
+                await chrome.storage.local.remove('flagCookies_logged');
+              } else {
+                await browser.storage.local.remove('flagCookies_logged');
+              }
+
               delete data.flagCookies_logged;
             }
           }
         }
       }
 
-      if (useChrome) await chrome.storage.local.set(data);
-      else await browser.storage.local.set(data);
+      if (useChrome) {
+        await chrome.storage.local.set(data);
+      } else {
+        await browser.storage.local.set(data);
+      }
 
       const loggedInCookieList = document.querySelector('#loggedInCookies');
       removeCookieOfProfileList(loggedInCookieList, cookieName, cookieDomain);
@@ -1626,8 +1660,11 @@ async function cookieLockSwitch (evt) {
   } else {
     data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookieName] = true;
 
-    if (useChrome) await chrome.storage.local.set(data);
-    else await browser.storage.local.set(data);
+    if (useChrome) {
+      await chrome.storage.local.set(data);
+    } else {
+      await browser.storage.local.set(data);
+    }
 
     const loggedInCookieList = document.querySelector('#loggedInCookies');
     if (!isDomainCookieInList('#loggedInCookies', cookieName, cookieDomain)) addCookieToProfileList(loggedInCookieList, cookieName, cookieDomain, 'flagCookies_logged');
@@ -2045,11 +2082,17 @@ async function toggleOptionById (evt, doSwitch) {
       data.flagCookies_notifications = doSwitch;
 
       if (doSwitch) {
-        if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/fc128.png' });
-        else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' });
+        if (useChrome) {
+          chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/fc128.png' });
+        } else {
+          browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsEnabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' });
+        }
       } else {
-        if (useChrome) chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/fc128.png' });
-        else browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' });
+        if (useChrome) {
+          chrome.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/fc128.png' });
+        } else {
+          browser.notifications.create('notifications_info', { type: 'basic', message: getMsg('NotificationsDisabledNotifications'), title: getMsg('NotificationsHeadlineNeutral'), iconUrl: 'icons/flagcookies_icon.svg' });
+        }
       }
 
       break;
@@ -2197,8 +2240,11 @@ async function resetUIDomain (data) {
     if (Object.keys(data.flagCookies_autoFlag).length === 0) {
       delete data.flagCookies_autoFlag;
 
-      if (useChrome) await chrome.storage.local.remove('flagCookies_autoFlag');
-      else await browser.storage.local.remove('flagCookies_autoFlag');
+      if (useChrome) {
+        await chrome.storage.local.remove('flagCookies_autoFlag');
+      } else {
+        await browser.storage.local.remove('flagCookies_autoFlag');
+      }
     }
   }
 
@@ -2212,8 +2258,11 @@ async function resetUIDomain (data) {
         if (Object.keys(data.flagCookies_logged).length === 0) {
           delete data.flagCookies_logged;
 
-          if (useChrome) await chrome.storage.local.remove('flagCookies_logged');
-          else await browser.storage.local.remove('flagCookies_logged');
+          if (useChrome) {
+            await chrome.storage.local.remove('flagCookies_logged');
+          } else {
+            await browser.storage.local.remove('flagCookies_logged');
+          }
         }
       }
     }
@@ -2229,8 +2278,11 @@ async function resetUIDomain (data) {
         if (Object.keys(data.flagCookies_accountMode).length === 0) {
           delete data.flagCookies_accountMode;
 
-          if (useChrome) await chrome.storage.local.remove('flagCookies_accountMode');
-          else await browser.storage.local.remove('flagCookies_accountMode');
+          if (useChrome) {
+            await chrome.storage.local.remove('flagCookies_accountMode');
+          } else {
+            await browser.storage.local.remove('flagCookies_accountMode');
+          }
         }
       }
     }
@@ -2244,13 +2296,19 @@ async function resetUIDomain (data) {
     if (Object.keys(data[contextName]).length === 0) {
       delete data[contextName];
 
-      if (useChrome) await chrome.storage.local.remove(contextName);
-      else await browser.storage.local.remove(contextName);
+      if (useChrome) {
+        await chrome.storage.local.remove(contextName);
+      } else {
+        await browser.storage.local.remove(contextName);
+      }
     }
   }
 
-  if (useChrome) await chrome.storage.local.set(data);
-  else await browser.storage.local.set(data);
+  if (useChrome) {
+    await chrome.storage.local.set(data);
+  } else {
+    await browser.storage.local.set(data);
+  }
 
   const confirmClearing = document.querySelector('#confirmDomainClearing');
   confirmClearing.classList.remove('active');
@@ -2283,16 +2341,23 @@ async function dumpProfileCookie (evt) {
         delete data[cookieSrc][contextName];
 
         if (Object.keys(data[cookieSrc]).length === 0) {
-          if (useChrome) await chrome.storage.local.remove(cookieSrc);
-          else await browser.storage.local.remove(cookieSrc);
+          if (useChrome) {
+            await chrome.storage.local.remove(cookieSrc);
+          } else {
+            await browser.storage.local.remove(cookieSrc);
+          }
+
           delete data[cookieSrc];
         }
       }
     }
   }
 
-  if (useChrome) await chrome.storage.local.set(data);
-  else await browser.storage.local.set(data);
+  if (useChrome) {
+    await chrome.storage.local.set(data);
+  } else {
+    await browser.storage.local.set(data);
+  }
 
   const cookieList = document.querySelectorAll('#cookie-list .cookieEntry');
   for (const child of cookieList) {
@@ -2331,8 +2396,12 @@ async function accountModeSwitch (evt) {
         delete data.flagCookies_accountMode[contextName];
 
         if (Object.keys(data.flagCookies_accountMode).length === 0) {
-          if (useChrome) await chrome.storage.local.remove('flagCookies_accountMode');
-          else await browser.storage.local.remove('flagCookies_accountMode');
+          if (useChrome) {
+            await chrome.storage.local.remove('flagCookies_accountMode');
+          } else {
+            await browser.storage.local.remove('flagCookies_accountMode');
+          }
+
           delete data.flagCookies_accountMode;
         }
       }
@@ -2343,6 +2412,7 @@ async function accountModeSwitch (evt) {
     } else {
       await browser.storage.local.set(data);
     }
+
     evt.target.classList.remove('active');
 
     // Account mode icon removal
