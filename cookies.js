@@ -259,7 +259,7 @@ async function clearByDomainJob (request, sender, sendResponse) {
   }
 
   if (removedCookies === cookieCount || removedCookies !== 0) {
-    console.log('cookieData[contextName][windowId][tabId][cookieDomain]', cookieData[contextName][windowId][tabId][cookieDomain]);
+    // console.log('cookieData[contextName][windowId][tabId][cookieDomain]', cookieData[contextName][windowId][tabId][cookieDomain]);
     if (cookieData[contextName][windowId][tabId][cookieDomain].length === 0) {
       delete cookieData[contextName][windowId][tabId][cookieDomain];
 
