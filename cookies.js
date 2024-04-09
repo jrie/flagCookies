@@ -35,7 +35,7 @@ function getFirefoxMessage (messageName, params) {
 }
 
 async function clearCookiesWrapper (action, cookieDetails, currentTab) {
-  if (currentTab === undefined || currentTab.url === undefined) {
+  if (currentTab === undefined || currentTab.url === undefined || currentTab.url === null) {
     return;
   }
 
@@ -259,7 +259,6 @@ async function clearByDomainJob (request, sender, sendResponse) {
   }
 
   if (removedCookies === cookieCount || removedCookies !== 0) {
-    // console.log('cookieData[contextName][windowId][tabId][cookieDomain]', cookieData[contextName][windowId][tabId][cookieDomain]);
     if (cookieData[contextName][windowId][tabId][cookieDomain].length === 0) {
       delete cookieData[contextName][windowId][tabId][cookieDomain];
 
@@ -398,40 +397,43 @@ function handleMessage (request, sender, sendResponse) {
 
     // console.log('cookieData:', cookieData)
 
-    if (cookieData[contextName] === undefined || cookieData[contextName][request.windowId] === undefined || cookieData[contextName][request.windowId][request.tabId] === undefined) {
+    if (cookieData[contextName] === undefined || cookieData[contextName][request.windowId] === undefined || cookieData[contextName][request.windowId][request.tabId] === undefined || cookieData[contextName][request.windowId][request.tabId].fgRoot === undefined) {
       sendResponse({ sessionData: null, cookies: null, rootDomain: null, msg: getMsg('UnknownDomain'), logData: null });
       return;
     }
 
     const rootDomain = cookieData[contextName][request.windowId][request.tabId].fgRoot;
-
     if (request.targetDomain !== undefined && request.targetDomain !== null) {
-      for (const cookie of cookieData[contextName][request.windowId][request.tabId][request.targetDomain]) {
-        if (cookieDataDomain[request.targetDomain] === undefined) cookieDataDomain[request.targetDomain] = [];
+      if (cookieData[contextName][request.windowId][request.tabId][request.targetDomain] !== undefined) {
+        for (const cookie of cookieData[contextName][request.windowId][request.tabId][request.targetDomain]) {
+          if (cookieDataDomain[request.targetDomain] === undefined) cookieDataDomain[request.targetDomain] = [];
 
-        for (const key of Object.keys(cookie)) {
-          if (key.startsWith('fg')) {
-            continue;
+          for (const key of Object.keys(cookie)) {
+            if (key.startsWith('fg')) {
+              continue;
+            }
+
+            switch (key) {
+              case 'name':
+              case 'value':
+              case 'domain':
+              case 'path':
+              case 'secure':
+              case 'expirationDate':
+              case 'firstPartyDomain':
+              case 'partitionKey':
+                // case 'storeId':
+                continue;
+              default:
+                delete cookie[key];
+                continue;
+            }
           }
 
-          switch (key) {
-            case 'name':
-            case 'value':
-            case 'domain':
-            case 'path':
-            case 'secure':
-            case 'expirationDate':
-            case 'firstPartyDomain':
-            case 'partitionKey':
-              // case 'storeId':
-              continue;
-            default:
-              delete cookie[key];
-              continue;
-          }
+          cookieDataDomain[request.targetDomain].push(cookie);
         }
-
-        cookieDataDomain[request.targetDomain].push(cookie);
+      } else {
+        cookieDataDomain[request.targetDomain] = [];
       }
     } else {
       for (const cookieDomainKey of Object.keys(cookieData[contextName][request.windowId][request.tabId])) {
