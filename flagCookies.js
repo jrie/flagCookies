@@ -608,14 +608,16 @@ async function updateUI () {
       }
     }
   }
-
-  if (rootDomain === undefined || rootDomain === null) {
+  if (cookieData === null || rootDomain !== undefined) {
+    introUrl.appendChild(document.createTextNode(rootDomain));
+  } else {
     introUrl.appendChild(document.createTextNode(getMsg('UnknownDomain')));
+  }
+
+  if (cookieData === null) {
     const contentText = getMsg('NoActiveDomainCookiesText');
     infoDisplay.children[0].textContent = contentText;
     infoDisplay.removeAttribute('class');
-  } else {
-    introUrl.appendChild(document.createTextNode(rootDomain));
   }
 
   activeTabUrl.appendChild(introSpan);
@@ -630,16 +632,20 @@ async function updateUI () {
 
   if (rootDomain !== null && rootDomain !== undefined) {
     const hasAccountMode = data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined;
-    const sortedCookieDomains = Object.keys(cookieData).sort();
+    let sortedCookieDomains = [];
 
     // TODO: Add check for (global) or single cookie profile for update in UI
     const hasLoggedProfile = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined;
     let hasEmptyProfile = false;
 
-    for (const cookieDomain of sortedCookieDomains) {
-      hasEmptyProfile = data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined || data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined;
-      if (hasEmptyProfile === false) {
-        break;
+    if (cookieData !== null) {
+      sortedCookieDomains = Object.keys(cookieData).sort();
+
+      for (const cookieDomain of sortedCookieDomains) {
+        hasEmptyProfile = data.flagCookies_logged === undefined || data.flagCookies_logged[contextName] === undefined || data.flagCookies_logged[contextName][rootDomain] === undefined || data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined;
+        if (hasEmptyProfile === false) {
+          break;
+        }
       }
     }
 
