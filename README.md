@@ -3,7 +3,7 @@
 A cookie, and browser storage manager with cow powers.
 Gives the ability to flag and set rules explicitly for cookies, also third-party cookies, cross origin, and secure cookies aswell as browser storage management and clearing.
 
-Domain.net and subdomain.Domain.net can have individual rights. Providing several modes to set rules on cookies and keeping a cookie profile, while being logged in in a website or service.
+**Domain.net** and **subdomain.Domain.net** can have individual rights. Providing several modes to set rules on cookies and keeping a cookie profile, while being logged in in a website or service.
 
 ## Important privacy notice
 - No cookie information besides the name and domain name are stored inside FlagCookies to work, no values, no direct details.
@@ -13,8 +13,8 @@ Domain.net and subdomain.Domain.net can have individual rights. Providing severa
 ### Before you use this addon
 This add-on is mainly aimed at power users, this might sound harsh, but it is realy not!
 
-To get the most out of FlagCookies, you have to define either cookie rules for websites and or make use of `Global Flag`, or `Auto flag`, `Profile` modes.
-In case you use payment services/providers, be advised to disable the "Global flag" feature temporarily. For example when using Paypal or other shopping/payment services or providers.
+To get the most out of FlagCookies, you define cookie rules for websites or make use of `Global Flag`, or `Auto flag`, `Profile` modes.
+In case you use payment services/providers, disable the "Global flag" feature temporarily. For example when using Paypal or other shopping/payment services or providers.
 
 ### *Long story made short* - Basic usage
 1) Use `Global mode` if you are surfing, this will remove all kind of cookies while browsing the web if not protected by `profile` mode.
@@ -22,9 +22,10 @@ In case you use payment services/providers, be advised to disable the "Global fl
 3) Use `Profile mode` either globally for a website, protecting all cookies of that domain if no cookies are picked as profile cookies. Or protect single cookies even when `Global flag` or `Auto flag` modes are active.
 4) `Click / Flag` and set rules for each cookie individually, works together with the other modes.
 
-### JDownloader2
-Note: It is possible to export detected cookies into a json file or into the clipboard, used by JDownloader2, from the `Settings` tab inside of FlagCookies.
-More information also can be found here: [JDownloader2 Knowledgebase with cookie import instructions](https://support.jdownloader.org/Knowledgebase/Article/View/account-cookie-login-instructions)
+## Requirements
+
+A recent version of possibly any **Chrome** browser, **Firefox**, **Opera**, **Edge** or **Brave** browser(s).
+Please note, there is no mobile version of FlagCookies.
 
 ## Some features
 
@@ -43,11 +44,6 @@ More information also can be found here: [JDownloader2 Knowledgebase with cookie
 * Support for firstPartyIsolate/firstPartyDomain cookies
 * Support for container tabs/contextual identities
 
-## Requirements
-
-A recent version of **Chrome**, **Firefox** or **Opera** or **Edge** browser(s). Please note, there is no mobile version of FlagCookies.
-
-
 ## Installation
 
 ### Firefox
@@ -64,6 +60,21 @@ Use Edge addon store: [Flag Cookies @ Microsoft for Edge](https://microsoftedge.
 
 ## Help, documentation and usage
 Please read along here: https://github.com/jrie/flagCookies/wiki/FlagCookies-help-and-documentation
+
+## Support the cause
+
+If you like this or other pieces of software I do, you can give me a tip!
+
+You can use [PayPal.me/dwroxnet](https://paypal.me/dwroxnet)
+or if you prefer, Ko-fi.
+
+See the details here:
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y6WUABE)
+
+### JDownloader2
+Note: It is possible to export detected cookies into a json file or into the clipboard, used by JDownloader2, from the `Settings` tab inside of FlagCookies.
+More information also can be found here: [JDownloader2 Knowledgebase with cookie import instructions](https://support.jdownloader.org/Knowledgebase/Article/View/account-cookie-login-instructions)
+
 
 ## Translations
 As of version 3.0.27 translations can be done of Flag Cookies.
