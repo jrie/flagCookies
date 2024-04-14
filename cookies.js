@@ -145,14 +145,7 @@ async function clearCookiesWrapper (action, cookieDetails, currentTab) {
   preSetMouseOverTitle(contextName, currentTab.id);
   if (cookies.length === 0) return;
 
-  let data = {};
-  if (useChrome) {
-    data = await chrome.storage.local.get();
-  } else {
-    data = await browser.storage.local.get();
-  }
-
-  clearCookiesAction(action, data, cookies, currentTab);
+  clearCookiesAction(action, cookies, currentTab);
 }
 
 async function handleTabChange (activeInfo) {
@@ -685,7 +678,7 @@ function setMouseOverTitle (contextName, tabWindowId, tabId) {
 }
 
 // Clear the cookies which are enabled for the domain in browser storage
-async function clearCookiesAction (action, data, cookies, currentTab) {
+async function clearCookiesAction (action, cookies, currentTab) {
   const tabWindowId = currentTab.windowId;
   const tabTabId = currentTab.id;
 
@@ -699,6 +692,13 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
   const strippedRootDomain = rootDomain.replace(/^(http:|https:)\/\//i, '');
 
+  let data = {};
+  if (useChrome) {
+    data = await chrome.storage.local.get();
+  } else {
+    data = await browser.storage.local.get();
+  }
+
   const hasDataContext = data[contextName] !== undefined && data[contextName][strippedRootDomain] !== undefined;
 
   if (data[contextName] === undefined) data[contextName] = {};
@@ -708,81 +708,83 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
   let accountDomain = null;
 
   let foundCookie = false;
-  for (const cookie of cookies) {
-    foundCookie = false;
+  if (cookies !== null) {
+    for (const cookie of cookies) {
+      foundCookie = false;
 
-    for (const key of Object.keys(cookie)) {
-      if (key.startsWith('fg')) {
-        delete cookie[key];
-        continue;
+      for (const key of Object.keys(cookie)) {
+        if (key.startsWith('fg')) {
+          delete cookie[key];
+          continue;
+        }
       }
-    }
 
-    const domainKey = cookie.domain;
-    const domain = domainKey.replace(/^\./, '');
-    let hasHttpProfile = false;
-    let hasHttpsProfile = false;
-    if (hasAccountsInContext) {
-      hasHttpProfile = data.flagCookies_accountMode[contextName]['http://' + domain] !== undefined;
-      hasHttpsProfile = data.flagCookies_accountMode[contextName]['https://' + domain] !== undefined;
-    }
+      const domainKey = cookie.domain;
+      const domain = domainKey.replace(/^\./, '');
+      let hasHttpProfile = false;
+      let hasHttpsProfile = false;
+      if (hasAccountsInContext) {
+        hasHttpProfile = data.flagCookies_accountMode[contextName]['http://' + domain] !== undefined;
+        hasHttpsProfile = data.flagCookies_accountMode[contextName]['https://' + domain] !== undefined;
+      }
 
-    if (hasHttpProfile || hasHttpsProfile) {
-      for (const cookieDomainKey of Object.keys(cookieData[contextName][tabWindowId][tabTabId])) {
-        let index = 0;
-        for (const cookieEntry of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookieDomainKey) {
-            foundCookie = true;
+      if (hasHttpProfile || hasHttpsProfile) {
+        for (const cookieDomainKey of Object.keys(cookieData[contextName][tabWindowId][tabTabId])) {
+          let index = 0;
+          for (const cookieEntry of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
+            if (cookieEntry.name === cookie.name && cookieEntry.domain === cookieDomainKey) {
+              foundCookie = true;
 
-            if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookieEntry.name] === true) {
-              cookie.fgProfile = true;
-              cookie.fgAllowed = true;
-              cookie.fgProtected = true;
-              cookie.fgDomain = strippedRootDomain;
+              if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookie.name] !== undefined && data.flagCookies_logged[contextName][strippedRootDomain][cookieDomainKey][cookieEntry.name] === true) {
+                cookie.fgProfile = true;
+                cookie.fgAllowed = true;
+                cookie.fgProtected = true;
+                cookie.fgDomain = strippedRootDomain;
+              }
+
+              cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie;
+              break;
             }
 
-            cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey][index] = cookie;
-            break;
+            ++index;
           }
 
-          ++index;
+          if (foundCookie) {
+            break;
+          }
         }
+      } else {
+        for (const cookieDomainKey of Object.keys(cookieData[contextName][tabWindowId][tabTabId])) {
+          if (cookieDomainKey === 'fgRoot') continue;
+          let index = 0;
+          for (const cookieEntry of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
+            if (cookieEntry.name === cookie.name && cookieEntry.domain === cookieDomainKey) {
+              foundCookie = true;
 
-        if (foundCookie) {
-          break;
-        }
-      }
-    } else {
-      for (const cookieDomainKey of Object.keys(cookieData[contextName][tabWindowId][tabTabId])) {
-        if (cookieDomainKey === 'fgRoot') continue;
-        let index = 0;
-        for (const cookieEntry of cookieData[contextName][tabWindowId][tabTabId][cookieDomainKey]) {
-          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookieDomainKey) {
-            foundCookie = true;
+              for (const key of Object.keys(cookieEntry)) {
+                cookie[key] = cookieEntry[key];
+              }
 
-            for (const key of Object.keys(cookieEntry)) {
-              cookie[key] = cookieEntry[key];
+              cookieData[contextName][tabWindowId][tabTabId][cookie.domain][index] = cookie;
+              break;
             }
 
-            cookieData[contextName][tabWindowId][tabTabId][cookie.domain][index] = cookie;
-            break;
+            ++index;
           }
 
-          ++index;
-        }
-
-        if (foundCookie) {
-          break;
+          if (foundCookie) {
+            break;
+          }
         }
       }
-    }
 
-    if (!foundCookie) {
-      if (cookieData[contextName][tabWindowId][tabTabId][domainKey] === undefined) {
-        cookieData[contextName][tabWindowId][tabTabId][domainKey] = [];
+      if (!foundCookie) {
+        if (cookieData[contextName][tabWindowId][tabTabId][domainKey] === undefined) {
+          cookieData[contextName][tabWindowId][tabTabId][domainKey] = [];
+        }
+
+        cookieData[contextName][tabWindowId][tabTabId][domainKey].push(cookie);
       }
-
-      cookieData[contextName][tabWindowId][tabTabId][domainKey].push(cookie);
     }
   }
 
@@ -1757,11 +1759,11 @@ async function clearCookiesAction (action, data, cookies, currentTab) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
-  const tabWindowId = tab.windowId;
-
   if (changeInfo.status === undefined) {
     return;
   }
+
+  const tabWindowId = tab.windowId;
 
   if (changeInfo.status === 'loading') {
     if (openTabData[tabWindowId] === undefined || openTabData[tabWindowId][tabId] === undefined || openTabData[tabWindowId][tabId][0] === undefined) {
@@ -1774,7 +1776,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
 
     // TODO: Check if we can remove this call
     // TODO: Temporary disabled
-    // clearCookiesWrapper(getMsg('ActionDocumentLoad'), null, tab);
+    clearCookiesWrapper(getMsg('ActionDocumentLoad'), null, tab);
     return;
   }
 
@@ -2336,14 +2338,11 @@ async function clearCookiesOnRequest (details) {
     }
 
     let currentTab = null;
-    let data = null;
 
     if (useChrome) {
       currentTab = await chrome.tabs.get(details.tabId);
-      data = await chrome.storage.local.get();
     } else {
       currentTab = await browser.tabs.get(details.tabId);
-      data = await browser.storage.local.get();
     }
 
     let domainURL = '';
@@ -2392,90 +2391,6 @@ async function clearCookiesOnRequest (details) {
     }
 
     addTabURLtoDataList(currentTab, details, domainURL);
-    const domainWWW = 'http://www.' + domainURL;
-    const domainWWW2 = 'https://www.' + domainURL;
-
-    // TODO: If in any case we need the first party domain, this will be the place to define that, instead of passing "null" by default
-    let firstPartyIsolate = null;
-
-    if (details !== null && details.firstPartyDomain !== undefined) {
-      firstPartyIsolate = details.firstPartyDomain;
-    }
-
-    let cookieList = [];
-
-    if (!useChrome) {
-      const cookiesBase = await browser.cookies.getAll({ domain: domainURL, firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      const cookiesURL = await browser.cookies.getAll({ url: domainURL, firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      const cookiesSec = await browser.cookies.getAll({ domain: domainURL, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      const cookies2 = await browser.cookies.getAll({ domain: domainURL.replace(/^(http:|https:)\/\//i, '.'), firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      const cookiesSec2 = await browser.cookies.getAll({ domain: domainURL.replace(/^(http:|https:)\/\//i, '.'), secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      const cookies3 = await browser.cookies.getAll({ domain: domainWWW, firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      const cookiesSec3 = await browser.cookies.getAll({ domain: domainWWW, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      const cookies4 = await browser.cookies.getAll({ domain: domainWWW2, firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      const cookiesSec4 = await browser.cookies.getAll({ domain: domainWWW2, secure: true, firstPartyDomain: firstPartyIsolate, storeId: contextName });
-      cookieList = [cookiesBase, cookiesURL, cookiesSec, cookies2, cookiesSec2, cookies3, cookiesSec3, cookies4, cookiesSec4];
-    } else {
-      const domainSplit = domainURL.split('.');
-      const targetDomain = domainSplit.splice(domainSplit.length - 2, 2).join('.');
-
-      const cookiesBase = await chrome.cookies.getAll({ domain: domainURL });
-      const cookiesURL = await chrome.cookies.getAll({ url: currentTab.url });
-      const cookiesRoot = await chrome.cookies.getAll({ domain: targetDomain });
-      const cookiesRootDot = await chrome.cookies.getAll({ domain: '.' + targetDomain });
-      cookieList = [cookiesBase, cookiesURL, cookiesRoot, cookiesRootDot];
-
-      if (openTabData !== undefined && openTabData[tabWindowId] !== undefined && openTabData[tabWindowId][tabTabId] !== undefined) {
-        for (const tabUrl of Object.keys(openTabData[tabWindowId][tabTabId])) {
-          if (openTabData[tabWindowId][tabTabId][tabUrl].d === undefined) {
-            continue;
-          }
-
-          const targetURL = openTabData[tabWindowId][tabTabId][tabUrl].d;
-          cookieList.push(await chrome.cookies.getAll({ domain: targetURL }));
-        }
-      }
-    }
-
-    const cookies = [];
-    for (const list of cookieList) {
-      for (const cookie of list) {
-        let hasCookie = false;
-
-        for (const cookieEntry of cookies) {
-          if (cookieEntry.name === cookie.name && cookieEntry.domain === cookie.domain) {
-            hasCookie = true;
-            break;
-          }
-        }
-
-        if (!hasCookie) {
-          for (const key of Object.keys(cookie)) {
-            if (key.startsWith('fg')) {
-              continue;
-            }
-
-            switch (key) {
-              case 'name':
-              case 'value':
-              case 'domain':
-              case 'path':
-              case 'secure':
-              case 'expirationDate':
-              case 'firstPartyDomain':
-              case 'partitionKey':
-                // case 'storeId':
-                continue;
-              default:
-                delete cookie[key];
-                continue;
-            }
-          }
-
-          cookies.push(cookie);
-        }
-      }
-    }
 
     let typeOfRequest = '';
     switch (details.type) {
@@ -2489,7 +2404,7 @@ async function clearCookiesOnRequest (details) {
         break;
     }
 
-    clearCookiesAction(typeOfRequest, data, cookies, currentTab);
+    clearCookiesAction(typeOfRequest, null, currentTab);
   }
 }
 
@@ -2623,6 +2538,7 @@ if (useChrome) {
   chrome.tabs.onActivated.addListener(handleTabChange);
   chrome.runtime.onMessage.addListener(handleMessage);
   chrome.cookies.onChanged.addListener(onCookieChanged);
+  // Is this the performance culprit in chrome browsers?
   chrome.webRequest.onBeforeRequest.addListener(clearCookiesOnRequest, { urls: ['<all_urls>'], types: ['main_frame', 'sub_frame', 'xmlhttprequest'] });
   chrome.runtime.onInstalled.addListener(onInstallNotification);
 } else {
