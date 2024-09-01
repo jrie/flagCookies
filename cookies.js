@@ -34,6 +34,62 @@ function getFirefoxMessage (messageName, params) {
   return browser.i18n.getMessage(messageName);
 }
 
+async function getStoreValue (key, keyStore, targetValue) {
+  let value = {};
+
+  if (keyStore !== undefined) {
+    let request = {};
+    if (targetValue !== undefined) {
+      request = { [keyStore]: { [key]: targetValue } };
+    } else {
+      request = { [keyStore]: key };
+    }
+
+    if (useChrome) {
+      value = await chrome.storage.local.get(request);
+    } else {
+      value = await browser.storage.local.get(request);
+    }
+  } else {
+    if (useChrome) {
+      value = await chrome.storage.local.get(key);
+    } else {
+      value = await browser.storage.local.get(key);
+    }
+  }
+
+  if (Object.keys(value).length === 0) {
+    return;
+  }
+
+  return value;
+}
+
+async function setStoreValue (key, keyStore, targetValue) {
+  if (keyStore !== undefined) {
+    let request = {};
+    if (targetValue !== undefined) {
+      request = { [keyStore]: { [key]: targetValue } };
+    } else {
+      request = { [keyStore]: key };
+    }
+
+    if (useChrome) {
+      await chrome.storage.local.set(request);
+    } else {
+      await browser.storage.local.set(request);
+    }
+  } else {
+    if (useChrome) {
+      await chrome.storage.local.set(key);
+    } else {
+      await browser.storage.local.set(key);
+    }
+  }
+
+  return true;
+}
+
 async function clearCookiesWrapper (action, cookieDetails, currentTab) {
   if (currentTab === undefined || currentTab.url === undefined || currentTab.url === null) {
     return;
@@ -691,6 +747,24 @@ async function clearCookiesAction (action, cookies, currentTab) {
   }
 
   const strippedRootDomain = rootDomain.replace(/^(http:|https:)\/\//i, '');
+
+  // TODO: Start here
+  /*
+  // This will need a lot of refactoring, but should be able to improve the performance quite a bunch
+  // I am not sure when this will be implemented so as everything inside here needs to be refactored, trimmed down to 1/3..
+  // .. and also be reflected in the UI accordingly using the "cookie.fg" values
+  // If anynone is interested, feel free to make improvements :)
+  const flagCookiesAccountMode = await getStoreValue(contextName, 'flagCookies_accountMode', strippedRootDomain);
+  const flagCookiesLoggedDomain = await getStoreValue(contextName, 'flagCookies_logged', strippedRootDomain);
+  const flagCookiesLogSetting = await getStoreValue('flagCookies_logEnabled');
+  const flagCookiesAutoFlagEnabled = await getStoreValue(contextName, 'flagCookies_autoFlag', strippedRootDomain);
+  const flagCookiesGlobalFlagEnabled = await getStoreValue(contextName, 'flagCookies_flagGlobal', strippedRootDomain);
+  const isLogEnabled = !!flagCookiesLogSetting?.flagCookies_logEnabled;
+  const accountMode = !!flagCookiesAccountMode?.flagCookies_accountMode?.[contextName]?.[strippedRootDomain];
+  const autoFlagDomain = !!flagCookiesAutoFlagEnabled?.flagCookies_autoFlag?.[contextName]?.[strippedRootDomain];
+  const globalFlagDomain = flagCookiesGlobalFlagEnabled?.flagCookies_flagGlobal?.[contextName] === true;
+  const loggedDomainData = !!flagCookiesLoggedDomain?.flagCookies_logged?.[contextName]?.[strippedRootDomain];
+  */
 
   let data = {};
   if (useChrome) {
