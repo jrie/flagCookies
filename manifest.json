@@ -4,7 +4,7 @@
     "url": "https://www.dwrox.net"
   },
   "default_locale": "en",
-  "browser_action": {
+  "action": {
     "default_title": "FlagCookies",
     "default_popup": "cookies.html",
     "default_icon": {
@@ -22,9 +22,9 @@
     "128": "icons/flagcookies_icon.svg"
   },
   "homepage_url": "https://github.com/jrie/flagCookies",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Flag Cookies",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "permissions": [
     "cookies",
     "tabs",
@@ -34,6 +34,9 @@
     "clipboardWrite",
     "notifications",
     "contextualIdentities",
+    "webNavigation"
+  ],
+  "host_permissions": [
     "<all_urls>"
   ],
   "background": {
