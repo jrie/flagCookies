@@ -268,6 +268,11 @@ async function clearByDomainJob (request, sender, sendResponse) {
     const details = { url: 'https://' + cookieDomain + cookie.path, name: cookie.name };
     const details2 = { url: 'http://' + cookieDomain + cookie.path, name: cookie.name };
 
+    if (contextName) {
+      details.storeId = contextName;
+      details2.storeId = contextName;
+    }
+
     if (useChrome) {
       if (await chrome.cookies.get(details) === null && await chrome.cookies.get(details2) === null) {
         --cookieCount;
