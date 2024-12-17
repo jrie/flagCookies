@@ -58,12 +58,12 @@ async function initDomainURLandProceed (tabs) {
     data = await browser.storage.local.get();
   }
 
-  if (data.flagCookies_darkTheme !== undefined && data.flagCookies_darkTheme === true) {
+  if (data.flagCookies_darkTheme && data.flagCookies_darkTheme === true) {
     document.body.classList.add('dark');
   }
 
   contextName = 'default';
-  if (tab.cookieStoreId !== undefined) {
+  if (tab.cookieStoreId) {
     contextName = tab.cookieStoreId;
   }
 
@@ -92,7 +92,7 @@ function sortObjectByKey (ObjectElements, keyName, doReverse) {
     return elementOne[keyName].toLowerCase() < elementTwo[keyName].toLowerCase();
   }
 
-  if (doReverse !== undefined && doReverse === true) return Object.values(ObjectElements).sort(sortByKey).reverse();
+  if (doReverse && doReverse === true) return Object.values(ObjectElements).sort(sortByKey).reverse();
   return Object.values(ObjectElements).sort(sortByKey);
 }
 
@@ -317,7 +317,7 @@ async function clearCookiesByDomain (evt) {
   if (useChrome) {
     chrome.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain }).then(async function () {
       const data = await chrome.storage.local.get('flagCookies_notifications');
-      if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
+      if (data.flagCookies_notifications && data.flagCookies_notifications === true) {
         chrome.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/fc128.png' });
       }
 
@@ -326,7 +326,7 @@ async function clearCookiesByDomain (evt) {
   } else {
     browser.runtime.sendMessage({ clearByDomain: true, cookieDomain, tabId, windowId, contextName, rootDomain }).then(async function () {
       const data = await browser.storage.local.get('flagCookies_notifications');
-      if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
+      if (data.flagCookies_notifications && data.flagCookies_notifications === true) {
         browser.notifications.create('cookies_cleared_by_domain', { type: 'basic', message: getMsg('NotificationCookiesRemovedByDomain', [cookieDomain]), title: getMsg('NotificationCookiesRemovedByDomainTitle'), iconUrl: 'icons/flagcookies_icon.svg' });
       }
 
@@ -383,7 +383,7 @@ async function updateCookieDataForUI (updateData, targetDomain) {
         for (const key of Object.keys(updateData)) {
           switch (updateData[key]) {
             case null:
-              if (cookie[key] !== undefined) delete cookie[key];
+              if (cookie[key]) delete cookie[key];
               break;
             case true:
             case false:
@@ -413,7 +413,7 @@ async function updateCookieDataForUI (updateData, targetDomain) {
       for (const key of Object.keys(updateData)) {
         switch (updateData[key]) {
           case null:
-            if (cookie[key] !== undefined) delete cookie[key];
+            if (cookie[key]) delete cookie[key];
             break;
           case true:
           case false:
@@ -473,7 +473,7 @@ function setPanelScroll () {
     if (list.classList.contains('hidden')) {
       continue;
     }
-    if (scrollPanelTop[list.id] !== undefined) {
+    if (scrollPanelTop[list.id]) {
       document.querySelector('.panel').scrollTop = scrollPanelTop[list.id];
       break;
     }
@@ -483,7 +483,7 @@ function setPanelScroll () {
     if (list.classList.contains('hidden')) {
       continue;
     }
-    if (scrollPanelTop[list.id] !== undefined) {
+    if (scrollPanelTop[list.id]) {
       document.querySelector('.panel').scrollTop = scrollPanelTop[list.id];
       break;
     }
@@ -563,7 +563,7 @@ async function updateUI () {
       tab = await browser.tabs.get(tabId);
     }
 
-    if (tab !== undefined) {
+    if (tab) {
       const tabURL = tab.url.toLowerCase();
       if (tabURL.startsWith('chrome:') || tabURL.startsWith('about:') || tabURL.startsWith('edge:')) {
         isBrowserPage = true;
@@ -608,7 +608,7 @@ async function updateUI () {
       }
     }
   }
-  if (cookieData === null || rootDomain !== undefined) {
+  if (cookieData === null || rootDomain) {
     introUrl.appendChild(document.createTextNode(rootDomain));
   } else {
     introUrl.appendChild(document.createTextNode(getMsg('UnknownDomain')));
@@ -630,12 +630,12 @@ async function updateUI () {
   introSpanStore.appendChild(introStore);
   activeTabUrl.appendChild(introSpanStore);
 
-  if (rootDomain !== null && rootDomain !== undefined) {
-    const hasAccountMode = data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined;
+  if (rootDomain !== null && rootDomain) {
+    const hasAccountMode = data.flagCookies_accountMode && data.flagCookies_accountMode[contextName] && data.flagCookies_accountMode[contextName][rootDomain];
     let sortedCookieDomains = [];
 
     // TODO: Add check for (global) or single cookie profile for update in UI
-    const hasLoggedProfile = data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined;
+    const hasLoggedProfile = data.flagCookies_logged && data.flagCookies_logged[contextName] && data.flagCookies_logged[contextName][rootDomain];
     let hasEmptyProfile = false;
 
     if (cookieData !== null) {
@@ -720,7 +720,7 @@ async function updateUI () {
 
           cookieList.appendChild(cookieSubDiv);
           hasHeader = true;
-        } else if (cookieEntry.isAdded !== undefined) continue;
+        } else if (cookieEntry.isAdded) continue;
 
         const sortedCookies = sortObjectByKey(cookieData[cookieDomain], 'name', true);
 
@@ -728,10 +728,10 @@ async function updateUI () {
           let cookieIsLogged = false;
           let cookieWasCleared = false;
           if (hasLoggedProfile) {
-            cookieIsLogged = data.flagCookies_logged[contextName][rootDomain][cookieDomain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true;
+            cookieIsLogged = data.flagCookies_logged[contextName][rootDomain][cookieDomain] && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true;
           }
 
-          if (cookie.fgCleared !== undefined && cookie.fgCleared === true) {
+          if (cookie.fgCleared && cookie.fgCleared === true) {
             cookieWasCleared = true;
           }
 
@@ -757,8 +757,8 @@ async function updateUI () {
           lockSwitch.addEventListener('click', cookieLockSwitch);
 
           let isHandledCookie = false;
-          if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined) {
-            if (data[contextName][rootDomain][cookie.domain] !== undefined && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined) {
+          if (data[contextName] && data[contextName][rootDomain]) {
+            if (data[contextName][rootDomain][cookie.domain] && data[contextName][rootDomain][cookie.domain][cookie.name]) {
               if (data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
                 checkMark.className = 'checkmark flagged';
                 checkMark.title = getMsg('CookieIsFlaggedHelpText');
@@ -775,7 +775,7 @@ async function updateUI () {
             }
           }
 
-          if (cookieIsLogged && data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] !== undefined && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] === true) {
+          if (cookieIsLogged && data.flagCookies_logged && data.flagCookies_logged[contextName] && data.flagCookies_logged[contextName] && data.flagCookies_logged[contextName][rootDomain][cookie.domain] && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] && data.flagCookies_logged[contextName][rootDomain][cookie.domain][cookie.name] === true) {
             lockSwitch.classList.add('locked');
 
             lockSwitch.title = getMsg('CookieIsLockedProfileCookieHelpText');
@@ -815,7 +815,7 @@ async function updateUI () {
           }
 
           const timestampNow = Math.floor(Date.now() * 0.001);
-          if (cookie.expirationDate !== undefined && cookie.expirationDate < timestampNow) {
+          if (cookie.expirationDate && cookie.expirationDate < timestampNow) {
             const pCookieKeyExpiredMessageElm = document.createElement('span');
             const pCookieKeyExpiredMessage = document.createTextNode(getMsg('ExpiredCookieMsg'));
             pCookieKeyExpiredMessageElm.className = 'expired-cookie';
@@ -824,7 +824,7 @@ async function updateUI () {
             pCookieKeyElm.appendChild(pCookieKeyExpiredMessageElm);
           }
 
-          if (cookie.fgNotPresent !== undefined && cookie.fgNotPresent === true) {
+          if (cookie.fgNotPresent && cookie.fgNotPresent === true) {
             const pCookieKeySecMessageElm = document.createElement('span');
             const pCookieKeySecMessage = document.createTextNode(getMsg('CookieNotPresentMsg'));
             pCookieKeySecMessageElm.className = 'nonpresent-cookie';
@@ -844,21 +844,21 @@ async function updateUI () {
             pCookieKeyElm.appendChild(pCookieClearMessageElm);
           }
 
-          if ((cookie.fgProfile !== undefined || cookie.fgProtected !== undefined || cookie.fgLogged !== undefined || (cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) || cookie.fgPermitted !== undefined || cookie.fgDomain !== undefined)) {
+          if ((cookie.fgProfile || cookie.fgProtected || cookie.fgLogged || (cookie.fgRemoved && cookie.fgRemovedDomain) || cookie.fgPermitted || cookie.fgDomain)) {
             const pCookieDomainMessageElm = document.createElement('span');
 
             let pCookieDomainMessage = '';
-            if (cookie.fgPermitted !== undefined && cookie.fgProfile === undefined && cookie.fgProtected === undefined) {
+            if (cookie.fgPermitted && cookie.fgProfile === undefined && cookie.fgProtected === undefined) {
               pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainAllowed', [cookie.fgDomain]);
-            } else if (cookie.fgLogged !== undefined) {
+            } else if (cookie.fgLogged) {
               pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainUnprotected', [cookie.fgDomain]);
-            } else if (cookie.fgProtected !== undefined || (cookieIsLogged)) {
+            } else if (cookie.fgProtected || (cookieIsLogged)) {
               pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainProtected', [cookie.fgDomain]);
-            } else if (cookie.fgProfile !== undefined && hasAccountMode && hasEmptyProfile) {
+            } else if (cookie.fgProfile && hasAccountMode && hasEmptyProfile) {
               pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainGlobalProtected', [cookie.fgDomain]);
             }
 
-            if (!isHandledCookie && cookie.fgRemoved !== undefined && cookie.fgRemovedDomain !== undefined) {
+            if (!isHandledCookie && cookie.fgRemoved && cookie.fgRemovedDomain) {
               if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie.fgRemovedDomain]);
             } else if (isHandledCookie) {
               pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie.fgDomain]);
@@ -891,7 +891,7 @@ async function updateUI () {
     }
   }
 
-  if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined) {
+  if (data[contextName] && data[contextName][rootDomain]) {
     const domainData = data[contextName][rootDomain];
     for (const cookieDomain of Object.keys(domainData)) {
       if (cookieDomain === rootDomain) continue;
@@ -911,7 +911,7 @@ async function updateUI () {
     }
   }
 
-  if (data.flagCookies_logged !== undefined && data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined) {
+  if (data.flagCookies_logged && data.flagCookies_logged[contextName] && data.flagCookies_logged[contextName][rootDomain]) {
     const domainData = data.flagCookies_logged[contextName][rootDomain];
     for (const cookieDomain of Object.keys(domainData)) {
       for (const cookieKey of Object.keys(domainData[cookieDomain])) {
@@ -923,56 +923,56 @@ async function updateUI () {
   if (loggedInCookieList.children.length !== 0) loggedInCookieList.removeAttribute('class');
   else document.querySelector('#profileNoData').removeAttribute('class');
 
-  if (data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true) {
+  if (data.flagCookies_flagGlobal && data.flagCookies_flagGlobal[contextName] && data.flagCookies_flagGlobal[contextName] === true) {
     document.querySelector('#global-flag').classList.add('active');
     switchAutoFlagGlobal(true, '#cookie-list');
   }
 
   document.querySelector('#activeCookies').className = 'active';
-  if (logData !== null && data.flagCookies_logEnabled !== undefined && data.flagCookies_logEnabled === true) {
+  if (logData !== null && data.flagCookies_logEnabled && data.flagCookies_logEnabled === true) {
     const log = document.querySelector('#log');
     for (const entry of logData) log.textContent += entry + '\n';
   }
 
-  if (data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
+  if (data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain]) {
     document.querySelector('#auto-flag').classList.add('active');
     switchAutoFlag(true, '#cookie-list');
   }
 
-  if (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined) {
+  if (data.flagCookies_accountMode && data.flagCookies_accountMode[contextName] && data.flagCookies_accountMode[contextName][rootDomain]) {
     document.querySelector('#account-mode').classList.add('active');
   }
 
-  if (data.flagCookies_darkTheme !== undefined && data.flagCookies_darkTheme === true) {
+  if (data.flagCookies_darkTheme && data.flagCookies_darkTheme === true) {
     document.querySelector('#confirmDarkTheme').classList.add('active');
   }
-  if (data.flagCookies_removeUserDeleted !== undefined && data.flagCookies_removeUserDeleted === true) {
+  if (data.flagCookies_removeUserDeleted && data.flagCookies_removeUserDeleted === true) {
     document.querySelector('#confirmRemoveByUser').classList.add('active');
   }
 
-  if (data.flagCookies_logEnabled !== undefined && data.flagCookies_logEnabled === true) {
+  if (data.flagCookies_logEnabled && data.flagCookies_logEnabled === true) {
     document.querySelector('#confirmLoggingEnable').classList.add('active');
   }
 
-  if (data.flagCookies_notifications !== undefined && data.flagCookies_notifications === true) {
+  if (data.flagCookies_notifications && data.flagCookies_notifications === true) {
     document.querySelector('#confirmNotifications').classList.add('active');
   }
 
-  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+  if (data.flagCookies_expiredExport && data.flagCookies_expiredExport === true) {
     document.querySelector('#confirmExportExpired').classList.add('active');
   }
 
-  if (data.flagCookies_doDebug !== undefined && data.flagCookies_doDebug === true) {
+  if (data.flagCookies_doDebug && data.flagCookies_doDebug === true) {
     document.querySelector('#confirmDoDebug').classList.add('active');
     doDebug = true;
   }
 
-  if (data.flagCookies_unfoldByDefault !== undefined && data.flagCookies_unfoldByDefault === true) {
+  if (data.flagCookies_unfoldByDefault && data.flagCookies_unfoldByDefault === true) {
     document.querySelector('#confirmUnfolding').classList.add('active');
     unfoldByDefault = true;
   }
 
-  if (data.flagCookies_updateNotifications !== undefined && data.flagCookies_updateNotifications === true) {
+  if (data.flagCookies_updateNotifications && data.flagCookies_updateNotifications === true) {
     document.querySelector('#confirmUpdateNotifications').classList.add('active');
   }
 
@@ -1024,7 +1024,7 @@ async function updateUI () {
   for (const child of cookieList.children) {
     const collapse = child.children[0].children[0].children[0];
     collapse.addEventListener('click', toggleCollapse);
-    const hasExpandedEntry = expandedByDomain[collapse.parentNode.parentNode.lastChild.dataset.cookieDomain] !== undefined && expandedByDomain[collapse.parentNode.parentNode.lastChild.dataset.cookieDomain] === true;
+    const hasExpandedEntry = expandedByDomain[collapse.parentNode.parentNode.lastChild.dataset.cookieDomain] && expandedByDomain[collapse.parentNode.parentNode.lastChild.dataset.cookieDomain] === true;
 
     if (unfoldByDefault || hasExpandedEntry) {
       collapse.parentNode.parentNode.parentNode.lastChild.classList.remove('hidden');
@@ -1073,7 +1073,7 @@ function toggleCollapse (evt) {
   evt.target.parentNode.parentNode.parentNode.lastChild.classList.add('hidden');
   evt.target.classList.add('active');
   evt.target.textContent = '+';
-  if (expandedByDomain[evt.target.parentNode.parentNode.lastChild.dataset.cookieDomain] !== undefined) {
+  if (expandedByDomain[evt.target.parentNode.parentNode.lastChild.dataset.cookieDomain]) {
     delete expandedByDomain[evt.target.parentNode.parentNode.lastChild.dataset.cookieDomain];
   }
 
@@ -1237,8 +1237,8 @@ async function flaggedCookieSwitch (evt) {
 
   // Uncheck from flagged in active cookies, if present
   const domainCookieList = document.querySelectorAll('#cookie-list .cookieEntry');
-  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined;
-  const hasGlobal = data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true;
+  const hasAutoFlag = data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain];
+  const hasGlobal = data.flagCookies_flagGlobal && data.flagCookies_flagGlobal[contextName] && data.flagCookies_flagGlobal[contextName] === true;
 
   for (const child of domainCookieList) {
     if (child.firstChild.dataset.name === cookieName && child.firstChild.dataset.domain === cookieDomain) {
@@ -1305,8 +1305,8 @@ async function permittedCookieSwitch (evt) {
 
   // Uncheck from permitted in active cookies, if present
   const domainCookieList = document.querySelectorAll('#cookie-list .cookieEntry');
-  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined;
-  const hasGlobal = data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true;
+  const hasAutoFlag = data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain];
+  const hasGlobal = data.flagCookies_flagGlobal && data.flagCookies_flagGlobal[contextName] && data.flagCookies_flagGlobal[contextName] === true;
 
   for (const child of domainCookieList) {
     if (child.firstChild.dataset.name === cookieName && child.firstChild.dataset.domain === cookieDomain) {
@@ -1378,9 +1378,9 @@ async function cookieFlagSwitch (evt) {
   if (data[contextName][rootDomain] === undefined) data[contextName][rootDomain] = {};
   if (data[contextName][rootDomain][cookieDomain] === undefined) data[contextName][rootDomain][cookieDomain] = {};
 
-  const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined;
-  const hasCookie = data[contextName][rootDomain][cookieDomain][cookieName] !== undefined;
-  const cookieWasCleared = hasCookie && data[contextName][rootDomain][cookieDomain][cookieName].fgCleared !== undefined && data[contextName][rootDomain][cookieDomain][cookieName].fgCleared === true;
+  const hasAutoFlag = data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain];
+  const hasCookie = data[contextName][rootDomain][cookieDomain][cookieName];
+  const cookieWasCleared = hasCookie && data[contextName][rootDomain][cookieDomain][cookieName].fgCleared && data[contextName][rootDomain][cookieDomain][cookieName].fgCleared === true;
 
   if (!hasCookie || (hasAutoFlag && (hasCookie && data[contextName][rootDomain][cookieDomain][cookieName] !== true && data[contextName][rootDomain][cookieDomain][cookieName] !== false))) {
     data[contextName][rootDomain][cookieDomain][cookieName] = true;
@@ -1427,7 +1427,7 @@ async function cookieFlagSwitch (evt) {
 
     evt.target.className = 'checkmark auto-flagged';
     evt.target.title = getMsg('CookieIsAutoFlaggedHelpText');
-  } else if (data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true) {
+  } else if (data.flagCookies_flagGlobal && data.flagCookies_flagGlobal[contextName] && data.flagCookies_flagGlobal[contextName] === true) {
     delete data[contextName][rootDomain][cookieDomain][cookieName];
 
     if (Object.keys(data[contextName][rootDomain][cookieDomain]).length === 0) {
@@ -1529,7 +1529,7 @@ async function cookieLockSwitchByDomain (evt) {
 
   if (evt.target.classList.contains('locked')) {
     for (const cookie of cookieData.cookies[cookieDomain]) {
-      if (data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] !== undefined) {
+      if (data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name]) {
         delete data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name];
 
         if (Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length === 0) {
@@ -1621,7 +1621,7 @@ async function cookieLockSwitch (evt) {
   if (data.flagCookies_logged[contextName][rootDomain][cookieDomain] === undefined) data.flagCookies_logged[contextName][rootDomain][cookieDomain] = {};
 
   if (evt.target.classList.contains('locked')) {
-    if (data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookieName] !== undefined) {
+    if (data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookieName]) {
       delete data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookieName];
 
       if (Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length === 0) {
@@ -1823,7 +1823,7 @@ async function flagGlobalAuto () {
     switchAutoFlagGlobal(true, '#cookie-list');
   } else {
     globalFlagButton.classList.remove('active');
-    if (data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined) {
+    if (data.flagCookies_flagGlobal && data.flagCookies_flagGlobal[contextName]) {
       delete data.flagCookies_flagGlobal[contextName];
 
       if (Object.keys(data.flagCookies_flagGlobal).length === 0) {
@@ -1843,7 +1843,7 @@ async function flagGlobalAuto () {
       }
     }
 
-    const hasAutoFlag = data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined;
+    const hasAutoFlag = data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain];
 
     if (hasAutoFlag) switchAutoFlag(true, '#cookie-list');
     else switchAutoFlagGlobal(false, '#cookie-list');
@@ -1888,7 +1888,7 @@ async function switchAutoFlag (doSwitchOn, targetList) {
       browser.runtime.sendMessage({ clearOnActivation: true, tabId });
     }
   } else {
-    const hasGlobalFlag = data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined;
+    const hasGlobalFlag = data.flagCookies_flagGlobal && data.flagCookies_flagGlobal[contextName];
 
     for (const child of containerNode) {
       const contentChild = child.children[0];
@@ -1905,7 +1905,7 @@ async function switchAutoFlag (doSwitchOn, targetList) {
       }
     }
 
-    if (data.flagCookies_autoFlag !== undefined && data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
+    if (data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain]) {
       delete data.flagCookies_autoFlag[contextName][rootDomain];
 
       if (Object.keys(data.flagCookies_autoFlag[contextName]).length === 0) {
@@ -2210,7 +2210,7 @@ async function resetUIDomain (data) {
 
     if (contentChildProfile === undefined) continue;
 
-    if (data.flagCookies_flagGlobal !== undefined && data.flagCookies_flagGlobal[contextName] !== undefined && data.flagCookies_flagGlobal[contextName] === true) {
+    if (data.flagCookies_flagGlobal && data.flagCookies_flagGlobal[contextName] && data.flagCookies_flagGlobal[contextName] === true) {
       contentChild.className = 'checkmark auto-flagged';
       contentChild.title = getMsg('CookieIsGlobalFlaggedHelpText');
     } else {
@@ -2234,12 +2234,12 @@ async function resetUIDomain (data) {
   }
 
   document.querySelector('#profileNoData').removeAttribute('class');
-  if (data.flagCookies_autoFlag !== undefined) {
-    if (data.flagCookies_autoFlag[contextName] !== undefined && data.flagCookies_autoFlag[contextName][rootDomain] !== undefined) {
+  if (data.flagCookies_autoFlag) {
+    if (data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain]) {
       delete data.flagCookies_autoFlag[contextName][rootDomain];
     }
 
-    if (data.flagCookies_autoFlag[contextName] !== undefined && Object.keys(data.flagCookies_autoFlag[contextName]).length === 0) {
+    if (data.flagCookies_autoFlag[contextName] && Object.keys(data.flagCookies_autoFlag[contextName]).length === 0) {
       delete data.flagCookies_autoFlag[contextName];
     }
 
@@ -2254,8 +2254,8 @@ async function resetUIDomain (data) {
     }
   }
 
-  if (data.flagCookies_logged !== undefined) {
-    if (data.flagCookies_logged[contextName] !== undefined && data.flagCookies_logged[contextName][rootDomain] !== undefined) {
+  if (data.flagCookies_logged) {
+    if (data.flagCookies_logged[contextName] && data.flagCookies_logged[contextName][rootDomain]) {
       delete data.flagCookies_logged[contextName][rootDomain];
 
       if (Object.keys(data.flagCookies_logged[contextName]).length === 0) {
@@ -2274,8 +2274,8 @@ async function resetUIDomain (data) {
     }
   }
 
-  if (data.flagCookies_accountMode !== undefined) {
-    if (data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined) {
+  if (data.flagCookies_accountMode) {
+    if (data.flagCookies_accountMode[contextName] && data.flagCookies_accountMode[contextName][rootDomain]) {
       delete data.flagCookies_accountMode[contextName][rootDomain];
 
       if (Object.keys(data.flagCookies_accountMode[contextName]).length === 0) {
@@ -2296,7 +2296,7 @@ async function resetUIDomain (data) {
     document.querySelector('#account-mode').removeAttribute('class');
   }
 
-  if (data[contextName] !== undefined && data[contextName][rootDomain] !== undefined) {
+  if (data[contextName] && data[contextName][rootDomain]) {
     delete data[contextName][rootDomain];
 
     if (Object.keys(data[contextName]).length === 0) {
@@ -2395,7 +2395,7 @@ async function accountModeSwitch (evt) {
   }
 
   if (evt.target.classList.contains('active')) {
-    if (data.flagCookies_accountMode !== undefined && data.flagCookies_accountMode[contextName] !== undefined && data.flagCookies_accountMode[contextName][rootDomain] !== undefined) {
+    if (data.flagCookies_accountMode && data.flagCookies_accountMode[contextName] && data.flagCookies_accountMode[contextName][rootDomain]) {
       delete data.flagCookies_accountMode[contextName][rootDomain];
 
       if (Object.keys(data.flagCookies_accountMode[contextName]).length === 0) {
@@ -2566,7 +2566,7 @@ function doExportCookiesFunc (cookies, exportExpired) {
     return;
   }
 
-  if (cookies.rootDomain !== undefined) {
+  if (cookies.rootDomain) {
     const timestampNow = Math.floor(Date.now() * 0.001);
     const jsonData = { userAgent: navigator.userAgent };
 
@@ -2575,7 +2575,7 @@ function doExportCookiesFunc (cookies, exportExpired) {
 
       for (const cookieKey of Object.keys(cookies.cookies[cookieDomain])) {
         const cookie = cookies.cookies[cookieDomain][cookieKey];
-        if (!exportExpired && cookie.expirationDate !== undefined && cookie.expirationDate < timestampNow) {
+        if (!exportExpired && cookie.expirationDate && cookie.expirationDate < timestampNow) {
           continue;
         }
 
@@ -2621,7 +2621,7 @@ function doExportCookiesClipFunc (cookies, exportExpired) {
     return;
   }
 
-  if (cookies.rootDomain !== undefined) {
+  if (cookies.rootDomain) {
     const timestampNow = Math.floor(Date.now() * 0.001);
     const jsonData = { userAgent: navigator.userAgent };
 
@@ -2630,7 +2630,7 @@ function doExportCookiesClipFunc (cookies, exportExpired) {
 
       for (const cookieKey of Object.keys(cookies.cookies[cookieDomain])) {
         const cookie = cookies.cookies[cookieDomain][cookieKey];
-        if (!exportExpired && cookie.expirationDate !== undefined && cookie.expirationDate < timestampNow) {
+        if (!exportExpired && cookie.expirationDate && cookie.expirationDate < timestampNow) {
           continue;
         }
 
@@ -2660,7 +2660,7 @@ async function doExportCookiesTabFunc (tabs) {
 
   contextName = 'default';
 
-  if (!useChrome && tab.cookieStoreId !== undefined) {
+  if (!useChrome && tab.cookieStoreId) {
     contextName = tab.cookieStoreId;
   }
 
@@ -2676,7 +2676,7 @@ async function doExportCookiesTabFunc (tabs) {
     cookies = await browser.runtime.sendMessage({ getCookies: true, storeId: contextName, windowId, tabId });
   }
 
-  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+  if (data.flagCookies_expiredExport && data.flagCookies_expiredExport === true) {
     exportExpired = true;
   }
 
@@ -2705,7 +2705,7 @@ async function exportCookiesClipboard () {
     data = await browser.storage.local.get();
   }
 
-  if (data.flagCookies_expiredExport !== undefined && data.flagCookies_expiredExport === true) {
+  if (data.flagCookies_expiredExport && data.flagCookies_expiredExport === true) {
     exportExpired = true;
   }
 
