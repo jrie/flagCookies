@@ -1,7 +1,7 @@
 const useChrome = typeof (browser) === 'undefined';
 
 function handleMessage (message) {
-  if (message.getStorageData !== undefined && message.getStorageData === true) {
+  if (message.getStorageData && message.getStorageData === true) {
     const localStorageData = {};
     const sessionStorageData = {};
 
@@ -22,7 +22,7 @@ function handleMessage (message) {
     return;
   }
 
-  if (message.clearStorage !== undefined) {
+  if (message.clearStorage) {
     if (message.clearStorage === 'local') {
       window.localStorage.clear();
     } else if (message.clearStorage === 'session') {
