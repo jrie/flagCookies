@@ -3,6 +3,11 @@
     "name": "Jan Riechers",
     "url": "https://www.dwrox.net"
   },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{d8d0bc2b-45c2-404d-bb00-ce54305fc39c}"
+    }
+  },
   "default_locale": "en",
   "action": {
     "default_title": "FlagCookies",
