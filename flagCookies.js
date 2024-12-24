@@ -380,6 +380,13 @@ async function updateCookieDataForUI (updateData, targetDomain) {
     for (const domainKey of Object.keys(cookiesToUpdate)) {
       let index = 0;
       for (const cookie of cookiesToUpdate[domainKey]) {
+
+        if (cookie.fgProfile && cookie.fgProfile === true) {
+          cookiesToUpdate[targetDomain][index] = cookie;
+          ++index;
+          continue;
+        }
+
         for (const key of Object.keys(updateData)) {
           switch (updateData[key]) {
             case null:
@@ -410,6 +417,12 @@ async function updateCookieDataForUI (updateData, targetDomain) {
 
     let index = 0;
     for (const cookie of cookiesToUpdate[targetDomain]) {
+      if (cookie.fgProfile && cookie.fgProfile === true) {
+        cookiesToUpdate[targetDomain][index] = cookie;
+        ++index;
+        continue;
+      }
+
       for (const key of Object.keys(updateData)) {
         switch (updateData[key]) {
           case null:

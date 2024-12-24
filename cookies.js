@@ -253,7 +253,7 @@ async function clearByDomainJob (request, sender, sendResponse) {
     return false;
   }
 
-  const hasLogged = data.flagCookies_logged && data.flagCookies_logged[contextName] && data.flagCookies_logged[contextName][rootDomain];
+  const hasLogged = data.flagCookies_logged && data.flagCookies_logged[contextName] && data.flagCookies_logged[contextName][rootDomain] && data.flagCookies_logged[contextName][rootDomain][cookieDomain] && Object.keys(data.flagCookies_logged[contextName][rootDomain][cookieDomain]).length !== 0;
   const doRemoveByUser = data.flagCookies_removeUserDeleted && data.flagCookies_removeUserDeleted === true;
 
   let index = 0;
