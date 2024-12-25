@@ -380,7 +380,6 @@ async function updateCookieDataForUI (updateData, targetDomain) {
     for (const domainKey of Object.keys(cookiesToUpdate)) {
       let index = 0;
       for (const cookie of cookiesToUpdate[domainKey]) {
-
         if (cookie.fgProfile && cookie.fgProfile === true) {
           cookiesToUpdate[targetDomain][index] = cookie;
           ++index;
@@ -1735,8 +1734,11 @@ function switchView (evt) {
 
   const prefs = document.querySelector('#prefs');
   let prefsActive = false;
-  if (prefs !== evt.target) prefs.classList.remove('active');
-  else if (prefs.classList.contains('active')) prefsActive = true;
+  if (prefs !== evt.target) {
+    prefs.classList.remove('active');
+  } else if (prefs.classList.contains('active')) {
+    prefsActive = true;
+  }
 
   const help = document.querySelector('#help');
   let helpActive = false;
@@ -1747,10 +1749,6 @@ function switchView (evt) {
     helpActive = true;
   } else if (help === evt.target) {
     useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage());
-
-    evt.target.classList.add('active');
-    list.removeAttribute('class');
-    return;
   }
 
   const donate = document.querySelector('#donate');
@@ -1762,15 +1760,12 @@ function switchView (evt) {
     donateActive = true;
   } else if (donate === evt.target) {
     useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage());
-
-    evt.target.classList.add('active');
-    list.removeAttribute('class');
-    return;
   }
 
   evt.target.classList.add('active');
+  list.removeAttribute('class');
 
-  if (list.children.length === 0) {
+  if (list.children.length === 0 && !helpActive && !donateActive) {
     let contentText = getMsg('NoActiveDomainCookiesText');
 
     if (isBrowserPage && evt.target.dataset.target === 'cookie-list') {
@@ -1788,8 +1783,6 @@ function switchView (evt) {
     infoDisplay.children[0].textContent = contentText;
     infoDisplay.removeAttribute('class');
   }
-
-  list.removeAttribute('class');
 
   if (prefsActive || helpActive || donateActive) {
     document.querySelector('#activeCookies').click();
