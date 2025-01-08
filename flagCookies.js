@@ -770,7 +770,7 @@ async function updateUI () {
 
           let isHandledCookie = false;
           if (data[contextName] && data[contextName][rootDomain]) {
-            if (data[contextName][rootDomain][cookie.domain] && data[contextName][rootDomain][cookie.domain][cookie.name]) {
+            if (data[contextName][rootDomain][cookie.domain] && data[contextName][rootDomain][cookie.domain][cookie.name] !== undefined) {
               if (data[contextName][rootDomain][cookie.domain][cookie.name] === true) {
                 checkMark.className = 'checkmark flagged';
                 checkMark.title = getMsg('CookieIsFlaggedHelpText');
@@ -1391,7 +1391,7 @@ async function cookieFlagSwitch (evt) {
   if (data[contextName][rootDomain][cookieDomain] === undefined) data[contextName][rootDomain][cookieDomain] = {};
 
   const hasAutoFlag = data.flagCookies_autoFlag && data.flagCookies_autoFlag[contextName] && data.flagCookies_autoFlag[contextName][rootDomain];
-  const hasCookie = data[contextName][rootDomain][cookieDomain][cookieName];
+  const hasCookie = data[contextName][rootDomain][cookieDomain][cookieName] !== undefined;
   const cookieWasCleared = hasCookie && data[contextName][rootDomain][cookieDomain][cookieName].fgCleared && data[contextName][rootDomain][cookieDomain][cookieName].fgCleared === true;
 
   if (!hasCookie || (hasAutoFlag && (hasCookie && data[contextName][rootDomain][cookieDomain][cookieName] !== true && data[contextName][rootDomain][cookieDomain][cookieName] !== false))) {
