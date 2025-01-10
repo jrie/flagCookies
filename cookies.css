@@ -81,6 +81,7 @@ h5 {
 .panel,
 .panel-import {
   max-height: 500px;
+  min-height: 500px;
   padding: 0px;
   margin: 0px;
   overflow-x: hidden;
@@ -123,6 +124,9 @@ h5 {
   border: none;
   overflow: hidden;
   border-top: 1px solid #99a;
+  position: absolute;
+  top: calc(100% - 2.75em);
+  width: 100%;
 }
 
 .chrome .legend {
@@ -260,6 +264,10 @@ ul {
   list-style: none;
   margin: 0px;
   padding: 5px 1px;
+}
+
+#content {
+  margin-bottom: 5em;
 }
 
 #content>ul {
