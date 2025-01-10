@@ -1733,11 +1733,15 @@ function switchView (evt) {
   }
 
   const infoDisplay = document.querySelector('#infoDisplay');
+  let switchBack = false;
 
   const prefs = document.querySelector('#prefs');
   let prefsActive = false;
   if (prefs !== evt.target) {
     prefs.classList.remove('active');
+  } else if (prefs.classList.contains('active')) {
+    prefsActive = false;
+    switchBack = true;
   } else if (prefs.classList.contains('active')) {
     prefsActive = true;
   }
@@ -1748,8 +1752,10 @@ function switchView (evt) {
     help.classList.remove('active');
     document.querySelector('#help-view').replaceChildren();
   } else if (help.classList.contains('active')) {
-    helpActive = true;
+    helpActive = false;
+    switchBack = true;
   } else if (help === evt.target) {
+    helpActive = true;
     useChrome ? loadHelp(chrome.i18n.getUILanguage()) : loadHelp(browser.i18n.getUILanguage());
   }
 
@@ -1759,9 +1765,11 @@ function switchView (evt) {
     donate.classList.remove('active');
     document.querySelector('#donate-view').replaceChildren();
   } else if (donate.classList.contains('active')) {
-    donateActive = true;
+    donateActive = false;
+    switchBack = true;
   } else if (donate === evt.target) {
     useChrome ? loadDonate(chrome.i18n.getUILanguage()) : loadDonate(browser.i18n.getUILanguage());
+    donateActive = true;
   }
 
   evt.target.classList.add('active');
@@ -1786,7 +1794,7 @@ function switchView (evt) {
     infoDisplay.removeAttribute('class');
   }
 
-  if (prefsActive || helpActive || donateActive) {
+  if (!prefsActive && !helpActive && !donateActive && switchBack) {
     document.querySelector('#activeCookies').click();
   }
 
