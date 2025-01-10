@@ -1775,7 +1775,7 @@ function switchView (evt) {
   evt.target.classList.add('active');
   list.removeAttribute('class');
 
-  if (list.children.length === 0 && !helpActive && !donateActive) {
+  if (list.children.length === 0 && !helpActive && !donateActive && !prefsActive) {
     let contentText = getMsg('NoActiveDomainCookiesText');
 
     if (isBrowserPage && evt.target.dataset.target === 'cookie-list') {
