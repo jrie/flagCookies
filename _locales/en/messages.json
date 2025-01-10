@@ -495,7 +495,7 @@
     "message": "Cookies removed",
     "description": "Headline of notification on removal of cookies by dump icon click"
   },
-  
+
   "NotificationProfileModeTitleEnabled": {
     "message": "Flag Cookies: Profile mode enabled",
     "description": "Headline of notification on removal of cookies"
@@ -880,7 +880,7 @@
     "description": "Information that the cookie is removed already by website and could not be cleared"
   },
   "CookieWasClearedMsg": {
-    "message": "(removed by user)",
+    "message": "(removed on demand)",
     "description": "Information that the cookie was removed through the user on the dumpster icon for the domain"
   },
   "CookieWasClearedByUserText": {
