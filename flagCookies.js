@@ -743,7 +743,7 @@ async function updateUI () {
             cookieIsLogged = data.flagCookies_logged[contextName][rootDomain][cookieDomain] && data.flagCookies_logged[contextName][rootDomain][cookieDomain][cookie.name] === true;
           }
 
-          if (cookie.fgCleared && cookie.fgCleared === true) {
+          if (cookie.fgCleared !== undefined && cookie.fgCleared === true) {
             cookieWasCleared = true;
           }
 
@@ -870,8 +870,10 @@ async function updateUI () {
               pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainGlobalProtected', [cookie.fgDomain]);
             }
 
-            if (!isHandledCookie && cookie.fgRemoved && cookie.fgRemovedDomain) {
-              if (pCookieDomainMessage === '') pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie.fgRemovedDomain]);
+            if (cookie.fgRemoved && cookie.fgRemovedDomain) {
+              if (pCookieDomainMessage === '') {
+                pCookieDomainMessage = getMsg('CookieHelpTextBaseDomainRemoved', [cookie.fgRemovedDomain]);
+              }
             } else if (isHandledCookie) {
               pCookieDomainMessage = ' ' + getMsg('CookieHelpTextBaseDomainRulePresent', [cookie.fgDomain]);
             }
