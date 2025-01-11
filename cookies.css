@@ -982,7 +982,8 @@ button#help.active {
   color: #446;
 }
 
-body.dark .legend .intro {
+body.dark .legend .intro,
+body.dark .setting-info p {
   background-image: url('icons/help_16w.png');
 }
 
