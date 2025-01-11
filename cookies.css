@@ -365,7 +365,6 @@ li.cookieEntry:hover .nonpresent-cookie,
 li.cookieEntry:hover .expired-cookie,
 li.cookieEntry:hover .cleareduser-cookie {
   color: #ff8020;
-  text-shadow: none;
 }
 
 .dark li.cookieEntry:hover .secure-cookie,
