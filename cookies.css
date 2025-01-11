@@ -30,8 +30,7 @@ html * {
 
 html .dark,
 body.dark {
-  background-color: #ccc;
-  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.175);
+  background-color: #222244;
   color: #eef;
 }
 
@@ -57,7 +56,6 @@ h2,
 h3,
 h4,
 h5 {
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.15);
   cursor: default;
   user-select: none;
 }
@@ -69,8 +67,7 @@ h5 {
 .dark h3,
 .dark h4,
 .dark h5 {
-  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.25);
-  color: #557;
+  color: #eef;
 }
 
 .chrome span {
@@ -164,7 +161,7 @@ h5 {
 .dark .legend span,
 .dark .legend p.intro {
   color: #eef;
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.58);
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.48);
 }
 
 .chrome .legend span {
@@ -205,7 +202,7 @@ span.domainurl,
 
 .dark .intro,
 .dark .settings-title {
-  color: #bbc;
+  color: #eef;
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.28);
 }
 
@@ -293,6 +290,20 @@ li.cookieEntrySublist {
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.35);
 }
 
+.dark li.cookieEntry,
+.dark li.cookieEntrySublist {
+  background-color: #1a2f45;
+  color: #eef;
+  border-top: 1px solid #335;
+  border-right: 1px solid #222244;
+  border-bottom: 1px solid #222244;
+}
+
+.dark li.cookieEntry:nth-child(2n+1),
+.dark li.cookieEntrySublist:nth-child(2n+1) {
+  background-color: #333355;
+}
+
 
 
 li.cookieEntry:nth-child(2n+1),
@@ -344,12 +355,18 @@ li.cookieEntry:hover .nonpresent-cookie,
 li.cookieEntry:hover .cookie-domain li.cookieEntrySublist:hover .nonpresent-cookie,
 li.cookieEntry:hover .cleareduser-cookie,
 li.cookieEntry:hover .cookie-domain li.cookieEntrySublist:hover .cleareduser-cookie,
-li.cookieEntry:hover .expired-cookie,
 li.cookieEntry:hover .cookie-domain li.cookieEntrySublist:hover .expired-cookie,
 li.cookieEntrySublist:hover .cookie-domain {
   color: #fff;
 }
 
+li.cookieEntry:hover .secure-cookie,
+li.cookieEntry:hover .nonpresent-cookie,
+li.cookieEntry:hover .expired-cookie,
+li.cookieEntry:hover .cleareduser-cookie {
+  color: #ff8020;
+  text-shadow: none;
+}
 
 .dark li.cookieEntry:hover .secure-cookie,
 .dark li.cookieEntry:hover .nonpresent-cookie,
@@ -360,7 +377,17 @@ li.cookieEntrySublist:hover .cookie-domain {
 .dark li.cookieEntrySublist:hover .nonpresent-cookie,
 .dark li.cookieEntrySublist:hover .cleareduser-cookie,
 .dark li.cookieEntrySublist:hover .expired-cookie,
-.dark li.cookieEntrySublist:hover .cookie-domain {
+.dark li.cookieEntrySublist:hover .cookie-domain,
+.dark li.cookieEntry .secure-cookie,
+.dark li.cookieEntry .nonpresent-cookie,
+.dark li.cookieEntry .cleareduser-cookie,
+.dark li.cookieEntry .expired-cookie,
+.dark li.cookieEntry .cookie-domain,
+.dark li.cookieEntrySublist .secure-cookie,
+.dark li.cookieEntrySublist .nonpresent-cookie,
+.dark li.cookieEntrySublist .cleareduser-cookie,
+.dark li.cookieEntrySublist .expired-cookie,
+.dark li.cookieEntrySublist .cookie-domain {
   color: #ff8020;
 }
 
@@ -429,6 +456,16 @@ li.cookieEntrySublist.unremoved-secure-cookie {
   margin-top: 2px;
 }
 
+.dark .subloadbar,
+.dark .subloadContainer {
+  background-color: #1a2f45;
+  border: 1px solid #445;
+}
+
+.dark .subloadContainer {
+  border: 0;
+}
+
 .subloadbar button {
   width: 28px;
   height: 28px;
@@ -441,6 +478,10 @@ li.cookieEntrySublist.unremoved-secure-cookie {
 
 .subloadbar button.dumpster {
   right: 6px;
+}
+
+.dark button.dumpster {
+  border: 1px solid #ccc;
 }
 
 .domainNameMenu {
@@ -745,6 +786,15 @@ button#help {
   background-size: 24px;
 }
 
+button:hover#auto-flag,
+button:hover#global-flag,
+button:hover#account-mode,
+button:hover#help,
+button:hover#donate {
+  background-color: #b20600;
+  color: #eee;
+}
+
 button#donate {
   background-color: #ddd;
   border-color: #ddd;
@@ -761,10 +811,18 @@ button#donate {
 .dark button#account-mode,
 .dark button#help,
 .dark button#donate {
-  background-color: #446;
+  background-color: #335;
   border-color: #335;
   color: #fff;
   border: 1px solid #66a;
+}
+
+.dark button:hover#auto-flag,
+.dark button:hover#global-flag,
+.dark button:hover#account-mode,
+.dark button:hover#help,
+.dark button:hover#donate {
+  background-color: #558;
 }
 
 .chrome button#auto-flag,
@@ -890,6 +948,10 @@ button#help.active {
 
 #settings-view hr {
   margin: 15px 0px 12px 0px;
+}
+
+.dark #settings-view p {
+  color: #eef;
 }
 
 .settings-title {
@@ -1026,6 +1088,12 @@ textarea#log {
   padding-top: 4px;
   padding-bottom: 3px;
   padding-left: 8px;
+}
+
+.dark #help-view,
+.dark #donate-view {
+  background-color: #222244;
+  color: #eef;
 }
 
 .dark .helpNavigation li {
