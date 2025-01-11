@@ -1997,10 +1997,20 @@ async function switchAutoFlagGlobal (doSwitchOn, targetList) {
 // Search related
 function searchContent (evt) {
   const searchVal = evt.target.value.trim().toLowerCase();
+  const tabs = document.querySelectorAll('#content > ul');
+  for (const tab of tabs) {
+    if (tab.classList.contains('hidden')) {
+      continue;
+    } else {
+      doSearch(searchVal, tab.id);
+    }
+  }
+  /*
   doSearch(searchVal, 'cookie-list');
   doSearch(searchVal, 'cookie-list-flagged');
   doSearch(searchVal, 'cookie-list-permitted');
   doSearch(searchVal, 'session-data-list');
+  */
 }
 
 function doSearch (searchVal, targetList) {
@@ -2050,10 +2060,9 @@ function doSearch (searchVal, targetList) {
 
   const infoDisplay = document.querySelector('#infoDisplay');
   if (!hasVisibleContent) {
-    if (currentParent) {
+    if (currentParent !== null) {
       currentParent.classList.add('hidden');
     }
-
     const contentText = getMsg('NoSearchResultsText');
     infoDisplay.children[0].textContent = contentText;
     infoDisplay.removeAttribute('class');
