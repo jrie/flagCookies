@@ -795,6 +795,10 @@
     "message": "Search data",
     "description": "Searchbar placeholder action text"
   },
+  "NoSearchResultsText": {
+    "message": "Nothing found for the requested search value.",
+    "description": "Search no results text"
+  },
   "ActionLogHelpText": {
     "message": "The log shows all cookie actions taken by Flag Cookies.",
     "description": "Displayed help text for action log"

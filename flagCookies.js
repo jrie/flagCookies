@@ -2006,6 +2006,7 @@ function searchContent (evt) {
 function doSearch (searchVal, targetList) {
   let currentParent = null;
   let hasVisible = false;
+  let hasVisibleContent = false;
 
   let searchSession = false;
   if (targetList === 'session-data-list') {
@@ -2033,15 +2034,29 @@ function doSearch (searchVal, targetList) {
       searchValue = child.children[1].lastChild.textContent.toLowerCase();
     }
 
+    const toggle = child.parentNode.parentNode.querySelector('.collapseToggle');
+
     if (searchKey.indexOf(searchVal) === -1 && searchValue.indexOf(searchVal) === -1) {
       child.classList.add('hidden');
     } else {
       child.classList.remove('hidden');
       hasVisible = true;
+      hasVisibleContent = true;
+      if (toggle && toggle.classList.contains('active')) {
+        toggle.dispatchEvent(new window.MouseEvent('click'));
+      }
     }
   }
 
-  if (currentParent !== null && !hasVisible) currentParent.classList.add('hidden');
+  const infoDisplay = document.querySelector('#infoDisplay');
+  if (!hasVisibleContent) {
+    currentParent.classList.add('hidden');
+    const contentText = getMsg('NoSearchResultsText');
+    infoDisplay.children[0].textContent = contentText;
+    infoDisplay.removeAttribute('class');
+  } else {
+    infoDisplay.classList.add('hidden');
+  }
 }
 
 // Settings dialog - clearing flag cookies data

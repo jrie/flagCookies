@@ -130,7 +130,7 @@
   "CookieWasClearedText": {
     "message": "durch Interaktion gelöscht",
     "description": "Cookie is removed by user display in UI"
-  },  
+  },
   "CookieIsAutoFlaggedHelpText": {
     "message": "Dieser Cookie ist Auto-Markiert und wird entfernt.",
     "description": "Cookie auto-flagged help text"
@@ -315,7 +315,7 @@
     }
   },
 
-  
+
 
   "GlobalFlagState": {
     "message": "Globaler Modus",
@@ -786,6 +786,10 @@
   "SearchBarText": {
     "message": "Durchsuchen",
     "description": "Searchbar placeholder action text"
+  },
+  "NoSearchResultsText": {
+    "message": "Kein Ergebnis für die Suchanfrage.",
+    "description": "Search no results text"
   },
   "ActionLogHelpText": {
     "message": "Die Aktionsliste zeigt alle Aktionen von Flag Cookies",
