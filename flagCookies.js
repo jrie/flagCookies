@@ -2050,7 +2050,10 @@ function doSearch (searchVal, targetList) {
 
   const infoDisplay = document.querySelector('#infoDisplay');
   if (!hasVisibleContent) {
-    currentParent.classList.add('hidden');
+    if (currentParent) {
+      currentParent.classList.add('hidden');
+    }
+
     const contentText = getMsg('NoSearchResultsText');
     infoDisplay.children[0].textContent = contentText;
     infoDisplay.removeAttribute('class');
