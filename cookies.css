@@ -642,29 +642,29 @@ button::-moz-focus-inner {
   margin-right: 5px;
 }
 
-button#activeCookies {
-  background-image: url('icons/cookie_38.png');
+button#activeCookies,
+button#flaggedCookies,
+button#permittedCookies,
+button#sessionData {
   background-size: 21px;
   background-repeat: no-repeat;
   background-position: 8px center;
+}
+
+button#activeCookies {
+  background-image: url('icons/cookie_38.png');
 }
 
 button#flaggedCookies {
   background-image: url('icons/ban.png');
-  background-size: 21px;
-  background-repeat: no-repeat;
-  background-position: 8px center;
 }
 
 button#permittedCookies {
   background-image: url('icons/permit.png');
-  background-size: 21px;
-  background-repeat: no-repeat;
-  background-position: 8px center;
 }
 
 button#sessionData {
-  padding: 7px 20px 8px 20px;
+  background-image: url('icons/session.png');
 }
 
 .cookieCount {
@@ -792,6 +792,7 @@ button:hover#help,
 button:hover#donate {
   background-color: #b20600;
   color: #eee;
+  border-color: #533;
 }
 
 button#donate {
@@ -870,7 +871,7 @@ button#account-mode.active,
 button#help.active,
 button#donate.active {
   background-color: #b20600;
-  background-image: url('icons/cookie_flag_28.png');
+  background-image: url('icons/cookie_wflag_28.png');
   color: #eee;
   border: 1px solid #779;
 }
@@ -880,7 +881,7 @@ button#account-mode.active {
 }
 
 button#global-flag.active {
-  background-image: url('icons/globe_wflag_28.png');
+  background-image: url('icons/globe_flag_28.png');
 }
 
 button#donate.active {
