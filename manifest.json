@@ -29,7 +29,7 @@
   "homepage_url": "https://github.com/jrie/flagCookies",
   "manifest_version": 3,
   "name": "Flag Cookies",
-  "version": "3.6.6",
+  "version": "3.6.7",
   "permissions": [
     "cookies",
     "tabs",
