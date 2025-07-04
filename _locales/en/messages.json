@@ -2,8 +2,6 @@
   "AddonDescription": {
     "message": "A cookie and browser storage data manager on steroids to mark, 'flag', and manage cookies using rulesets."
   },
-
-
   "CookiesForDomainText": {
     "message": "Cookies for domain:",
     "description": "Cookies for domain label in UI"
@@ -28,7 +26,6 @@
     "message": "This domain is priviliged and cookies cannot be managed.",
     "description": "Information that the page is restricted and cookies cannot be managed"
   },
-
   "CrossOriginInformationText": {
     "message": "[CROSS ORIGIN]",
     "description": "Display the cookies are from a cross origin source"
@@ -65,49 +62,64 @@
     "message": "This cookie is set locked as profile-mode cookie for this domain.",
     "description": "Help for cookie being locked as profile key cookie"
   },
-
-
-
   "CookieHelpTextBaseDomainAllowed": {
     "message": "(Allowed cookie of: '$cookieDomain$')",
     "description": "Cookie is allowed from base domain",
     "placeholders": {
-      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+      "cookieDomain": {
+        "content": "$1",
+        "example": "https://domain.com"
+      }
     }
   },
   "CookieHelpTextBaseDomainUnprotected": {
     "message": "(Unprotected profile cookie of: '$cookieDomain$')",
     "description": "Cookie is removed on demand, but was earlier protected by base domain",
     "placeholders": {
-      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+      "cookieDomain": {
+        "content": "$1",
+        "example": "https://domain.com"
+      }
     }
   },
   "CookieHelpTextBaseDomainProtected": {
     "message": "(Protected profile cookie of: '$cookieDomain$')",
     "description": "Cookie is not removed because it is protected by base domain",
     "placeholders": {
-      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+      "cookieDomain": {
+        "content": "$1",
+        "example": "https://domain.com"
+      }
     }
   },
   "CookieHelpTextBaseDomainGlobalProtected": {
     "message": "(Global protected profile cookie of: '$cookieDomain$')",
     "description": "Cookie is not removed because it is globally protected by base domain",
     "placeholders": {
-      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+      "cookieDomain": {
+        "content": "$1",
+        "example": "https://domain.com"
+      }
     }
   },
   "CookieHelpTextBaseDomainRemoved": {
     "message": "(Cookie removed due to rule on: '$cookieDomain$')",
     "description": "Cookie is removed because it has a rule on cookieDomain",
     "placeholders": {
-      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+      "cookieDomain": {
+        "content": "$1",
+        "example": "https://domain.com"
+      }
     }
   },
   "CookieHelpTextBaseDomainRulePresent": {
     "message": "(Rule present on: '$cookieDomain$')",
     "description": "Cookie has a rule on cookieDomain",
     "placeholders": {
-      "cookieDomain": { "content": "$1", "example": "https://domain.com"}
+      "cookieDomain": {
+        "content": "$1",
+        "example": "https://domain.com"
+      }
     }
   },
   "CookieHelpTextSecureMightNotHandled": {
@@ -118,7 +130,10 @@
     "message": "$containerGroup$, is a temporary container",
     "description": "Container is a temporary container",
     "placeholders": {
-      "containerGroup": { "content": "$1", "example": "tmp-2017"}
+      "containerGroup": {
+        "content": "$1",
+        "example": "tmp-2017"
+      }
     }
   },
   "CookieIsInactiveText": {
@@ -213,17 +228,13 @@
     "message": "Error clearing domain data.",
     "description": "There was a error clearing domain data"
   },
-
-
-
-
-
-
   "BrowserErrorChromeDetail": {
     "message": "The browser had an error, with mesage: $errorMsg$",
     "description": "Chrome or Opera encountered a error with message",
     "placeholders": {
-      "errorMsg": { "content": "$1" }
+      "errorMsg": {
+        "content": "$1"
+      }
     }
   },
   "BrowserErrorNeutral": {
@@ -274,7 +285,6 @@
     "message": "Deleted on",
     "description": "Status deleted, used as filter for Msg Count in logging"
   },
-
   "DeletedCookiesMsg": {
     "message": "Deleted cookies: $count$",
     "description": "Icon title for deleted cookies in tab",
@@ -315,7 +325,6 @@
       }
     }
   },
-
   "GlobalFlagState": {
     "message": "Global-flag",
     "description": "Status global-flag, also used as filter for Msg Count in logging and overview display"
@@ -328,75 +337,148 @@
     "message": "Allowed global profile cookie on '$action$', cookie: '$cookieName$' for '$domainName$'",
     "description": "Log Message for allowed global profile cookie, word for allowed should be equal to 'AllowedState'",
     "placeholders": {
-      "action": { "content": "$1", "example": "reload, javascript request, document load" },
-      "cookieName": { "content": "$2" },
-      "domainName": { "content": "$3", "example": "https://domain.com"}
+      "action": {
+        "content": "$1",
+        "example": "reload, javascript request, document load"
+      },
+      "cookieName": {
+        "content": "$2"
+      },
+      "domainName": {
+        "content": "$3",
+        "example": "https://domain.com"
+      }
     }
   },
   "AllowedProfileCookieMsg": {
     "message": "Allowed profile cookie on '$action$', cookie: '$cookieName$' for '$domainName$'",
     "description": "Log Message for allowed profile cookie, word for allowed should be equal to 'AllowedState'",
     "placeholders": {
-      "action": { "content": "$1", "example": "reload, javascript request, document load" },
-      "cookieName": { "content": "$2" },
-      "domainName": { "content": "$3", "example": "https://domain.com"}
+      "action": {
+        "content": "$1",
+        "example": "reload, javascript request, document load"
+      },
+      "cookieName": {
+        "content": "$2"
+      },
+      "domainName": {
+        "content": "$3",
+        "example": "https://domain.com"
+      }
     }
   },
   "PermittedCookieMsg": {
     "message": "Permitted cookie on '$action$', cookie: '$cookieName$' for '$domainName$'",
     "description": "Log Message for permitted cookies, word for permitted should be equal to 'AllowedState'",
     "placeholders": {
-      "action": { "content": "$1", "example": "reload, javascript request, document load" },
-      "cookieName": { "content": "$2" },
-      "domainName": { "content": "$3", "example": "https://domain.com"}
+      "action": {
+        "content": "$1",
+        "example": "reload, javascript request, document load"
+      },
+      "cookieName": {
+        "content": "$2"
+      },
+      "domainName": {
+        "content": "$3",
+        "example": "https://domain.com"
+      }
     }
   },
   "DeletedCookieMsg": {
     "message": "Deleted on '$action$', cookie: '$cookieName$' for '$domainName$'",
     "description": "Log Message for deleted cookie, word for deleted should be equal to 'DeletedState'",
     "placeholders": {
-      "action": { "content": "$1", "example": "reload, javascript request, document load" },
-      "cookieName": { "content": "$2" },
-      "domainName": { "content": "$3", "example": "https://domain.com"}
+      "action": {
+        "content": "$1",
+        "example": "reload, javascript request, document load"
+      },
+      "cookieName": {
+        "content": "$2"
+      },
+      "domainName": {
+        "content": "$3",
+        "example": "https://domain.com"
+      }
     }
   },
   "DeletedCookieMsgHttpAndHttps": {
     "message": "Deleted on '$action$', cookie: '$cookieName$' for '$httpHttps$$domainName$'",
     "description": "Log Message for deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
     "placeholders": {
-      "action": { "content": "$1", "example": "reload, javascript request, document load" },
-      "cookieName": { "content": "$2" },
-      "domainName": { "content": "$3", "example": "domain.com"},
-      "httpHttps": { "content": "$4", "example": "https:// OR http:// - no need to translate"}
+      "action": {
+        "content": "$1",
+        "example": "reload, javascript request, document load"
+      },
+      "cookieName": {
+        "content": "$2"
+      },
+      "domainName": {
+        "content": "$3",
+        "example": "domain.com"
+      },
+      "httpHttps": {
+        "content": "$4",
+        "example": "https:// OR http:// - no need to translate"
+      }
     }
   },
   "DeletedCookieMsgAutoFlag": {
     "message": "Auto-flag deleted on '$action$', cookie: '$cookieName$' for '$domainName$'",
     "description": "Log Message for deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
     "placeholders": {
-      "action": { "content": "$1", "example": "reload, javascript request, document load" },
-      "cookieName": { "content": "$2" },
-      "domainName": { "content": "$3", "example": "https://domain.com"}
+      "action": {
+        "content": "$1",
+        "example": "reload, javascript request, document load"
+      },
+      "cookieName": {
+        "content": "$2"
+      },
+      "domainName": {
+        "content": "$3",
+        "example": "https://domain.com"
+      }
     }
   },
   "DeletedCookieMsgHttpAndHttpsAutoFlag": {
     "message": "Auto-flag deleted on '$action$', cookie: '$cookieName$' for '$httpHttps$$domainName$'",
     "description": "Log Message for auto-flag deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
     "placeholders": {
-      "action": { "content": "$1", "example": "reload, javascript request, document load" },
-      "cookieName": { "content": "$2" },
-      "domainName": { "content": "$3", "example": "domain.com"},
-      "httpHttps": { "content": "$4", "example": "https:// OR http:// - no need to translate"}
+      "action": {
+        "content": "$1",
+        "example": "reload, javascript request, document load"
+      },
+      "cookieName": {
+        "content": "$2"
+      },
+      "domainName": {
+        "content": "$3",
+        "example": "domain.com"
+      },
+      "httpHttps": {
+        "content": "$4",
+        "example": "https:// OR http:// - no need to translate"
+      }
     }
   },
   "DeletedCookieMsgHttpAndHttpsGlobalFlag": {
     "message": "Global-flag deleted on '$action$', cookie: '$cookieName$' for '$httpHttps$$domainName$'",
     "description": "Log Message for global flag deleted cookie on http or https, word for deleted should be equal to 'DeletedState'",
     "placeholders": {
-      "action": { "content": "$1", "example": "reload, javascript request, document load" },
-      "cookieName": { "content": "$2" },
-      "domainName": { "content": "$3", "example": "domain.com"},
-      "httpHttps": { "content": "$4", "example": "https:// OR http:// - no need to translate"}
+      "action": {
+        "content": "$1",
+        "example": "reload, javascript request, document load"
+      },
+      "cookieName": {
+        "content": "$2"
+      },
+      "domainName": {
+        "content": "$3",
+        "example": "domain.com"
+      },
+      "httpHttps": {
+        "content": "$4",
+        "example": "https:// OR http:// - no need to translate"
+      }
     }
   },
   "IconDisplayLog": {
@@ -407,10 +489,12 @@
     "message": "Found cookies for tab: $foundCookieCount$\n\n",
     "description": "Count of tab cookies when hovering the mouse over the browser icon",
     "placeholders": {
-      "foundCookieCount": { "content": "$1", "example": "0" }
+      "foundCookieCount": {
+        "content": "$1",
+        "example": "0"
+      }
     }
   },
-
   "localStorageKeyCountTitle": {
     "message": "Count local session data: $foundLocalCount$",
     "description": "Count of local storage items when hovering the mouse over the browser icon",
@@ -439,7 +523,6 @@
     "message": "Session Storage browser data",
     "description": "Title for the Session Storage browser data"
   },
-
   "NoActionOnPage": {
     "message": "No actions taken on this website",
     "description": "Info message when hovering the mouse over the browser icon and no actions have taken place"
@@ -472,9 +555,18 @@
     "message": "$count$ cookie(s) removed for domain '$domainName$' in context '$contextName$'.",
     "description": "Displayed notification text for removed cookies",
     "placeholders": {
-      "count": { "content": "$1", "example": "1.. 5 ... 10" },
-      "domainName": { "content": "$2", "example": "https://domain.com"},
-      "contextName": { "content": "$3", "example": "default - no need to translate"}
+      "count": {
+        "content": "$1",
+        "example": "1.. 5 ... 10"
+      },
+      "domainName": {
+        "content": "$2",
+        "example": "https://domain.com"
+      },
+      "contextName": {
+        "content": "$3",
+        "example": "default - no need to translate"
+      }
     }
   },
   "ClearDomainCookiesByDomain": {
@@ -495,7 +587,6 @@
     "message": "Cookies removed",
     "description": "Headline of notification on removal of cookies by dump icon click"
   },
-
   "NotificationProfileModeTitleEnabled": {
     "message": "Flag Cookies: Profile mode enabled",
     "description": "Headline of notification on removal of cookies"
@@ -504,8 +595,14 @@
     "message": "Profile mode enabled for domain '$domainName$' in '$contextName$'.",
     "description": "Displayed notification text body for enabled profile mode",
     "placeholders": {
-      "domainName": { "content": "$1", "example": "https://domain.com"},
-      "contextName": { "content": "$2", "example": "default - no need to translate"}
+      "domainName": {
+        "content": "$1",
+        "example": "https://domain.com"
+      },
+      "contextName": {
+        "content": "$2",
+        "example": "default - no need to translate"
+      }
     }
   },
   "NotificationProfileModeTitleDisabled": {
@@ -516,13 +613,17 @@
     "message": "Profile mode disabled for domain '$domainName$' in '$contextName$'.",
     "description": "Displayed notification text body for disabled profile mode",
     "placeholders": {
-      "domainName": { "content": "$1", "example": "https://domain.com"},
-      "contextName": { "content": "$2", "example": "default or current context name - no need to translate"}
+      "domainName": {
+        "content": "$1",
+        "example": "https://domain.com"
+      },
+      "contextName": {
+        "content": "$2",
+        "example": "default or current context name - no need to translate"
+      }
     }
   },
-
-
-"UpdatedInstallationString": {
+  "UpdatedInstallationString": {
     "message": "updated",
     "description": "Message title for updated installation"
   },
@@ -534,15 +635,16 @@
     "message": "FlagCookies succesfully $installationType$",
     "description": "Displayed notification title for FlagCookies installation or update",
     "placeholders": {
-      "installationType": { "content": "$1", "example": "updated/installed"}
+      "installationType": {
+        "content": "$1",
+        "example": "updated/installed"
+      }
     }
   },
   "InstalledAddonMessage": {
-    "message": "Thank you. Please also take a loot at the 'Donate' tab.",
+    "message": "Thank you. Please also take a look at the 'Donate' tab.",
     "description": "Displayed notification body for FlagCookies installation/update"
   },
-
-
   "DonateButtonText": {
     "message": "Donate",
     "description": "Donate button label text, note this is in UI and might require some styling changes."
@@ -695,11 +797,6 @@
     "message": "Overwrite settings on import",
     "description": "Label info for importing cookie settings"
   },
-
-
-
-
-
   "LegendIntroHelp": {
     "message": "Move the mouse over the items to receive help.",
     "description": "Flag Legend help information"
@@ -748,9 +845,6 @@
     "message": "Preferences",
     "description": "Preferences/Settigns button lable text"
   },
-
-
-
   "DonateButtonHelpText": {
     "message": "Donate to support the development of FlagCookies.",
     "description": "Displayed help text for Donate button"
