@@ -620,7 +620,7 @@ async function updateUI () {
       }
     }
   }
-  if (cookieData === null || rootDomain) {
+  if (cookieData === null || rootDomain !== null) {
     introUrl.appendChild(document.createTextNode(rootDomain));
   } else {
     introUrl.appendChild(document.createTextNode(getMsg('UnknownDomain')));

@@ -10,7 +10,7 @@ function handleMessage (message) {
     }
 
     for (const key of Object.keys(window.sessionStorage)) {
-      sessionStorageData[key] = window.localStorage.getItem(key);
+      sessionStorageData[key] = window.sessionStorage.getItem(key);
     }
 
     if (useChrome) {
