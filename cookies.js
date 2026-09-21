@@ -11,7 +11,7 @@ const localStorageData = {};
 const sessionStorageData = {};
 
 // Chrome
-const useChrome = typeof (browser) === 'undefined';
+const useChrome = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
 
 // Localization
 const getMsg = useChrome ? getChromeMessage : getFirefoxMessage;
@@ -24,17 +24,17 @@ if (!useChrome) {
   browserActionAPI = typeof (chrome.action) === 'undefined' ? chrome.browserAction : chrome.action;
 }
 
-function getChromeMessage (messageName, params) {
+function getChromeMessage(messageName, params) {
   if (params !== undefined) return chrome.i18n.getMessage(messageName, params);
   return chrome.i18n.getMessage(messageName);
 }
 
-function getFirefoxMessage (messageName, params) {
+function getFirefoxMessage(messageName, params) {
   if (params !== undefined) return browser.i18n.getMessage(messageName, params);
   return browser.i18n.getMessage(messageName);
 }
 
-async function getStoreValue (key, keyStore, targetValue) {
+async function getStoreValue(key, keyStore, targetValue) {
   let value = {};
 
   if (keyStore !== undefined) {
@@ -65,7 +65,7 @@ async function getStoreValue (key, keyStore, targetValue) {
   return value;
 }
 
-async function setStoreValue (key, keyStore, targetValue) {
+async function setStoreValue(key, keyStore, targetValue) {
   if (keyStore !== undefined) {
     let request = {};
     if (targetValue !== undefined) {
@@ -90,7 +90,7 @@ async function setStoreValue (key, keyStore, targetValue) {
   return true;
 }
 
-async function clearCookiesWrapper (action, cookieDetails, currentTab) {
+async function clearCookiesWrapper(action, cookieDetails, currentTab) {
   if (currentTab === undefined || currentTab.url === undefined || currentTab.url === null) {
     return;
   }
@@ -204,7 +204,7 @@ async function clearCookiesWrapper (action, cookieDetails, currentTab) {
   clearCookiesAction(action, cookies, currentTab);
 }
 
-async function handleTabChange (activeInfo) {
+async function handleTabChange(activeInfo) {
   let tab = null;
 
   if (useChrome) {
@@ -226,11 +226,11 @@ async function handleTabChange (activeInfo) {
   browser.tabs.sendMessage(activeInfo.tabId, { getStorageData: true });
 }
 
-function setTabForClearCookies (tab) {
+function setTabForClearCookies(tab) {
   clearCookiesWrapper(getMsg('ActionDomainClearByButton'), null, tab);
 }
 
-async function clearByDomainJob (request, sender, sendResponse) {
+async function clearByDomainJob(request, sender, sendResponse) {
   const tabId = request.tabId;
   const windowId = request.windowId;
   const contextName = request.contextName;
@@ -337,7 +337,7 @@ async function clearByDomainJob (request, sender, sendResponse) {
   return false;
 }
 
-function handleMessage (request, sender, sendResponse) {
+function handleMessage(request, sender, sendResponse) {
   if (request.clearOnActivation && request.tabId) {
     if (useChrome) {
       chrome.tabs.get(request.tabId).then(setTabForClearCookies);
@@ -535,7 +535,7 @@ function handleMessage (request, sender, sendResponse) {
   sendResponse({ sessionData: null, cookies: null, rootDomain: null, msg: getMsg('UnknownDomain'), logData: null });
 }
 
-function resetCookieInformation (tab) {
+function resetCookieInformation(tab) {
   let contextName = 'default';
   if (tab.cookieStoreId) {
     contextName = tab.cookieStoreId;
@@ -566,7 +566,7 @@ function resetCookieInformation (tab) {
   cookieData[contextName][tabWindowId][tabTabId] = {};
 }
 
-function increaseCount (contextName, tabWindowId, tabTabId, cookieName, domain) {
+function increaseCount(contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '');
 
   if (cookieCount[contextName] === undefined) cookieCount[contextName] = {};
@@ -580,7 +580,7 @@ function increaseCount (contextName, tabWindowId, tabTabId, cookieName, domain) 
   }
 }
 
-function isInRemoved (contextName, tabWindowId, tabTabId, cookieName, domain) {
+function isInRemoved(contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '');
 
   if (removedData[contextName] && removedData[contextName][tabWindowId] && removedData[contextName][tabWindowId][tabTabId] && removedData[contextName][tabWindowId][tabTabId].domains[strippedDomainURL]) {
@@ -592,7 +592,7 @@ function isInRemoved (contextName, tabWindowId, tabTabId, cookieName, domain) {
   return false;
 }
 
-function addRemovedByDomain (contextName, tabWindowId, tabTabId, cookieName, domain) {
+function addRemovedByDomain(contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '');
 
   if (removedByDomain[contextName] === undefined) removedByDomain[contextName] = {};
@@ -606,7 +606,7 @@ function addRemovedByDomain (contextName, tabWindowId, tabTabId, cookieName, dom
   }
 }
 
-function increaseRemoved (contextName, tabWindowId, tabTabId, cookieName, domain) {
+function increaseRemoved(contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '');
 
   if (removedData[contextName] === undefined) removedData[contextName] = {};
@@ -620,7 +620,7 @@ function increaseRemoved (contextName, tabWindowId, tabTabId, cookieName, domain
   }
 }
 
-function increasePermitted (contextName, tabWindowId, tabTabId, cookieName, domain) {
+function increasePermitted(contextName, tabWindowId, tabTabId, cookieName, domain) {
   const strippedDomainURL = domain.replace(/^(http:|https:)\/\//i, '');
 
   if (permittedData[contextName] === undefined) permittedData[contextName] = {};
@@ -634,7 +634,7 @@ function increasePermitted (contextName, tabWindowId, tabTabId, cookieName, doma
   }
 }
 
-async function preSetMouseOverTitle (contextName, tabId) {
+async function preSetMouseOverTitle(contextName, tabId) {
   let tab = null;
 
   if (useChrome) {
@@ -650,7 +650,7 @@ async function preSetMouseOverTitle (contextName, tabId) {
   setMouseOverTitle(contextName, tab.windowId, tab.id);
 }
 
-function setMouseOverTitle (contextName, tabWindowId, tabId) {
+function setMouseOverTitle(contextName, tabWindowId, tabId) {
   let titleString = '::::::::::::::::::: ' + getMsg('IconDisplayLog') + ' :::::::::::::::::::';
   if (cookieCount[contextName] && cookieCount[contextName][tabWindowId] && cookieCount[contextName][tabWindowId][tabId]) {
     titleString += '\n' + getMsg('cookieCountDisplayIconHover', cookieCount[contextName][tabWindowId][tabId].count.toString());
@@ -739,7 +739,7 @@ function setMouseOverTitle (contextName, tabWindowId, tabId) {
 }
 
 // Clear the cookies which are enabled for the domain in browser storage
-async function clearCookiesAction (action, cookies, currentTab) {
+async function clearCookiesAction(action, cookies, currentTab) {
   const tabWindowId = currentTab.windowId;
   const tabTabId = currentTab.id;
 
@@ -1837,7 +1837,7 @@ async function clearCookiesAction (action, cookies, currentTab) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
+async function clearCookiesOnUpdate(tabId, changeInfo, tab) {
   if (changeInfo.status === undefined) {
     return;
   }
@@ -1936,7 +1936,7 @@ async function clearCookiesOnUpdate (tabId, changeInfo, tab) {
   }
 }
 
-function clearCookiesOnLeave (tabId, moveInfo) {
+function clearCookiesOnLeave(tabId, moveInfo) {
   if (moveInfo !== null) {
     if (openTabData[moveInfo.windowId] && openTabData[moveInfo.windowId][tabId]) {
       const domainData = openTabData[moveInfo.windowId][tabId];
@@ -1953,7 +1953,7 @@ function clearCookiesOnLeave (tabId, moveInfo) {
   }
 }
 
-async function setBrowserActionIcon (contextName, tabDomain, tabId) {
+async function setBrowserActionIcon(contextName, tabDomain, tabId) {
   if (useChrome) {
     if (await chrome.tabs.get(tabId) === undefined) {
       return;
@@ -2024,7 +2024,7 @@ async function setBrowserActionIcon (contextName, tabDomain, tabId) {
 }
 // --------------------------------------------------------------------------------------------------------------------------------
 // Log info
-function clearDomainLog (currentTab, details) {
+function clearDomainLog(currentTab, details) {
   let contextName = 'default';
   if (currentTab.cookieStoreId) {
     contextName = currentTab.cookieStoreId;
@@ -2049,7 +2049,7 @@ function clearDomainLog (currentTab, details) {
   }
 }
 
-function addToLogData (contextName, tabWindowId, tabTabId, msg, timeString, timestamp) {
+function addToLogData(contextName, tabWindowId, tabTabId, msg, timeString, timestamp) {
   if (logData[contextName] === undefined) logData[contextName] = {};
   if (logData[contextName][tabWindowId] === undefined) logData[contextName][tabWindowId] = {};
   if (logData[contextName][tabWindowId][tabTabId] === undefined) logData[contextName][tabWindowId][tabTabId] = [];
@@ -2065,7 +2065,7 @@ function addToLogData (contextName, tabWindowId, tabTabId, msg, timeString, time
   }
 }
 
-async function onCookieChanged (changeInfo) {
+async function onCookieChanged(changeInfo) {
   const cookieDetails = changeInfo.cookie;
   const cookieDomain = cookieDetails.domain.replace(/^(http:|https:)\/\//i, '');
 
@@ -2181,7 +2181,7 @@ async function onCookieChanged (changeInfo) {
   clearCookiesWrapper(getMsg('ActionCookieChange'), updatedCookie, currentTab);
 }
 
-async function onContextRemoved (changeInfo) {
+async function onContextRemoved(changeInfo) {
   const contextName = changeInfo.contextualIdentity.name;
   const data = await browser.storage.local.get();
 
@@ -2215,7 +2215,7 @@ async function onContextRemoved (changeInfo) {
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
-function addTabURLtoDataList (tab, details, domain) {
+function addTabURLtoDataList(tab, details, domain) {
   const urlLower = details.url.toLowerCase();
   if (!urlLower.startsWith('chrome:') && !urlLower.startsWith('about:') && !urlLower.startsWith('edge:')) {
     const tabWindowId = tab.windowId;
@@ -2265,7 +2265,7 @@ function addTabURLtoDataList (tab, details, domain) {
   }
 }
 
-async function removeTabIdfromDataList (tabId, removeInfo) {
+async function removeTabIdfromDataList(tabId, removeInfo) {
   if (removeInfo === undefined) return;
   if (openTabData[removeInfo.windowId] && openTabData[removeInfo.windowId][tabId]) {
     const domainData = openTabData[removeInfo.windowId][tabId];
@@ -2396,7 +2396,7 @@ async function removeTabIdfromDataList (tabId, removeInfo) {
   }
 }
 
-async function clearCookiesOnRequest (details) {
+async function clearCookiesOnRequest(details) {
   if ((details.method === 'GET' || details.method === 'POST') && details.tabId !== -1) {
     let sourceDomain = null;
     switch (details.type) {
@@ -2492,7 +2492,7 @@ async function clearCookiesOnRequest (details) {
 const doImportOverwrite = false;
 
 // Called in frontend/UI
-function importSettings (evt) {
+function importSettings(evt) {
   if (evt.target.files[0] === undefined) return;
 
   const file = evt.target.files[0];
@@ -2524,7 +2524,7 @@ function importSettings (evt) {
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-function mergeData (existingData, data) {
+function mergeData(existingData, data) {
   const flagCookieSettings = ['flagCookies_logged', 'flagCookies_flagGlobal', 'flagCookies_autoflag', 'flagCookies_notifications', 'flagCookies_darkTheme'];
   for (const key of Object.keys(data)) {
     if (flagCookieSettings.indexOf(key) === -1) {
@@ -2576,7 +2576,7 @@ function mergeData (existingData, data) {
   return existingData;
 }
 
-async function onInstallNotification (details) {
+async function onInstallNotification(details) {
   let data = false;
 
   if (useChrome) {
